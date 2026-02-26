@@ -77,7 +77,8 @@ public class MainStartVM {
 
             if (MainSettingsManager.getVmUi(context).equals("X11") && !VMManager.isVMRunning(context, vmID)) {
                 if (MainSettingsManager.getRunQemuWithXterm(context)) {
-                    runCommandFormat = String.format(runCommandFormat, "xterm -e bash -c \"%s\"");
+                    String logFilePath = VMManager.getVMLogFilePath(context, vmID);
+                    runCommandFormat = String.format(runCommandFormat, "xterm -e bash -c \"%s 2>&1 | tee " + logFilePath + "\"; cat " + logFilePath + "; rm " + logFilePath);
                 } else {
                     runCommandFormat = String.format(runCommandFormat, "bash -c \"%s\"");
                 }

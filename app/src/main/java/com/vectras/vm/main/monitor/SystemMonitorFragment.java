@@ -104,7 +104,7 @@ public class SystemMonitorFragment extends Fragment {
                 if (getContext() != null) {
                     requireActivity().runOnUiThread(this::getQemuInfo);
                 }
-            }, 500, TimeUnit.MILLISECONDS);
+            }, 2000, TimeUnit.MILLISECONDS);
         }));
 
         binding.btStopvmvnc.setOnClickListener(v -> {

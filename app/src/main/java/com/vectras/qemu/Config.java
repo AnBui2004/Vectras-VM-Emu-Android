@@ -157,6 +157,10 @@ public class Config {
         return Config.getCacheDir()+ "/" + vmID + "/vncsocket";
     }
 
+    public static String getCacheVMPath() {
+        return Config.getCacheDir()+ "/" + vmID + "/";
+    }
+
     public static enum MouseMode {
         Trackpad, External
     }

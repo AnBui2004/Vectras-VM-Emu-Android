@@ -500,6 +500,12 @@ public class VMManager {
         }
     }
 
+    public static String getVMLogFilePath(Context context, String vmID) {
+        String cachePath = Objects.requireNonNull(context.getExternalCacheDir()).getAbsolutePath();
+        FileUtils.createDirectory(cachePath + "/logs");
+        return cachePath + "/logs/" + vmID + ".log";
+    }
+
     public static String quickScanDiskFileInFolder(@NonNull String _foderpath) {
         if (!_foderpath.isEmpty()) {
             int _startRepeat = 0;
@@ -812,27 +818,18 @@ public class VMManager {
 
     public static void killcurrentqemuprocess(Activity activity) {
         Terminal vterm = new Terminal(activity);
-        String env = "killall -15 ";
-        switch (MainSettingsManager.getArch(activity)) {
-            case "ARM64":
-                env += "qemu-system-aarch64";
-                break;
-            case "PPC":
-                env += "qemu-system-ppc";
-                break;
-            case "I386":
-                env += "qemu-system-i386";
-                break;
-            default:
-                env += "qemu-system-x86_64";
-                break;
-        }
-        vterm.executeShellCommand2(env, false, null);
+        String qemuProcess = switch (MainSettingsManager.getArch(activity)) {
+            case "ARM64" -> "qemu-system-aarch64";
+            case "PPC" -> "qemu-system-ppc";
+            case "I386" -> "qemu-system-i386";
+            default -> "qemu-system-x86_64";
+        };
+        vterm.executeShellCommand2("killall -15 " + qemuProcess + "; sleep 1; killall -9 " + qemuProcess, false, null);
     }
 
     public static void killallqemuprocesses(Context context) {
         Terminal vterm = new Terminal(context);
-        vterm.executeShellCommand2("killall -15 qemu-system-i386 && killall -15 qemu-system-x86_64 && killall -15 qemu-system-aarch64 && killall -15 qemu-system-ppc", false, null);
+        vterm.executeShellCommand2("pkill -15 -f qemu-system-; sleep 1; pkill -9 -f qemu-system-", false, null);
     }
 
     public static void shutdownCurrentVM() {
