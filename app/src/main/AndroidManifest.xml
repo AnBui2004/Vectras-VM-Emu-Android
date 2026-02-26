@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
@@ -92,6 +91,7 @@
             android:exported="false" />
         <activity
             android:name=".RomReceiverActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
             android:exported="true"
             android:label="@string/importRom">
             <intent-filter>
@@ -112,34 +112,31 @@
         </activity>
         <activity
             android:name=".Minitools"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
             android:exported="false"
             android:label="@string/mini_tools" />
         <activity
             android:name=".RomInfo"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
-            android:exported="false"
-            android:hardwareAccelerated="true" />
+            android:exported="false" />
         <activity
             android:name=".ExportRomActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
             android:exported="false"
-            android:hardwareAccelerated="true"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".CqcmActivity"
-            android:exported="true"
-            android:hardwareAccelerated="true" />
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+            android:exported="true" />
         <activity
             android:name=".creator.QemuParamsEditorActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
             android:exported="false"
-            android:hardwareAccelerated="true"
             android:windowSoftInputMode="stateHidden" /> <!-- uiMode so that FlashActivity does not automatically restart when changing themes, causing MainActivity to be called twice. -->
         <activity
             android:name=".SplashActivity"
             android:configChanges="uiMode|orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
-            android:exported="true"
-            android:hardwareAccelerated="true">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -148,13 +145,13 @@
         </activity>
         <activity
             android:name=".AboutActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
             android:exported="true"
-            android:hardwareAccelerated="true"
             android:label="@string/about_app" />
         <activity
             android:name=".ImagePrvActivity"
-            android:exported="true"
-            android:hardwareAccelerated="true" />
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+            android:exported="true" />
         <activity
             android:name="com.vectras.qemu.MainVNCActivity"
             android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize"
