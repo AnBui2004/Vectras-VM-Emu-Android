@@ -1963,6 +1963,24 @@
     "id": ""
   },
   {
+    "rom_name": "Windows Vista Lite",
+    "rom_icon": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/7da8855e-55d1-4cd3-ba5b-f8f32c4cdc1d/df4yf7a-9d63c96c-ed4b-4cd2-913a-16f47f19ea38.png/v1/fill/w_1280,h_1280/windows_vista_logo_by_mohamadouwindowsxp10_df4yf7a-fullview.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTI4MCIsInBhdGgiOiIvZi83ZGE4ODU1ZS01NWQxLTRjZDMtYmE1Yi1mOGYzMmM0Y2RjMWQvZGY0eWY3YS05ZDYzYzk2Yy1lZDRiLTRjZDItOTEzYS0xNmY0N2YxOWVhMzgucG5nIiwid2lkdGgiOiI8PTEyODAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.nOQd-36q5JBjP3aI8hW-P8H1GHE2XkzPtlg8AsEAmSI",
+    "rom_url": "https://anbui.ovh/get/vec/community/win/nt6/vistalite.html",
+    "rom_path": "Windows Vista Lite.cvbi",
+    "rom_avail": true,
+    "rom_size": "Lighter",
+    "rom_arch": "X86_64",
+    "rom_kernel": "windows",
+    "rom_extra": "",
+    "final_rom_file_name": "",
+    "desc": "From @olikvos on Telegram.\n\nWindows Vista is a major release of the Windows NT operating system developed by Microsoft. It was the direct successor to Windows XP, released five years earlier, which was then the longest time span between successive releases of Microsoft Windows. It was released to manufacturing on November 8, 2006, and over the following two months, it was released in stages to business customers, original equipment manufacturers (OEMs), and retail channels. On January 30, 2007, it was released internationally and was made available for purchase and download from the Windows Marketplace; it is the first release of Windows to be made available through a digital distribution platform.",
+    "file_size": "3.5 GB",
+    "creator": "Olivka",
+    "verified": true,
+    "vecid": "windowsvistalitecvbi",
+    "id": ""
+  },
+  {
     "rom_name": "Windows Vista Starter",
     "rom_icon": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/7da8855e-55d1-4cd3-ba5b-f8f32c4cdc1d/df4yf7a-9d63c96c-ed4b-4cd2-913a-16f47f19ea38.png/v1/fill/w_1280,h_1280/windows_vista_logo_by_mohamadouwindowsxp10_df4yf7a-fullview.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTI4MCIsInBhdGgiOiIvZi83ZGE4ODU1ZS01NWQxLTRjZDMtYmE1Yi1mOGYzMmM0Y2RjMWQvZGY0eWY3YS05ZDYzYzk2Yy1lZDRiLTRjZDItOTEzYS0xNmY0N2YxOWVhMzgucG5nIiwid2lkdGgiOiI8PTEyODAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.nOQd-36q5JBjP3aI8hW-P8H1GHE2XkzPtlg8AsEAmSI",
     "rom_url": "https://youtu.be/omkImuu1Wu0",
