@@ -117,7 +117,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private void cleanUp() {
         FileUtils.delete(AppConfig.vmFolder + "QuickRun");
-        VmFileManager.removeTemp(this, "");
+        VmFileManager.quickCleanUp(this);
     }
 
     private void finishSplash() {

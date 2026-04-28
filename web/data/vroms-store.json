@@ -901,6 +901,24 @@
     "id": ""
   },
   {
+    "rom_name": "Tiny Core Linux",
+    "rom_icon": "https://miro.medium.com/v2/1*6Xeb45jiU6kKqoH7LeUGsg.png",
+    "rom_url": "https://anbui.ovh/get/vec/community/linux/tinycorelinux.html",
+    "rom_path": "Tiny Core Linux.cvbi",
+    "rom_avail": true,
+    "rom_size": "Light",
+    "rom_arch": "X86_64",
+    "rom_kernel": "linux",
+    "rom_extra": "",
+    "final_rom_file_name": "",
+    "desc": "From @olikvos on Telegram and fixed by Nguyen Bao An Bui.\n\nTiny Core Linux (TCL) is a minimal Linux kernel based operating system focusing on providing a base system using BusyBox and FLTK. It was developed by Robert Shingledecker, who was previously the lead developer of Damn Small Linux. The distribution is notable for its small size (11 to 16 MB) and minimalism; additional functions are provided by extensions. Tiny Core Linux is free and open-source software licensed under the GNU General Public License version 2.",
+    "file_size": "700 MB",
+    "creator": "olikvos",
+    "verified": true,
+    "vecid": "tinycorelinuxcvbi",
+    "id": ""
+  },
+  {
     "rom_name": "Tiny XP",
     "rom_icon": "https://vuetiwuvbyxywfukompp.supabase.co/storage/v1/object/public/getmyos/v1/files/2018/10/12/windows_2001_logo_1_abcd7f82240a9d6d4ef94d5c6223130b.png",
     "rom_url": "https://anbui.ovh/get/vec/community/win/nt5/tinyxp.html",
@@ -1042,6 +1060,24 @@
     "creator": "tokaevUser",
     "verified": true,
     "vecid": "windows10micro10cvbi",
+    "id": ""
+  },
+  {
+    "rom_name": "Windows 10 (Tiny10)",
+    "rom_icon": "https://vuetiwuvbyxywfukompp.supabase.co/storage/v1/object/public/getmyos/v1/files/2018/09/17/windows-logo_1_926ed76111646acbbe332bc5af0cf2ce.png",
+    "rom_url": "https://anbui.ovh/get/vec/community/win/nt10/tiny10.html",
+    "rom_path": "Tiny10.cvbi",
+    "rom_avail": true,
+    "rom_size": "Lighter",
+    "rom_arch": "X86_64",
+    "rom_kernel": "windows",
+    "rom_extra": "",
+    "final_rom_file_name": "",
+    "desc": "From @tokaevUser on Telegram.\n\nWindows 10 is a major release of Microsoft's Windows NT operating system. The successor to Windows 8.1, it was released to manufacturing on July 15, 2015, and later to retail on July 29, 2015.",
+    "file_size": "7 GB",
+    "creator": "tokaevUser",
+    "verified": true,
+    "vecid": "tiny10cvbi",
     "id": ""
   },
   {

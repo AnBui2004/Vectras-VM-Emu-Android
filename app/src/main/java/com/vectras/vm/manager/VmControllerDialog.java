@@ -37,6 +37,11 @@ import com.vectras.vm.utils.StreamAudio;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VmControllerDialog extends DialogFragment {
 
@@ -54,10 +59,34 @@ public class VmControllerDialog extends DialogFragment {
         AlertDialog dialog = new AlertDialog.Builder(requireActivity()).create();
         dialog.setView(binding.getRoot());
 
-        new Thread(() -> {
-            infoBlock = QmpSender.getAllDevice();
+        AtomicBoolean isGotInfo = new AtomicBoolean(false);
 
+        ProgressDialog progressDialog = new ProgressDialog(requireActivity());
+        progressDialog.setText(getString(R.string.just_a_sec));
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (isGotInfo.get()) {
+                progressDialog.reset();
+            } else {
+                progressDialog.show();
+            }
+        }, 1000);
+
+
+        new Thread(() -> {
+            try {
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                Future<String> getInfoBlock = executor.submit(QmpSender::getAllDevice);
+                infoBlock = getInfoBlock.get(3, TimeUnit.SECONDS);
+            } catch (Exception e) {
+                infoBlock = "";
+            }
+
+            long audioFileSize = FileUtils.getFileSize(VmFileManager.findAudioRaw(requireContext(), Config.vmID));
+
+            isGotInfo.set(true);
             new Handler(Looper.getMainLooper()).post(() -> {
+                progressDialog.reset();
+
                 if (position > -1) {
                     binding.lnConnect.setOnClickListener(v -> {
                         if (isAdded()) DisplaySystem.launch(requireActivity());
@@ -112,13 +141,14 @@ public class VmControllerDialog extends DialogFragment {
                 });
 
                 if (isAdded() && (!(requireActivity() instanceof MainVNCActivity))) {
-                    if (streamAudio == null) streamAudio = new StreamAudio(requireActivity().getApplicationContext());
+                    if (streamAudio == null)
+                        streamAudio = new StreamAudio(requireActivity().getApplicationContext());
                     if (!streamAudio.isPlaying()) VmAudioManager.set(Config.vmID);
                 }
 
                 if (streamAudio == null ||
                         !isAdded() ||
-                        FileUtils.getFileSize(VmFileManager.findAudioRaw(requireContext(), Config.vmID)) == 0 ||
+                        audioFileSize == 0 ||
                         (isAdded() && (!(requireActivity() instanceof MainVNCActivity)) && !VmAudioManager.currentVmId.equals(Config.vmID))
                 ) {
                     binding.lnMute.setVisibility(View.GONE);
@@ -297,7 +327,8 @@ public class VmControllerDialog extends DialogFragment {
                     }
 
                     binding.ivScreenOneToOne.setOnClickListener(v -> {
-                        if (MainSettingsManager.getVNCScaleMode(requireActivity()) == VNCConfig.oneToOne) return;
+                        if (MainSettingsManager.getVNCScaleMode(requireActivity()) == VNCConfig.oneToOne)
+                            return;
 
                         MainSettingsManager.setVNCScaleMode(requireActivity(), VNCConfig.oneToOne);
                         requireActivity().recreate();
@@ -305,7 +336,8 @@ public class VmControllerDialog extends DialogFragment {
                     });
 
                     binding.ivScreenFit.setOnClickListener(v -> {
-                        if (MainSettingsManager.getVNCScaleMode(requireActivity()) == VNCConfig.fitToScreen) return;
+                        if (MainSettingsManager.getVNCScaleMode(requireActivity()) == VNCConfig.fitToScreen)
+                            return;
 
                         MainSettingsManager.setVNCScaleMode(requireActivity(), VNCConfig.fitToScreen);
                         requireActivity().recreate();
@@ -313,7 +345,8 @@ public class VmControllerDialog extends DialogFragment {
                     });
 
                     binding.ivScreenScale.setOnClickListener(v -> {
-                        if (MainSettingsManager.getVNCScaleMode(requireActivity()) == VNCConfig.scaleToFitScreen) return;
+                        if (MainSettingsManager.getVNCScaleMode(requireActivity()) == VNCConfig.scaleToFitScreen)
+                            return;
 
                         MainSettingsManager.setVNCScaleMode(requireActivity(), VNCConfig.scaleToFitScreen);
                         requireActivity().recreate();

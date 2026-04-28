@@ -77,8 +77,9 @@ public class VMCreatorActivity extends AppCompatActivity {
     private String thumbnailPath = "";
     private String vmID = VMManager.idGenerator();
     private boolean isShowBootMenu = false;
-    private boolean isUseUefi = false;
     private boolean isUseLocalTime = true;
+    private boolean isUseUefi = false;
+    private boolean isUseDefaultBios = true;
     private int bootFrom = 0;
 
     @Override
@@ -278,9 +279,14 @@ public class VMCreatorActivity extends AppCompatActivity {
 
         binding.cbvShowbootmenu.setOnCheckedChangeListener((v, isChecked) -> isShowBootMenu = isChecked);
 
+        binding.cbvUselocaltime.setOnCheckedChangeListener((v, isChecked) -> isUseLocalTime = isChecked);
+
         binding.cbvUseuefi.setOnCheckedChangeListener((v, isChecked) -> isUseUefi = isChecked);
 
-        binding.cbvUselocaltime.setOnCheckedChangeListener((v, isChecked) -> isUseLocalTime = isChecked);
+        binding.cbvUseDefaultBios.setOnCheckedChangeListener((v, isChecked) -> {
+            isUseDefaultBios = isChecked;
+            binding.cbvUseuefi.setEnabled(isChecked);
+        });
 
         if (!MainSettingsManager.getArch(this).equals("X86_64"))
             binding.cbvUseuefi.setVisibility(View.GONE);
@@ -574,6 +580,11 @@ public class VMCreatorActivity extends AppCompatActivity {
     private void loadConfig(DataMainRoms vmConfig) {
         if (vmConfig != null) current = vmConfig;
         if (binding != null && current != null) {
+            if (!current.vmID.isEmpty()) {
+                vmID = current.vmID;
+                checkVMID();
+            }
+
             if (current.itemArch != null) {
                 VMManager.setArch(current.itemArch, this);
                 binding.collapsingToolbarLayout.setSubtitle(MainSettingsManager.getArch(this));
@@ -624,6 +635,11 @@ public class VMCreatorActivity extends AppCompatActivity {
                 binding.cbvUseuefi.setVisibility(View.GONE);
             }
 
+            isUseDefaultBios = current.isUseDefaultBios;
+            binding.cbvUseDefaultBios.setChecked(isUseDefaultBios);
+
+            binding.cbvUseuefi.setEnabled(isUseDefaultBios);
+
             isUseLocalTime = current.isUseLocalTime;
             binding.cbvUselocaltime.setChecked(isUseLocalTime);
         }
@@ -657,13 +673,14 @@ public class VMCreatorActivity extends AppCompatActivity {
     }
 
     private void checkVMID() {
-        if (FileUtils.isFileExists(AppConfig.maindirpath + "/roms/" + vmID) || vmID.isEmpty()) {
+        if (vmID.isEmpty() || (!modify && VmFileManager.isInUse(vmID))) {
             vmID = VMManager.idGenerator();
+            Log.d(TAG, "Changed to ID:" + vmID);
         }
     }
 
     private boolean createVMFolder(boolean isShowDialog) {
-        File romDir = new File(VmFileManager.getPath(vmID));
+        File romDir = new File(VmFileManager.quickGetPath(vmID));
         if (!romDir.exists()) {
             if (!romDir.mkdirs()) {
                 if (isShowDialog) DialogUtils.oneDialog(this,
@@ -758,6 +775,7 @@ public class VMCreatorActivity extends AppCompatActivity {
         vmConfigMap.put("bootFrom", bootFrom);
         vmConfigMap.put("isShowBootMenu", isShowBootMenu);
         vmConfigMap.put("isUseUefi", isUseUefi);
+        vmConfigMap.put("isUseDefaultBios", isUseDefaultBios);
         vmConfigMap.put("isUseLocalTime", isUseLocalTime);
         vmConfigMap.put("vmID", vmID);
         vmConfigMap.put("qmpPort", 8080);
@@ -971,7 +989,7 @@ public class VMCreatorActivity extends AppCompatActivity {
 
         showProgressDialog(getString(R.string.importing) + "\n" + getString(R.string.please_stay_here));
 
-        Log.i(TAG, "importRom: Extracting with " + (isUseUri ? "uri" : "path") + " from " + filePath + " to " + VmFileManager.getPath(vmID));
+        Log.i(TAG, "importRom: Extracting with " + (isUseUri ? "uri" : "path") + " from " + filePath + " to " + VmFileManager.quickGetPath(vmID));
 
         new Thread(() -> {
             boolean result = isUseUri ? ZipUtils.extract(

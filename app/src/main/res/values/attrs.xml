@@ -45,6 +45,7 @@
     <declare-styleable name="CheckBoxView">
         <attr name="setText" format="string"/>
         <attr name="setChecked" format="boolean"/>
+        <attr name="setEnable" format="boolean"/>
     </declare-styleable>
 
 </resources>

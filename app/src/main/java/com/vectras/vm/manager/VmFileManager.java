@@ -7,6 +7,7 @@ import com.vectras.vm.AppConfig;
 import com.vectras.vm.utils.FileUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class VmFileManager {
     private static final String TAG = "VmFileManager";
@@ -41,6 +42,21 @@ public class VmFileManager {
 
     public static boolean visible(String vmId) {
         return FileUtils.rename(getPath(HIDE_VM_SUFFIX + vmId), vmId);
+    }
+
+    public static void quickCleanUp(Context context) {
+        ArrayList<String> fileList = new ArrayList<>();
+        FileUtils.getAListOfAllFilesAndFoldersInADirectory(AppConfig.vmFolder, fileList);
+        for (int position = 0; position < fileList.size(); position++) {
+            if (FileUtils.isEmpty(fileList.get(position))) FileUtils.delete(fileList.get(position));
+        }
+
+        removeTemp(context, "");
+    }
+
+    public static boolean isInUse(String vmId) {
+        if (!FileUtils.isFileExists(quickGetPath(vmId))) return true;
+        return !FileUtils.isEmpty(quickGetPath(vmId));
     }
 
     public static String getPath(String vmId, String childFilePath) {

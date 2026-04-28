@@ -17,6 +17,7 @@ import com.vectras.qemu.MainSettingsManager;
 import com.vectras.vm.R;
 import com.vectras.vm.databinding.ActivitySetArchBinding;
 import com.vectras.vm.main.MainActivity;
+import com.vectras.vm.utils.DialogUtils;
 import com.vectras.vm.utils.FileUtils;
 import com.vectras.vm.utils.IntentUtils;
 import com.vectras.vm.utils.UIUtils;
@@ -77,18 +78,28 @@ public class SetArchActivity extends AppCompatActivity implements View.OnClickLi
                         Uri uri = clipData.getItemAt(0).getUri();
                         String filePath = FileUtils.getFilePathFromUri(getApplicationContext(), uri);
 
-                        File file = new File(filePath);
+                        new Thread (() -> {
+                            if (filePath == null) FileUtils.getPath(this, uri);
 
-                        Intent intent = new Intent();
-                        intent.setClass(getApplicationContext(), VMCreatorActivity.class);
-                        intent.putExtra("addromnow", "");
-                        intent.putExtra("romextra", "");
-                        intent.putExtra("romname", "");
-                        intent.putExtra("romicon", "");
-                        intent.putExtra("rompath", filePath);
-                        intent.putExtra("romfilename", file.getName());
-                        startActivity(intent);
-                        finish();
+                            File file = filePath != null ? new File(filePath) : null;
+
+                            runOnUiThread(() -> {
+                                if (file != null) {
+                                    Intent intent = new Intent();
+                                    intent.setClass(getApplicationContext(), VMCreatorActivity.class);
+                                    intent.putExtra("addromnow", "");
+                                    intent.putExtra("romextra", "");
+                                    intent.putExtra("romname", "");
+                                    intent.putExtra("romicon", "");
+                                    intent.putExtra("rompath", filePath);
+                                    intent.putExtra("romfilename", file.getName());
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    DialogUtils.oopsDialog(this, getString(R.string.invalid_file_path_content));
+                                }
+                            });
+                        }).start();
                     }
                     return true;
             }

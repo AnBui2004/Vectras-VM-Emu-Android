@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -142,8 +143,9 @@ public class ExportRomActivity extends AppCompatActivity {
 
         vmConfigMap.put("bootFrom", current.bootFrom);
         vmConfigMap.put("isShowBootMenu", current.isShowBootMenu);
-        vmConfigMap.put("isUseUefi", current.isUseUefi);
         vmConfigMap.put("isUseLocalTime", current.isUseLocalTime);
+        vmConfigMap.put("isUseUefi", current.isUseUefi);
+        vmConfigMap.put("isUseDefaultBios", current.isUseDefaultBios);
         vmConfigMap.put("qemu", VmFileManager.pathToTextMark(current.vmID, current.itemExtra));
         vmConfigMap.put("arch", current.itemArch);
 
@@ -231,6 +233,21 @@ public class ExportRomActivity extends AppCompatActivity {
                 }
             }*/
 
+            String outputPath = FileUtils.getPath(this, uri);
+
+            if (outputPath != null) {
+                if (outputPath.startsWith(VmFileManager.quickGetPath(current.vmID))) {
+                    if (!new File(outputPath).isDirectory()) FileUtils.delete(outputPath);
+                    runOnUiThread(() -> {
+                        DialogUtils.oopsDialog(this, getString(R.string.cannot_save_here_please_choose_another_location));
+                        DialogUtils.safeDismiss(this, progressDialog);
+                    });
+                    return;
+                }
+            } else {
+                outputPath = "";
+            }
+
             final boolean[] result = {ZipUtils.compress(
                     this,
                     finalFilePaths,
@@ -238,32 +255,30 @@ public class ExportRomActivity extends AppCompatActivity {
                     progressText,
                     progressBar
             )};
+            String finalOutputPath = outputPath;
             runOnUiThread(() -> {
                 isExporting = false;
                 DialogUtils.safeDismiss(this, progressDialog);
 
-                String finalOutputPath = "";
                 try {
                     //FileUtils.delete(new File(outputPath));
                     VmFileManager.removeTemp(this, current.vmID);
-                    finalOutputPath = FileUtils.getPath(this, uri);
                 } catch (Exception e) {
                     Log.e(TAG, "startCreate: ", e);
                 }
 
-                String finalOutputPath1 = finalOutputPath != null ? finalOutputPath : "";
                 String title;
                 String content;
                 if (result[0]) {
                     title = getString(R.string.done);
-                    content = finalOutputPath1.isEmpty() ? getString(R.string.rom_successfully_exported) : getString(R.string.saved_in) + ": " + finalOutputPath1 + ".";
+                    content = finalOutputPath.isEmpty() ? getString(R.string.rom_successfully_exported) : getString(R.string.saved_in) + ": " + finalOutputPath + ".";
                 } else {
                     title = getString(R.string.oops);
                     content = getString(R.string.something_went_wrong) + ":\n\n" + ZipUtils.lastErrorContent;
                 }
 
-                File file = new File(finalOutputPath1);
-                boolean isShowInFolder = !finalOutputPath1.isEmpty() && result[0] && file.getParent() != null && FileUtils.isFileExists(file.getParent());
+                File file = new File(finalOutputPath);
+                boolean isShowInFolder = !finalOutputPath.isEmpty() && result[0] && file.getParent() != null && FileUtils.isFileExists(file.getParent());
 
                 DialogUtils.twoDialog(this,
                         title,
