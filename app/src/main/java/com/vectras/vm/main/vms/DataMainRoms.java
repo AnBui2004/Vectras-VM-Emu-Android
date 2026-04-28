@@ -51,7 +51,9 @@ public class DataMainRoms {
 
     public boolean isShowBootMenu = false;
 
+    public boolean isUseLocalTime = true;
+
     public boolean isUseUefi = false;
 
-    public boolean isUseLocalTime = true;
+    public boolean isUseDefaultBios = true;
 }

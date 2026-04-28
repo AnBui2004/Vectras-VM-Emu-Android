@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.transition.MaterialFadeThrough;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.vectras.vm.AppConfig;
 import com.vectras.vm.R;
 import com.vectras.vm.VMManager;
@@ -30,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -111,83 +114,33 @@ public class VmsFragment extends Fragment implements CallbackInterface.HomeCallT
             try {
                 if (!isAdded()) return;
 
-                jArray = new JSONArray(FileUtils.readFromFile(requireActivity(), new File(AppConfig.maindirpath
-                        + "roms-data.json")));
+                Gson gson = new Gson();
+                Type listType = new TypeToken<List<DataMainRoms>>(){}.getType();
 
-                // Extract data from json and store into ArrayList as class objects
-                for (int i = 0; i < jArray.length(); i++) {
-                    JSONObject json_data = jArray.getJSONObject(i);
-                    DataMainRoms romsMainData = new DataMainRoms();
-                    romsMainData.itemName = json_data.getString("imgName");
-                    romsMainData.itemIcon = json_data.getString("imgIcon");
-                    try {
-                        romsMainData.itemArch = json_data.getString("imgArch");
-                    } catch (JSONException ignored) {
-                        romsMainData.itemArch = "unknown";
-                    }
-                    romsMainData.itemPath = json_data.getString("imgPath");
-                    try {
-                        romsMainData.imgCdrom = json_data.getString("imgCdrom");
-                    } catch (JSONException ignored) {
-                        romsMainData.imgCdrom = "";
-                    }
-                    try {
-                        romsMainData.vmID = json_data.getString("vmID");
-                    } catch (JSONException ignored) {
-                        romsMainData.vmID = "";
-                    }
-                    try {
-                        romsMainData.qmpPort = json_data.getInt("qmpPort");
-                    } catch (JSONException ignored) {
-                        romsMainData.qmpPort = 0;
-                    }
-                    try {
-                        romsMainData.itemDrv1 = json_data.getString("imgDrv1");
-                    } catch (JSONException ignored) {
-                        romsMainData.itemDrv1 = "";
-                    }
-                    try {
-                        romsMainData.bootFrom = json_data.getInt("bootFrom");
-                    } catch (JSONException ignored) {
-                        romsMainData.bootFrom = 0;
-                    }
-                    try {
-                        romsMainData.isShowBootMenu = json_data.getBoolean("isShowBootMenu");
-                    } catch (JSONException ignored) {
-                        romsMainData.isShowBootMenu = false;
-                    }
-                    try {
-                        romsMainData.isUseUefi = json_data.getBoolean("isUseUefi");
-                    } catch (JSONException ignored) {
-                        romsMainData.isUseUefi = false;
-                    }
-                    try {
-                        romsMainData.isUseLocalTime = json_data.getBoolean("isUseLocalTime");
-                    } catch (JSONException ignored) {
-                        romsMainData.isUseLocalTime = true;
-                    }
+                String json = FileUtils.readFromFile(requireActivity(),
+                        new File(AppConfig.romsdatajson));
 
-                    romsMainData.itemExtra = json_data.getString("imgExtra");
-                    tempdata.add(romsMainData);
-                }
+                tempdata = gson.fromJson(json, listType);
+
                 if (!isAdded()) return;
                 requireActivity().runOnUiThread(() -> binding.lnError.setVisibility(View.GONE));
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 if (!isAdded()) return;
                 requireActivity().runOnUiThread(() -> binding.lnError.setVisibility(View.VISIBLE));
                 Log.e(TAG, "loadDataVbi: ", e);
             }
 
             if (!isAdded()) return;
+            List<DataMainRoms> finalTempdata = tempdata;
             requireActivity().runOnUiThread(() -> {
                 binding.lnLoad.setVisibility(View.GONE);
-                if (tempdata.isEmpty()) {
+                if (finalTempdata.isEmpty()) {
                     binding.rvRomlist.setVisibility(View.GONE);
                     binding.lnNothinghere.setVisibility(View.VISIBLE);
                 } else {
                     binding.rvRomlist.setVisibility(View.VISIBLE);
                     binding.lnNothinghere.setVisibility(View.GONE);
-                    vmsHomeAdapter.updateData(tempdata);
+                    vmsHomeAdapter.updateData(finalTempdata);
                 }
             });
         });

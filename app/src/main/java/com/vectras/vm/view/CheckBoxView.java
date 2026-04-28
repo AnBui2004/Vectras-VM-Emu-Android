@@ -70,7 +70,7 @@ public class CheckBoxView extends LinearLayout {
 
     public void setEnabled(boolean isEnabled) {
         findViewById(R.id.root).setEnabled(isEnabled);
-        findViewById(R.id.root).setAlpha(0.5f);
+        findViewById(R.id.root).setAlpha(isEnabled ? 1f : 0.5f);
         checkBox.setEnabled(isEnabled);
     }
 }

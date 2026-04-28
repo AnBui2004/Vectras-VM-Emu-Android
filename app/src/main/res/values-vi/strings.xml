@@ -555,6 +555,7 @@
     <string name="manage">Quản lý</string>
     <string name="connect">Kết nối</string>
     <string name="shutting_down">Đang tắt…</string>
+    <string name="cannot_save_here_please_choose_another_location">Không thể lưu ở đây, hãy chọn một nơi khác.</string>
 
     <!--======================TERMUX STRINGS====================-->
     <string name="application_name" translatable="false">Vterm</string>

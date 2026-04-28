@@ -722,6 +722,17 @@ public class FileUtils {
         }
     }
 
+    public static boolean isEmpty(String path) {
+        File file = new File(path);
+
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            return files != null && files.length == 0;
+        }
+
+        return file.length() == 0;
+    }
+
     public static int getFileSize(String _path) {
         try {
             File file = new File(_path);

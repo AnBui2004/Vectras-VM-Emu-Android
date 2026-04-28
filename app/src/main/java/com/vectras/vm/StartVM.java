@@ -34,7 +34,8 @@ public class StartVM {
                 snapshotParams = getQmpParams() + " " + snapshotParams;
                 snapshotParams = getQemuSystem(activity) + " " + snapshotParams;
                 snapshotParams += " " + getDisplayParams(activity);
-                if (!snapshotParams.contains("-incoming defer")) snapshotParams += " -incoming defer";
+                if (!snapshotParams.contains("-incoming defer"))
+                    snapshotParams += " -incoming defer";
                 Log.d("StartVM.env", snapshotParams);
                 return snapshotParams;
             }
@@ -82,7 +83,7 @@ public class StartVM {
             params.add(getQmpParams());
 
             String ifType;
-            ifType= MainSettingsManager.getIfType(activity);
+            ifType = MainSettingsManager.getIfType(activity);
 
             String cdrom = "";
             String hdd0;
@@ -208,7 +209,7 @@ public class StartVM {
 
             //params.add(soundDevice);
 
-            if (MainSettingsManager.useDefaultBios(activity)) {
+            if (vmConfigs.isUseDefaultBios) {
                 if (MainSettingsManager.getArch(activity).equals("PPC")) {
                     bios = "-L ";
                     bios += "pc-bios";
@@ -217,7 +218,7 @@ public class StartVM {
                     bios += "file=" + AppConfig.basefiledir + "QEMU_EFI.img,format=raw,readonly=on,if=pflash";
                     bios += " -drive ";
                     bios += "file=" + AppConfig.basefiledir + "QEMU_VARS.img,format=raw,if=pflash";
-                } else if (MainSettingsManager.getArch(activity).equals("X86_64") && (vmConfigs.isUseUefi)) {
+                } else if (vmConfigs.isUseUefi) {
                     bios = "-drive ";
                     bios += "file=" + AppConfig.basefiledir + "RELEASEX64_OVMF.fd,format=raw,readonly=on,if=pflash";
                     bios += " -drive ";
@@ -310,6 +311,7 @@ public class StartVM {
     public static String getQmpParams() {
         return "-qmp unix:" + Config.getLocalQMPSocketPath() + ",server,nowait";
     }
+
     public static String removeQmpParams(String params) {
         return params.replaceAll("(?<=\\s|^)-qmp\\s+(\"[^\"]+\"|\\S+)", "");
     }

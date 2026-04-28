@@ -280,17 +280,24 @@
                         app:setText="@string/show_boot_menu"/>
 
                     <com.vectras.vm.view.CheckBoxView
+                        android:id="@+id/cbv_uselocaltime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:setText="@string/use_local_time"
+                        app:setChecked="true"/>
+
+                    <com.vectras.vm.view.CheckBoxView
                         android:id="@+id/cbv_useuefi"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:setText="@string/use_uefi_for_x64_only"/>
 
                     <com.vectras.vm.view.CheckBoxView
-                        android:id="@+id/cbv_uselocaltime"
+                        android:id="@+id/cbv_use_default_bios"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:setText="@string/use_local_time"
-                        app:setChecked="true"/>
+                        app:setText="@string/use_default_bios_uefi"
+                        app:setChecked="true" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

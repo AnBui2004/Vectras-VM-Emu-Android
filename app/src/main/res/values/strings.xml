@@ -566,6 +566,7 @@
     <string name="manage">Manage</string>
     <string name="connect">Connect</string>
     <string name="shutting_down">Shutting down…</string>
+    <string name="cannot_save_here_please_choose_another_location">Cannot save here, please choose another location.</string>
 
 
     <!--======================TERMUX STRINGS====================-->

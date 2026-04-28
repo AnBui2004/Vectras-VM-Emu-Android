@@ -454,7 +454,10 @@ public class VMManager {
             result.append(random.nextInt(2) > 0 ? TextUtils.randomALetter() : String.valueOf(random.nextInt(10)));
         }
 
-        return result.toString();
+        long millis = System.currentTimeMillis();
+        long days = millis / 1000 / 60 / 60 / 24;
+
+        return result.toString() + days;
     }
 
     // TODO: This can be removed because QMP currently uses sockets instead of open ports.
