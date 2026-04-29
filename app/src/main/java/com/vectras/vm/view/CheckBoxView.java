@@ -4,15 +4,15 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.vectras.vm.R;
 
 public class CheckBoxView extends LinearLayout {
     private TextView tvTitle;
-    private CheckBox checkBox;
+    private MaterialCheckBox checkBox;
 
     public interface OnCheckedChangeListener {
         void onCheckedChanged(CheckBoxView view, boolean isChecked);
@@ -40,9 +40,11 @@ public class CheckBoxView extends LinearLayout {
 
             String title = typedArray.getString(R.styleable.CheckBoxView_setText);
             boolean isChecked = typedArray.getBoolean(R.styleable.CheckBoxView_setChecked, false);
+            boolean isEnabled = typedArray.getBoolean(R.styleable.CheckBoxView_setEnable, true);
 
             if (title != null) tvTitle.setText(title);
             checkBox.setChecked(isChecked);
+            setEnabled(isEnabled);
 
             typedArray.recycle();
         }

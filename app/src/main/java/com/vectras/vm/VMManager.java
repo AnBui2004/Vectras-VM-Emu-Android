@@ -109,6 +109,25 @@ public class VMManager {
                 writeToVMConfig(Objects.requireNonNull(vmConfigMap.get("vmID")).toString(), new Gson().toJson(vmConfigMap));
     }
 
+    public static boolean addToVMList(DataMainRoms vmConfig, String vmID) {
+        String vmListJson = FileUtils.readAFile(AppConfig.romsdatajson);
+        if (!JSONUtils.isValidFromString(vmListJson)) return false;
+
+        ArrayList<DataMainRoms> vmList = new Gson().fromJson(vmListJson,
+                new TypeToken<ArrayList<DataMainRoms>>() {}.getType());
+
+        if (vmList == null) return false;
+
+        if (!vmID.isEmpty()) {
+            generatedVMId = vmID;
+            vmConfig.vmID = generatedVMId;
+        }
+
+        vmList.add(0, vmConfig);
+        return writeToVMList(new Gson().toJson(vmList)) &&
+                writeToVMConfig(vmConfig.vmID, new Gson().toJson(vmConfig));
+    }
+
     public static boolean addToVMList(HashMap<String, Object> vmConfigMap, String vmID) {
         String vmListJson = FileUtils.readAFile(AppConfig.romsdatajson);
         if (!JSONUtils.isValidFromString(vmListJson)) return false;
@@ -162,6 +181,38 @@ public class VMManager {
                 writeToVMConfig(Objects.requireNonNull(vmConfigMap.get("vmID")).toString(), new Gson().toJson(vmConfigMap));
     }
 
+    public static boolean replaceToVMList(int position, String vmId, DataMainRoms vmConfig) {
+        String vmListJson = FileUtils.readAFile(AppConfig.romsdatajson);
+        if (!JSONUtils.isValidFromString(vmListJson)) return false;
+
+        Gson gson = new Gson();
+        int finalPosition = position;
+
+        ArrayList<DataMainRoms> vmList = gson.fromJson(vmListJson,
+                new TypeToken<ArrayList<DataMainRoms>>() {}.getType());
+
+        if (vmList == null) return false;
+
+        if (position == -1) {
+            for (int i = 0; i < vmList.size(); i++) {
+                DataMainRoms item = vmList.get(i);
+                if ((!vmId.isEmpty() && item.vmID.equals(vmId)) || item.vmID.equals(vmConfig.vmID)) {
+                    finalPosition = i;
+                    break;
+                }
+            }
+        }
+
+        if (finalPosition >= 0 && finalPosition < vmList.size()) {
+            vmList.set(finalPosition, vmConfig);
+        } else {
+            return false;
+        }
+
+        return writeToVMList(gson.toJson(vmList)) &&
+                writeToVMConfig(vmConfig.vmID, gson.toJson(vmConfig));
+    }
+
     public static boolean replaceToVMList(int postion, String vmId, HashMap<String, Object> vmConfigMap) {
         String vmListJson = FileUtils.readAFile(AppConfig.romsdatajson);
         if (!JSONUtils.isValidFromString(vmListJson)) return false;
@@ -204,6 +255,10 @@ public class VMManager {
 
     public static boolean addVM(HashMap<String, Object> vmConfigMap, int position) {
         return position == -1 ? addToVMList(vmConfigMap, Objects.requireNonNull(vmConfigMap.get("vmID")).toString()) : replaceToVMList(position, "", vmConfigMap);
+    }
+
+    public static boolean addVM(DataMainRoms vmConfig, int position) {
+        return position == -1 ? addToVMList(vmConfig, vmConfig.vmID) : replaceToVMList(position, "", vmConfig);
     }
 
     public static boolean isVMHidden(String vmPath) {

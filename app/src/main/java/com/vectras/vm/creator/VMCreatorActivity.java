@@ -17,6 +17,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -73,13 +74,14 @@ public class VMCreatorActivity extends AppCompatActivity {
     private boolean created = false;
     boolean modify;
     private boolean isProcessingFile = false;
-    public static DataMainRoms current;
+    public static DataMainRoms current = new DataMainRoms();
     private String thumbnailPath = "";
     private String vmID = VMManager.idGenerator();
     private boolean isShowBootMenu = false;
     private boolean isUseLocalTime = true;
     private boolean isUseUefi = false;
     private boolean isUseDefaultBios = true;
+    private boolean sharedFolder = false;
     private int bootFrom = 0;
 
     @Override
@@ -274,6 +276,8 @@ public class VMCreatorActivity extends AppCompatActivity {
                         }, null);
             }
         });
+
+        binding.svSharedFolder.setOnCheckedChangeListener((v, isChecked) -> sharedFolder = isChecked);
 
         binding.lineardisclaimer.setOnClickListener(v -> DialogUtils.oneDialog(this, getResources().getString(R.string.dont_miss_out), getResources().getString(R.string.disclaimer_when_using_rom), getResources().getString(R.string.i_agree), true, R.drawable.verified_user_24px, true, null, null));
 
@@ -628,7 +632,11 @@ public class VMCreatorActivity extends AppCompatActivity {
             isShowBootMenu = current.isShowBootMenu;
             binding.cbvShowbootmenu.setChecked(isShowBootMenu);
 
-            if (MainSettingsManager.getArch(this).equals("X86_64")) {
+            binding.svSharedFolder.setSubTitle(AppConfig.sharedFolder);
+            sharedFolder = current.sharedFolder;
+            binding.svSharedFolder.setChecked(sharedFolder);
+
+            if (MainSettingsManager.getArch(this).equals(MainSettingsManager.X86_64_ARCH)) {
                 isUseUefi = current.isUseUefi;
                 binding.cbvUseuefi.setChecked(isUseUefi);
             } else {
@@ -736,7 +744,7 @@ public class VMCreatorActivity extends AppCompatActivity {
             FileUtils.writeToFile(AppConfig.maindirpath, "roms-data.json", "[]");
         }
 
-        if (!VMManager.addVM(finalDataConfig(), modify ? getIntent().getIntExtra("POS", 0) : -1)) {
+        if (!VMManager.addVM(finalVmConfig(), modify ? getIntent().getIntExtra("POS", 0) : -1)) {
             DialogUtils.oneDialog(
                     this,
                     getString(R.string.oops),
@@ -770,6 +778,7 @@ public class VMCreatorActivity extends AppCompatActivity {
         vmConfigMap.put("imgIcon", thumbnailPath);
         vmConfigMap.put("imgPath", Objects.requireNonNull(binding.drive.getText()).toString());
         vmConfigMap.put("imgCdrom", Objects.requireNonNull(binding.cdrom.getText()).toString());
+        vmConfigMap.put("sharedFolder", sharedFolder);
         vmConfigMap.put("imgExtra", Objects.requireNonNull(binding.qemu.getText()).toString());
         vmConfigMap.put("imgArch", MainSettingsManager.getArch(this));
         vmConfigMap.put("bootFrom", bootFrom);
@@ -780,6 +789,25 @@ public class VMCreatorActivity extends AppCompatActivity {
         vmConfigMap.put("vmID", vmID);
         vmConfigMap.put("qmpPort", 8080);
         return vmConfigMap;
+    }
+
+    private DataMainRoms finalVmConfig() {
+        current.itemName = Objects.requireNonNull(binding.title.getText()).toString();
+        current.itemIcon = thumbnailPath;
+        current.itemPath = Objects.requireNonNull(binding.drive.getText()).toString();
+        current.imgCdrom = Objects.requireNonNull(binding.cdrom.getText()).toString();
+        current.sharedFolder = sharedFolder;
+        current.itemExtra = Objects.requireNonNull(binding.qemu.getText()).toString();
+        current.itemArch = MainSettingsManager.getArch(this);
+        current.bootFrom = bootFrom;
+        current.isShowBootMenu = isShowBootMenu;
+        current.isUseUefi = isUseUefi;
+        current.isUseDefaultBios = isUseDefaultBios;
+        current.isUseLocalTime = isUseLocalTime;
+        current.vmID = vmID;
+        current.qmpPort = 8080;
+
+        return current;
     }
 
     private void startProcessingThumbnail(Uri uri) {

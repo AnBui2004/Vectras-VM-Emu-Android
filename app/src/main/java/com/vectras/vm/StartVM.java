@@ -178,15 +178,10 @@ public class StartVM {
                 params.add(hdd1);
             }
 
-            if (MainSettingsManager.getSharedFolder(activity) && !MainSettingsManager.getArch(activity).equals("I386")) {
+            if (vmConfigs.sharedFolder) {
                 String driveParams = "-drive ";
-                if (ifType.isEmpty()) {
-                    driveParams += "media=disk,file=fat:";
-                } else {
-                    driveParams += "index=3,media=disk,file=fat:";
-                }
-                driveParams += "rw:"; //Disk Drives are always Read/Write
-                driveParams += FileUtils.getExternalFilesDirectory(activity).getPath() + "/SharedFolder,format=raw";
+                driveParams += "file=fat:rw:\""; //Disk Drives are always Read/Write
+                driveParams += AppConfig.sharedFolder + "\",format=raw";
                 params.add(driveParams);
             }
 

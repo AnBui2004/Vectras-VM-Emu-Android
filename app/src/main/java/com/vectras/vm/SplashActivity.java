@@ -136,9 +136,9 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             startActivity(new Intent(this, SetupWizard2Activity.class));
             //For Android 14+
-            if (!DeviceUtils.is64bit() || Build.VERSION.SDK_INT >= 34) {
+           /* if (!DeviceUtils.is64bit() || Build.VERSION.SDK_INT >= 34) {
                 MainSettingsManager.setVmUi(this, "VNC");
-            }
+            }*/
         }
         finish();
     }
