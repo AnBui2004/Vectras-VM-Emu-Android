@@ -179,19 +179,19 @@
                 style="?attr/materialCardViewFilledStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="8dp"
                 app:cardBackgroundColor="?attr/colorCard">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:paddingTop="16dp">
 
                     <TextView
                         style="@style/MaterialAlertDialog.Material3Expressive.Title.Text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingHorizontal="16dp"
                         android:paddingBottom="16dp"
                         android:text="@string/storage" />
 
@@ -199,6 +199,7 @@
                         android:id="@+id/driveField"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:paddingHorizontal="16dp"
                         android:clickable="true"
                         android:focusable="true"
                         android:hint="@string/rom_drive_qcow2_img_etc"
@@ -224,6 +225,7 @@
                         android:id="@+id/cdromField"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:paddingHorizontal="16dp"
                         android:clickable="true"
                         android:focusable="true"
                         android:hint="@string/cdrom_hint"
@@ -242,6 +244,19 @@
                             android:selectAllOnFocus="true"
                             android:singleLine="true" />
                     </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginHorizontal="16dp"/>
+
+                    <com.vectras.vm.view.SwitchView
+                        android:id="@+id/sv_shared_folder"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:title="@string/shared_folder"
+                        app:subtitle="SharedFolder/"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -285,6 +300,12 @@
                         android:layout_height="wrap_content"
                         app:setText="@string/use_local_time"
                         app:setChecked="true"/>
+
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="8dp"
+                        android:layout_marginHorizontal="16dp"/>
 
                     <com.vectras.vm.view.CheckBoxView
                         android:id="@+id/cbv_useuefi"

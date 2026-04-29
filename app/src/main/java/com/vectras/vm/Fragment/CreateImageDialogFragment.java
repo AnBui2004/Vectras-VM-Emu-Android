@@ -21,6 +21,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.vectras.vm.AppConfig;
 import com.vectras.vm.R;
 import com.vectras.vm.utils.DialogUtils;
+import com.vectras.vm.utils.ProgressDialog;
 import com.vectras.vterm.Terminal;
 
 import java.io.File;
@@ -90,18 +91,31 @@ public class CreateImageDialogFragment extends DialogFragment {
             if (!vDir.exists()) {
                 vDir.mkdirs();
             }
-            Terminal vterm = new Terminal(getActivity());
-            vterm.executeShellCommand("qemu-img create -f qcow2 \"" + folder + Objects.requireNonNull(imageName.getText()) + ".qcow2\" " +
-                    Objects.requireNonNull(imageSize.getText()) + "G", true, true, getActivity());
-            if (customRom) {
-                if(drive != null)
-                    drive.setText(folder + imageName.getText().toString() + ".qcow2");
 
-                if(driveLayout != null)
-                    driveLayout.setEndIconDrawable(R.drawable.more_vert_24px);
-            }
+            ProgressDialog progressDialog = new ProgressDialog(requireActivity());
+            progressDialog.setText(getString(R.string.just_a_sec));
+            progressDialog.show();
 
-            DialogUtils.safeDismiss(requireActivity(), builder.create());
+            new Thread(() -> {
+                String result = Terminal.executeShellCommandWithResult("qemu-img create -f qcow2 \"" + folder + Objects.requireNonNull(imageName.getText()) + ".qcow2\" " +
+                        Objects.requireNonNull(imageSize.getText()) + "G", requireActivity()).trim();
+                requireActivity().runOnUiThread(() -> {
+                    progressDialog.dismiss();
+                    if (result.endsWith("_bits=16")) {
+                        if (customRom) {
+                            if(drive != null)
+                                drive.setText(folder + imageName.getText().toString() + ".qcow2");
+
+                            if(driveLayout != null)
+                                driveLayout.setEndIconDrawable(R.drawable.more_vert_24px);
+                        }
+
+                        dismiss();
+                    } else {
+                        DialogUtils.oopsDialog(requireActivity(), getString(R.string.something_went_wrong) + "\n\n" + result);
+                    }
+                });
+            }).start();
         });
 
         builder.setView(view);

@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="colorCard" format="color"/>
+    <attr name="setText" format="string"/>
+    <attr name="title" format="string"/>
+    <attr name="subtitle" format="string"/>
+    <attr name="setChecked" format="boolean"/>
+    <attr name="setEnable" format="boolean"/>
 
     <declare-styleable name="JoystickView">
 
@@ -38,14 +43,21 @@
     </declare-styleable>
 
     <declare-styleable name="SelectBoxView">
-        <attr name="title" format="string"/>
-        <attr name="subtitle" format="string"/>
+        <attr name="title"/>
+        <attr name="subtitle"/>
     </declare-styleable>
 
     <declare-styleable name="CheckBoxView">
-        <attr name="setText" format="string"/>
-        <attr name="setChecked" format="boolean"/>
-        <attr name="setEnable" format="boolean"/>
+        <attr name="setText"/>
+        <attr name="setChecked"/>
+        <attr name="setEnable"/>
+    </declare-styleable>
+
+    <declare-styleable name="SwitchView">
+        <attr name="title"/>
+        <attr name="subtitle"/>
+        <attr name="setChecked"/>
+        <attr name="setEnable"/>
     </declare-styleable>
 
 </resources>

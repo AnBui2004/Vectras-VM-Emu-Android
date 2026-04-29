@@ -141,6 +141,7 @@ public class ExportRomActivity extends AppCompatActivity {
             vmConfigMap.put("cdrom", isUsingDiskInQemuExtraParams || FileUtils.isFileExists(Objects.requireNonNull(vmConfigMap.get("drive")).toString()) ? "" : VMManager.quickScanISOFileInFolder(getRomPath));
         }
 
+        vmConfigMap.put("sharedFolder", current.sharedFolder);
         vmConfigMap.put("bootFrom", current.bootFrom);
         vmConfigMap.put("isShowBootMenu", current.isShowBootMenu);
         vmConfigMap.put("isUseLocalTime", current.isUseLocalTime);

@@ -43,6 +43,8 @@ public class DataMainRoms {
     )
     public String imgCdrom = "";
 
+    public boolean sharedFolder = false;
+
     public String vmID = "";
 
     public int qmpPort = 0;

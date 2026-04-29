@@ -803,7 +803,7 @@ public class MainSettingsManager extends AppCompatActivity
 
     public static String getVmUi(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString("vmUi", "X11");
+        return prefs.getString("vmUi", "VNC");
     }
 
     public static void setResolution(Context context, String RESOLUTION) {

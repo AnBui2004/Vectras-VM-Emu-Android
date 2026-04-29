@@ -66,7 +66,7 @@
             android:entryValues="@array/bootValues"
             android:defaultValue="c"
             app:icon="@drawable/ic_b"
-            app:useSimpleSummaryProvider="true" />-->
+            app:useSimpleSummaryProvider="true" />
         <SwitchPreferenceCompat
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
             android:key="sharedFolder"
             android:summary="/Documents/VectrasVM/SharedFolder/"
             app:icon="@drawable/round_folder_24" />
-        <!--<EditTextPreference
+        <EditTextPreference
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:defaultValue=""
@@ -124,7 +124,7 @@
             android:title="@string/use_local_time"
             app:icon="@drawable/schedule_24px" />-->
     </PreferenceCategory>
-    <PreferenceCategory
+    <!--<PreferenceCategory
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:title="@string/ui_environment"
@@ -155,5 +155,5 @@
             app:useSimpleSummaryProvider="true"
             app:icon="@drawable/round_aspect_ratio_24"/>
 
-    </PreferenceCategory>
+    </PreferenceCategory>-->
 </PreferenceScreen>
