@@ -77,6 +77,10 @@ We publish a **new beta release after every commit** — so you can always test 
 [![Download Beta](https://img.shields.io/badge/Download-Beta-blue?style=for-the-badge&logo=github)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases)
 
 ### ⚙️ Bootstraps
+QEMU 11.0.0 (recommended and for Vectras VM 4.0.8+):
+- [For Android ARM (64-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/4.0.8/base-vectras-vm-arm64-v8a.tar.gz)
+- [See more at the Internet Archive](https://archive.org/details/qemu-11-0-0-for-vectras-vm-nbab)
+
 QEMU 9.2.4 - 3dfx (only for Vectras VM 3.5.0):
 - [For Android ARM (64-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/3.5.0/base-nosve-vectras-vm-arm64-v8a.tar.gz)
 - [For Android x86 (64-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/3.5.0/base-vectras-vm-x86_64.tar.gz)
