@@ -29,8 +29,16 @@ public class VMCreatorSelector {
         void onSelected(int position, String name, String value);
     }
 
+    public static HashMap<String, Object> getCpu(Context context, String arch, int position) {
+        return ListManager.cpus(context, arch).get(position);
+    }
+
     public static HashMap<String, Object> getBootFrom(Context context, int position) {
         return ListManager.bootFrom(context).get(position);
+    }
+
+    public static void cpu(Activity activity, String arch, int position, SelectorCallback callback) {
+        showDialog(activity, ListManager.cpus(activity, arch), position, callback, activity.getString(R.string.processor));
     }
 
     public static void bootFrom(Activity activity, int position, SelectorCallback callback) {

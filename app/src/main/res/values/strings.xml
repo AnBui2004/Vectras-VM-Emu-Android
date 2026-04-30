@@ -567,6 +567,8 @@
     <string name="connect">Connect</string>
     <string name="shutting_down">Shutting down…</string>
     <string name="cannot_save_here_please_choose_another_location">Cannot save here, please choose another location.</string>
+    <string name="processor">Processor</string>
+    <string name="board">Board</string>
 
 
     <!--======================TERMUX STRINGS====================-->
@@ -723,6 +725,76 @@
     <string name="settings_tag_keyboard">Keyboard</string>
     <string name="settings_tag_other">Other</string>
     <string name="executing_command_please_wait">Executing command, please wait…</string>
+
+    <!-- CPUs -->
+    <string name="max_cpu" translatable="false">Max</string>
+    <string name="host_cpu" translatable="false">Host</string>
+    <string name="qemu64" translatable="false">QEMU64</string>
+    <string name="qemu32" translatable="false">QEMU32</string>
+    <string name="base_cpu" translatable="false">Base</string>
+    <string name="kvm64" translatable="false">KVM64</string>
+    <string name="kvm32" translatable="false">KVM32</string>
+    <string name="intel_snow_ridge" translatable="false">Intel Snow Ridge</string>
+    <string name="intel_cooper_lake" translatable="false">Intel Cooper Lake</string>
+    <string name="intel_cascade_lake_server" translatable="false">Intel Cascade Lake Server</string>
+    <string name="intel_knights_mill" translatable="false">Intel Knights Mill</string>
+    <string name="intel_denverton" translatable="false">Intel Denverton</string>
+    <string name="intel_skylake_server" translatable="false">Intel Skylake Server</string>
+    <string name="intel_skylake_client" translatable="false">Intel Skylake Client</string>
+    <string name="intel_broadwell" translatable="false">Intel Broadwell</string>
+    <string name="intel_haswell" translatable="false">Intel Haswell</string>
+    <string name="intel_ivy_bridge" translatable="false">Intel Ivy Bridge</string>
+    <string name="intel_sandy_bridge" translatable="false">Intel Sandy Bridge</string>
+    <string name="intel_westmere" translatable="false">Intel Westmere</string>
+    <string name="intel_nehalem" translatable="false">Intel Nehalem</string>
+    <string name="intel_altom_n270" translatable="false">Intel Altom N270</string>
+    <string name="intel_penryn" translatable="false">Intel Penryn</string>
+    <string name="intel_core_2_duo" translatable="false">Intel Core 2 Duo</string>
+    <string name="intel_core_duo" translatable="false">Intel Core Duo</string>
+    <string name="intel_conroe" translatable="false">Intel Conroe</string>
+    <string name="intel_pentium_iii" translatable="false">Intel Pentium III</string>
+    <string name="intel_pentium_ii" translatable="false">Intel Pentium II</string>
+    <string name="intel_pentium" translatable="false">Intel Pentium</string>
+    <string name="intel_486" translatable="false">Intel 486</string>
+    <string name="amd_epyc_milan" translatable="false">AMD EPYC Milan</string>
+    <string name="amd_epyc_rome" translatable="false">AMD EPYC Rome</string>
+    <string name="amd_epyc" translatable="false">AMD EPYC</string>
+    <string name="amd_opteron_g5" translatable="false">AMD Opteron G5</string>
+    <string name="amd_opteron_g4" translatable="false">AMD Opteron G4</string>
+    <string name="amd_phenom" translatable="false">AMD Phenom</string>
+    <string name="amd_opteron_g3" translatable="false">AMD Opteron G3</string>
+    <string name="amd_opteron_g2" translatable="false">AMD Opteron G2</string>
+    <string name="amd_opteron_g1" translatable="false">AMD Opteron G1</string>
+    <string name="amd_athlon" translatable="false">AMD Athlon</string>
+    <string name="hygon_dhyana" translatable="false">Hygon Dhyana</string>
+
+    <string name="cortex_a76" translatable="false">Cortex A76</string>
+    <string name="cortex_a72" translatable="false">Cortex A72</string>
+    <string name="cortex_a57" translatable="false">Cortex A57</string>
+    <string name="cortex_a55" translatable="false">Cortex A55</string>
+    <string name="cortex_a53" translatable="false">Cortex A53</string>
+    <string name="cortex_a35" translatable="false">Cortex A35</string>
+    <string name="cortex_a15" translatable="false">Cortex A15</string>
+    <string name="cortex_a9" translatable="false">Cortex A9</string>
+    <string name="cortex_a8" translatable="false">Cortex A8</string>
+    <string name="cortex_a7" translatable="false">Cortex A7</string>
+    <string name="cortex_m55" translatable="false">Cortex M55</string>
+    <string name="cortex_m33" translatable="false">Cortex M33</string>
+    <string name="cortex_m7" translatable="false">Cortex M7</string>
+    <string name="cortex_m4" translatable="false">Cortex M4</string>
+    <string name="cortex_m3" translatable="false">Cortex M3</string>
+    <string name="cortex_m0" translatable="false">Cortex M0</string>
+    <string name="cortex_r52" translatable="false">Cortex R52</string>
+    <string name="cortex_r5f" translatable="false">Cortex R5F</string>
+    <string name="cortex_r5" translatable="false">Cortex R5</string>
+
+    <string name="cpu_460ex" translatable="false">460EX</string>
+    <string name="e500v2_cpu" translatable="false">e500</string>
+    <string name="g4_cpu_turbo">G4 (Turbo)</string>
+    <string name="g4_cpu_basic">G4 (Basic)</string>
+    <string name="g3_cpu" translatable="false">G3</string>
+    <string name="g2_cpu_workstation">G2 (Workstation)</string>
+    <string name="g2_cpu_low_power">G2 (Low-Power)</string>
     <!-- Feature: User Profile -->
 
     <!-- Feature: Settings -->

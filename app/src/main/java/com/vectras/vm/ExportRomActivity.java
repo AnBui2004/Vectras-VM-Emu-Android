@@ -127,6 +127,8 @@ public class ExportRomActivity extends AppCompatActivity {
             vmConfigMap.put("icon", current.itemIcon);
         }
 
+        vmConfigMap.put("cpu", current.cpu);
+
         boolean isUsingDiskInQemuExtraParams = VMManager.isHaveADisk(current.itemExtra);
 
         if (FileUtils.isFileExists(current.itemPath)) {
