@@ -77,6 +77,7 @@ public class VMCreatorActivity extends AppCompatActivity {
     public static DataMainRoms current = new DataMainRoms();
     private String thumbnailPath = "";
     private String vmID = VMManager.idGenerator();
+    private int cpu = 0;
     private boolean isShowBootMenu = false;
     private boolean isUseLocalTime = true;
     private boolean isUseUefi = false;
@@ -295,6 +296,11 @@ public class VMCreatorActivity extends AppCompatActivity {
         if (!MainSettingsManager.getArch(this).equals("X86_64"))
             binding.cbvUseuefi.setVisibility(View.GONE);
 
+        binding.sbvCpu.setOnClickListener(v -> VMCreatorSelector.cpu(this, MainSettingsManager.getArch(this), cpu, ((position, name, value) -> {
+            cpu = position;
+            binding.sbvCpu.setSubtitle(name);
+        })));
+
         binding.sbvBootfrom.setOnClickListener(v -> VMCreatorSelector.bootFrom(this, bootFrom, ((position, name, value) -> {
             bootFrom = position;
             binding.sbvBootfrom.setSubtitle(name);
@@ -391,6 +397,8 @@ public class VMCreatorActivity extends AppCompatActivity {
                 }
             });
         }
+
+        binding.svSharedFolder.setSubTitle(AppConfig.sharedFolder);
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -627,12 +635,14 @@ public class VMCreatorActivity extends AppCompatActivity {
                 binding.qemu.setText(VmFileManager.textMarkToPath(vmID, current.itemExtra));
             }
 
+            cpu = current.cpu;
+            binding.sbvCpu.setSubtitle(Objects.requireNonNull(VMCreatorSelector.getCpu(this, MainSettingsManager.getArch(this), current.cpu).get("name")).toString());
+
             bootFrom = current.bootFrom;
             binding.sbvBootfrom.setSubtitle(Objects.requireNonNull(VMCreatorSelector.getBootFrom(this, current.bootFrom).get("name")).toString());
             isShowBootMenu = current.isShowBootMenu;
             binding.cbvShowbootmenu.setChecked(isShowBootMenu);
 
-            binding.svSharedFolder.setSubTitle(AppConfig.sharedFolder);
             sharedFolder = current.sharedFolder;
             binding.svSharedFolder.setChecked(sharedFolder);
 
@@ -658,22 +668,18 @@ public class VMCreatorActivity extends AppCompatActivity {
         if (DeviceUtils.is64bit()) {
             defQemuParams = switch (MainSettingsManager.getArch(this)) {
                 case "ARM64" ->
-                        "-M virt,virtualization=true -cpu cortex-a76 -accel tcg,thread=multi -net nic,model=e1000 -net user -device nec-usb-xhci -device usb-kbd -device usb-mouse -device VGA";
-                case "PPC" -> "-M mac99 -cpu g4 -accel tcg,thread=multi -smp 1";
-                case "I386" ->
-                        "-M pc -cpu coreduo,+popcnt -accel tcg,thread=multi -smp 4 -vga std -netdev user,id=usernet -device e1000,netdev=usernet  -usb -device usb-tablet";
+                        "-M virt,virtualization=true -accel tcg,thread=multi -net nic,model=e1000 -net user -device nec-usb-xhci -device usb-kbd -device usb-mouse -device VGA";
+                case "PPC" -> "-M mac99 -accel tcg,thread=multi -smp 1";
                 default ->
-                        "-M pc -cpu core2duo,+popcnt -accel tcg,thread=multi -smp 4 -vga std -netdev user,id=usernet -device e1000,netdev=usernet  -usb -device usb-tablet";
+                        "-M pc -accel tcg,thread=multi -smp 4 -vga std -netdev user,id=usernet -device e1000,netdev=usernet  -usb -device usb-tablet";
             };
         } else {
             defQemuParams = switch (MainSettingsManager.getArch(this)) {
                 case "ARM64" ->
-                        "-M virt -cpu cortex-a76 -net nic,model=e1000 -net user -device nec-usb-xhci -device usb-kbd -device usb-mouse -device VGA";
-                case "PPC" -> "-M mac99 -cpu g4 -smp 1";
-                case "I386" ->
-                        "-M pc -cpu coreduo,+popcnt -smp 4 -vga std -netdev user,id=usernet -device e1000,netdev=usernet  -usb -device usb-tablet";
+                        "-M virt -net nic,model=e1000 -net user -device nec-usb-xhci -device usb-kbd -device usb-mouse -device VGA";
+                case "PPC" -> "-M mac99 -smp 1";
                 default ->
-                        "-M pc -cpu core2duo,+popcnt -smp 4 -vga std -netdev user,id=usernet -device e1000,netdev=usernet -usb -device usb-tablet";
+                        "-M pc -smp 4 -vga std -netdev user,id=usernet -device e1000,netdev=usernet -usb -device usb-tablet";
             };
         }
         binding.title.setText(getString(R.string.new_vm));
@@ -776,6 +782,7 @@ public class VMCreatorActivity extends AppCompatActivity {
         HashMap<String, Object> vmConfigMap = new HashMap<>();
         vmConfigMap.put("imgName", Objects.requireNonNull(binding.title.getText()).toString());
         vmConfigMap.put("imgIcon", thumbnailPath);
+
         vmConfigMap.put("imgPath", Objects.requireNonNull(binding.drive.getText()).toString());
         vmConfigMap.put("imgCdrom", Objects.requireNonNull(binding.cdrom.getText()).toString());
         vmConfigMap.put("sharedFolder", sharedFolder);
@@ -794,6 +801,7 @@ public class VMCreatorActivity extends AppCompatActivity {
     private DataMainRoms finalVmConfig() {
         current.itemName = Objects.requireNonNull(binding.title.getText()).toString();
         current.itemIcon = thumbnailPath;
+        current.cpu = cpu;
         current.itemPath = Objects.requireNonNull(binding.drive.getText()).toString();
         current.imgCdrom = Objects.requireNonNull(binding.cdrom.getText()).toString();
         current.sharedFolder = sharedFolder;

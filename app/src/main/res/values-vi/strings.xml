@@ -556,6 +556,8 @@
     <string name="connect">Kết nối</string>
     <string name="shutting_down">Đang tắt…</string>
     <string name="cannot_save_here_please_choose_another_location">Không thể lưu ở đây, hãy chọn một nơi khác.</string>
+    <string name="processor">Bộ xử lý</string>
+    <string name="board">Bo mạch chủ</string>
 
     <!--======================TERMUX STRINGS====================-->
     <string name="application_name" translatable="false">Vterm</string>
@@ -711,4 +713,11 @@
     <string name="settings_tag_keyboard">Bàn phím</string>
     <string name="settings_tag_other">Khác</string>
     <string name="executing_command_please_wait">Đang thực thi, vui lòng đợi…</string>
+
+    <!-- CPUs -->
+
+    <string name="g4_cpu_turbo">G4 (Tăng tốc)</string>
+    <string name="g4_cpu_basic">G4 (Cơ bản)</string>
+    <string name="g2_cpu_workstation">G2 (Máy trạm)</string>
+    <string name="g2_cpu_low_power">G2 (Tiết kiệm điện)</string>
 </resources>

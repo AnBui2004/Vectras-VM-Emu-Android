@@ -3,6 +3,8 @@ package com.vectras.vm.main.vms;
 import com.google.gson.annotations.SerializedName;
 
 public class DataMainRoms {
+    public int cpu = 0;
+
     @SerializedName(
             value = "icon",
             alternate = { "imgIcon" }

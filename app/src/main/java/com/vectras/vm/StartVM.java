@@ -43,6 +43,11 @@ public class StartVM {
 
         String extraParams = vmData.itemExtra;
 
+        String cpu = Objects.requireNonNull(VMCreatorSelector.getCpu(activity, MainSettingsManager.getArch(activity), vmData.cpu).get("value")).toString();
+        if (!cpu.isEmpty() && !extraParams.contains("-cpu")) {
+            extraParams = "-cpu " + cpu + " " + extraParams;
+        }
+
         String bootFromParams = Objects.requireNonNull(VMCreatorSelector.getBootFrom(activity, vmData.bootFrom).get("value")).toString();
         String showBootMenuParams = vmData.isShowBootMenu ? "menu=on" : "";
         String bootParams = "";
