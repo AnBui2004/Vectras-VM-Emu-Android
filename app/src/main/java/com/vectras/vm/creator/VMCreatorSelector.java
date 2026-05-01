@@ -29,16 +29,34 @@ public class VMCreatorSelector {
         void onSelected(int position, String name, String value);
     }
 
+    public static void cpu(Activity activity, String arch, int position, SelectorCallback callback) {
+        showDialog(activity, ListManager.cpus(activity, arch), position, callback, activity.getString(R.string.processor));
+    }
+
     public static HashMap<String, Object> getCpu(Context context, String arch, int position) {
         return ListManager.cpus(context, arch).get(position);
     }
 
-    public static HashMap<String, Object> getBootFrom(Context context, int position) {
-        return ListManager.bootFrom(context).get(position);
+    public static void cpuCore(Activity activity, String arch, int position, SelectorCallback callback) {
+        showDialog(activity, ListManager.cores(arch), position, callback, activity.getString(R.string.core));
     }
 
-    public static void cpu(Activity activity, String arch, int position, SelectorCallback callback) {
-        showDialog(activity, ListManager.cpus(activity, arch), position, callback, activity.getString(R.string.processor));
+    public static int getCpuCorePosition(int core) {
+        if (core > 8) return 7;
+        if (core > 2) return core - 2;
+        return core - 1;
+    }
+
+    public static HashMap<String, Object> getCpuCore(String arch, int position) {
+        return ListManager.cores(arch).get(position);
+    }
+
+    public static void cpuThread(Activity activity, String arch, int position, SelectorCallback callback) {
+        showDialog(activity, ListManager.threads(arch), position, callback, activity.getString(R.string.thread));
+    }
+
+    public static HashMap<String, Object> getBootFrom(Context context, int position) {
+        return ListManager.bootFrom(context).get(position);
     }
 
     public static void bootFrom(Activity activity, int position, SelectorCallback callback) {

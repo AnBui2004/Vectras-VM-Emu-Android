@@ -67,9 +67,7 @@ public class DeviceUtils {
     }
 
     public static boolean is64bit() {
-        return Build.SUPPORTED_ABIS[0].contains("64") &&
-                Build.SUPPORTED_64_BIT_ABIS != null &&
-                Build.SUPPORTED_64_BIT_ABIS.length > 0;
+        return new CpuHelper().is64Bit();
     }
     public static boolean isArm() {
         return Build.SUPPORTED_ABIS[0].contains("arm");

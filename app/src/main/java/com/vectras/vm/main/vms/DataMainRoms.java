@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class DataMainRoms {
     public int cpu = 0;
+    public int cores = 0;
+    public int threads = 0;
 
     @SerializedName(
             value = "icon",

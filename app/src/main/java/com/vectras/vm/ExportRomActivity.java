@@ -128,6 +128,8 @@ public class ExportRomActivity extends AppCompatActivity {
         }
 
         vmConfigMap.put("cpu", current.cpu);
+        vmConfigMap.put("cores", current.cores);
+        vmConfigMap.put("threads", current.threads);
 
         boolean isUsingDiskInQemuExtraParams = VMManager.isHaveADisk(current.itemExtra);
 
