@@ -38,6 +38,7 @@ import com.vectras.vm.databinding.DialogProgressStyleBinding;
 import com.vectras.vm.main.MainActivity;
 import com.vectras.vm.manager.VmFileManager;
 import com.vectras.vm.utils.ClipboardUltils;
+import com.vectras.vm.utils.CpuHelper;
 import com.vectras.vm.utils.DeviceUtils;
 import com.vectras.vm.utils.DialogUtils;
 import com.vectras.vm.utils.FileUtils;
@@ -78,6 +79,8 @@ public class VMCreatorActivity extends AppCompatActivity {
     private String thumbnailPath = "";
     private String vmID = VMManager.idGenerator();
     private int cpu = 0;
+    private int cores = 0;
+    private int threads = 0;
     private boolean isShowBootMenu = false;
     private boolean isUseLocalTime = true;
     private boolean isUseUefi = false;
@@ -299,6 +302,16 @@ public class VMCreatorActivity extends AppCompatActivity {
         binding.sbvCpu.setOnClickListener(v -> VMCreatorSelector.cpu(this, MainSettingsManager.getArch(this), cpu, ((position, name, value) -> {
             cpu = position;
             binding.sbvCpu.setSubtitle(name);
+        })));
+
+        binding.sbvCore.setOnClickListener(v -> VMCreatorSelector.cpuCore(this, MainSettingsManager.getArch(this), cores, ((position, name, value) -> {
+            cores = position;
+            binding.sbvCore.setSubtitle(name);
+        })));
+
+        binding.sbvThread.setOnClickListener(v -> VMCreatorSelector.cpuThread(this, MainSettingsManager.getArch(this), threads, ((position, name, value) -> {
+            threads = position;
+            binding.sbvThread.setSubtitle(name);
         })));
 
         binding.sbvBootfrom.setOnClickListener(v -> VMCreatorSelector.bootFrom(this, bootFrom, ((position, name, value) -> {
@@ -638,6 +651,12 @@ public class VMCreatorActivity extends AppCompatActivity {
             cpu = current.cpu;
             binding.sbvCpu.setSubtitle(Objects.requireNonNull(VMCreatorSelector.getCpu(this, MainSettingsManager.getArch(this), current.cpu).get("name")).toString());
 
+            cores = current.cores;
+            binding.sbvCore.setSubtitle(Objects.requireNonNull(VMCreatorSelector.getCpuCore(MainSettingsManager.getArch(this), cores).get("value")).toString());
+
+            threads = current.threads;
+            binding.sbvThread.setSubtitle(String.valueOf(threads + 1));
+
             bootFrom = current.bootFrom;
             binding.sbvBootfrom.setSubtitle(Objects.requireNonNull(VMCreatorSelector.getBootFrom(this, current.bootFrom).get("name")).toString());
             isShowBootMenu = current.isShowBootMenu;
@@ -669,21 +688,35 @@ public class VMCreatorActivity extends AppCompatActivity {
             defQemuParams = switch (MainSettingsManager.getArch(this)) {
                 case "ARM64" ->
                         "-M virt,virtualization=true -accel tcg,thread=multi -net nic,model=e1000 -net user -device nec-usb-xhci -device usb-kbd -device usb-mouse -device VGA";
-                case "PPC" -> "-M mac99 -accel tcg,thread=multi -smp 1";
+                case "PPC" -> "-M mac99 -accel tcg,thread=multi";
                 default ->
-                        "-M pc -accel tcg,thread=multi -smp 4 -vga std -netdev user,id=usernet -device e1000,netdev=usernet  -usb -device usb-tablet";
+                        "-M pc -accel tcg,thread=multi -vga std -netdev user,id=usernet -device e1000,netdev=usernet  -usb -device usb-tablet";
             };
         } else {
             defQemuParams = switch (MainSettingsManager.getArch(this)) {
                 case "ARM64" ->
                         "-M virt -net nic,model=e1000 -net user -device nec-usb-xhci -device usb-kbd -device usb-mouse -device VGA";
-                case "PPC" -> "-M mac99 -smp 1";
+                case "PPC" -> "-M mac99 1";
                 default ->
-                        "-M pc -smp 4 -vga std -netdev user,id=usernet -device e1000,netdev=usernet -usb -device usb-tablet";
+                        "-M pc -vga std -netdev user,id=usernet -device e1000,netdev=usernet -usb -device usb-tablet";
             };
         }
         binding.title.setText(getString(R.string.new_vm));
         binding.qemu.setText(defQemuParams);
+
+        String currentArch = MainSettingsManager.getArch(this);
+
+        if (currentArch.equals(MainSettingsManager.X86_64_ARCH)) {
+            cores = Math.min(1, VMCreatorSelector.getCpuCorePosition(new CpuHelper().getCpuCores() - 1));
+            binding.sbvCore.setSubtitle(Objects.requireNonNull(VMCreatorSelector.getCpuCore(currentArch, cores).get("value")).toString());
+        } else if (currentArch.equals(MainSettingsManager.ARM64_ARCH)) {
+            cores = Math.min(2, VMCreatorSelector.getCpuCorePosition(new CpuHelper().getCpuCores() - 1));
+            binding.sbvCore.setSubtitle(Objects.requireNonNull(VMCreatorSelector.getCpuCore(currentArch, cores).get("value")).toString());
+        } else {
+            binding.sbvCore.setSubtitle("1");
+        }
+
+        binding.sbvThread.setSubtitle("1");
     }
 
     private void checkVMID() {
@@ -802,6 +835,8 @@ public class VMCreatorActivity extends AppCompatActivity {
         current.itemName = Objects.requireNonNull(binding.title.getText()).toString();
         current.itemIcon = thumbnailPath;
         current.cpu = cpu;
+        current.cores = cores;
+        current.threads = threads;
         current.itemPath = Objects.requireNonNull(binding.drive.getText()).toString();
         current.imgCdrom = Objects.requireNonNull(binding.cdrom.getText()).toString();
         current.sharedFolder = sharedFolder;

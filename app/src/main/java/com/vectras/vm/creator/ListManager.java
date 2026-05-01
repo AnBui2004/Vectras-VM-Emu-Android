@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.vectras.qemu.MainSettingsManager;
 import com.vectras.vm.R;
+import com.vectras.vm.utils.CpuHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,6 +111,37 @@ public class ListManager {
         putToList(list, context.getString(R.string.g3_cpu), "g3");
         putToList(list, context.getString(R.string.g2_cpu_workstation), "604e");
         putToList(list, context.getString(R.string.g2_cpu_low_power), "603e");
+        return list;
+    }
+
+    public static ArrayList<HashMap<String, Object>> cores(String arch) {
+        ArrayList<HashMap<String, Object>> list = new ArrayList<>();
+
+        if (arch.equals(MainSettingsManager.PPC_ARCH)) {
+            putToList(list, "1", "1");
+            putToList(list, "2", "2");
+        } else {
+            CpuHelper cpuHelper = new CpuHelper();
+            int cores = cpuHelper.getCpuCores();
+            int addedCore = 1;
+            while (addedCore < cores + 1 && addedCore <= 8) {
+                if (addedCore == 1 || addedCore % 2 == 0)
+                    putToList(list, String.valueOf(addedCore), String.valueOf(addedCore));
+                addedCore++;
+            }
+        }
+
+        return list;
+    }
+
+    public static ArrayList<HashMap<String, Object>> threads(String arch) {
+        ArrayList<HashMap<String, Object>> list = new ArrayList<>();
+        putToList(list, "1", "1");
+
+        if (!(arch.equals(MainSettingsManager.ARM64_ARCH)
+                || arch.equals(MainSettingsManager.PPC_ARCH)))
+            putToList(list, "2", "2");
+
         return list;
     }
 

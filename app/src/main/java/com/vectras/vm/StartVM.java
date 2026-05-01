@@ -11,6 +11,7 @@ import com.vectras.vm.creator.VMCreatorSelector;
 import com.vectras.vm.main.vms.DataMainRoms;
 import com.vectras.vm.manager.VmFileManager;
 import com.vectras.vm.setupwizard.SetupFeatureCore;
+import com.vectras.vm.utils.CpuHelper;
 import com.vectras.vm.utils.FileUtils;
 
 import java.io.File;
@@ -43,10 +44,26 @@ public class StartVM {
 
         String extraParams = vmData.itemExtra;
 
+        String cpuParams = "";
+
         String cpu = Objects.requireNonNull(VMCreatorSelector.getCpu(activity, MainSettingsManager.getArch(activity), vmData.cpu).get("value")).toString();
-        if (!cpu.isEmpty() && !extraParams.contains("-cpu")) {
-            extraParams = "-cpu " + cpu + " " + extraParams;
+        if (!cpu.isEmpty() && !extraParams.contains("-cpu ")) {
+            cpuParams = " -cpu " + cpu;
         }
+
+        CpuHelper cpuHelper = new CpuHelper();
+
+        int cores = Integer.parseInt(Objects.requireNonNull(VMCreatorSelector.getCpuCore(MainSettingsManager.getArch(activity), vmConfigs.cores).get("value")).toString());
+        int threads = Math.max(1, vmConfigs.threads + 1);
+        if (!extraParams.contains("-smp ")) {
+            if (cores * threads > cpuHelper.getCpuThreads()) {
+                cpuParams += " -smp sockets=1,cores=" + cpuHelper.getCpuCores() + ",threads=1";
+            } else {
+                cpuParams += " -smp sockets=1,cores=" + cores + ",threads=" + threads;
+            }
+        }
+
+        if (!cpuParams.isEmpty()) extraParams = cpuParams + " " + extraParams;
 
         String bootFromParams = Objects.requireNonNull(VMCreatorSelector.getBootFrom(activity, vmData.bootFrom).get("value")).toString();
         String showBootMenuParams = vmData.isShowBootMenu ? "menu=on" : "";

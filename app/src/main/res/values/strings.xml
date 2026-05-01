@@ -569,6 +569,10 @@
     <string name="cannot_save_here_please_choose_another_location">Cannot save here, please choose another location.</string>
     <string name="processor">Processor</string>
     <string name="board">Board</string>
+    <string name="core">Core</string>
+    <string name="cores">Cores</string>
+    <string name="thread">Thread</string>
+    <string name="threads">Threads</string>
 
 
     <!--======================TERMUX STRINGS====================-->

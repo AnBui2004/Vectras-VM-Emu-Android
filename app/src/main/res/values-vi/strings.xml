@@ -558,6 +558,10 @@
     <string name="cannot_save_here_please_choose_another_location">Không thể lưu ở đây, hãy chọn một nơi khác.</string>
     <string name="processor">Bộ xử lý</string>
     <string name="board">Bo mạch chủ</string>
+    <string name="core">Nhân</string>
+    <string name="cores">Nhân</string>
+    <string name="thread">Luồng</string>
+    <string name="threads">Luồng</string>
 
     <!--======================TERMUX STRINGS====================-->
     <string name="application_name" translatable="false">Vterm</string>

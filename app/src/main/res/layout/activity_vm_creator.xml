@@ -203,6 +203,20 @@
                         app:title="@string/processor"
                         app:subtitle="@string/defaulttext" />
 
+                    <com.vectras.vm.view.SelectBoxView
+                        android:id="@+id/sbv_core"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:title="@string/cores"
+                        app:subtitle="@string/defaulttext" />
+
+                    <com.vectras.vm.view.SelectBoxView
+                        android:id="@+id/sbv_thread"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:title="@string/threads"
+                        app:subtitle="@string/defaulttext" />
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
