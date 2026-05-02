@@ -151,7 +151,7 @@ public class ExportRomActivity extends AppCompatActivity {
         vmConfigMap.put("isUseLocalTime", current.isUseLocalTime);
         vmConfigMap.put("isUseUefi", current.isUseUefi);
         vmConfigMap.put("isUseDefaultBios", current.isUseDefaultBios);
-        vmConfigMap.put("qemu", VmFileManager.pathToTextMark(current.vmID, current.itemExtra));
+        vmConfigMap.put("qemu", VmFileManager.pathToTextMark(this, current.vmID, current.itemExtra));
         vmConfigMap.put("arch", current.itemArch);
 
         if (Objects.requireNonNull(binding.edAuthor.getText()).toString().isEmpty()) {
@@ -189,7 +189,7 @@ public class ExportRomActivity extends AppCompatActivity {
                             String snapshotParams = FileUtils.readAFile(_filelist.get(_repeat));
                             snapshotParams = StartVM.removeQmpParams(snapshotParams);
                             snapshotParams = StartVM.removeDisplayParams(snapshotParams);
-                            FileUtils.writeToFile(tempFolder, VmFileManager.SNAPSHOT_SH_FILE_NAME, snapshotParams.replace(getRomPath, VmFileManager.TEXT_MARK_VM_PATH));
+                            FileUtils.writeToFile(tempFolder, VmFileManager.SNAPSHOT_SH_FILE_NAME, VmFileManager.pathToTextMark(this, current.vmID, snapshotParams));
                             pathList.add(tempFolder + VmFileManager.SNAPSHOT_SH_FILE_NAME);
                         }
                     } else if (_filelist.get(_repeat).endsWith(VmFileManager.CREATE_COMMAND_CONFIG_FILE_NAME)) {

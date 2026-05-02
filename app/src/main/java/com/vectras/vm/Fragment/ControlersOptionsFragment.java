@@ -55,11 +55,11 @@ public class ControlersOptionsFragment extends DialogFragment {
             public void onClick(View v) {
                 MainSettingsManager.setControlMode(getActivity(), "H");
                 if (MainSettingsManager.getVmUi(getActivity()).equals("X11")) {
-                    X11Activity.desktop.setVisibility(View.GONE);
-                    X11Activity.gamepad.setVisibility(View.GONE);
+                    if (X11Activity.desktop != null) X11Activity.desktop.setVisibility(View.GONE);
+                    if (X11Activity.gamepad != null) X11Activity.gamepad.setVisibility(View.GONE);
                 } else if (MainSettingsManager.getVmUi(getActivity()).equals("VNC")) {
-                    MainVNCActivity.desktop.setVisibility(View.GONE);
-                    MainVNCActivity.gamepad.setVisibility(View.GONE);
+                    if (MainVNCActivity.desktop != null) MainVNCActivity.desktop.setVisibility(View.GONE);
+                    if (MainVNCActivity.gamepad != null) MainVNCActivity.gamepad.setVisibility(View.GONE);
                 }
                 alertDialog.cancel();
             }

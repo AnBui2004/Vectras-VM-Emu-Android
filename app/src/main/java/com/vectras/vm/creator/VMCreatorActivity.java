@@ -96,7 +96,7 @@ public class VMCreatorActivity extends AppCompatActivity {
             return true;
         } else if (id == R.id.add_file) {
             try {
-            filePicker.launch("*/*");
+                filePicker.launch("*/*");
             } catch (Exception e) {
                 IntentUtils.showErrorDialog(this);
             }
@@ -140,14 +140,14 @@ public class VMCreatorActivity extends AppCompatActivity {
 
         binding.drive.setOnClickListener(v -> {
             try {
-            diskPicker.launch("*/*");
+                diskPicker.launch("*/*");
             } catch (Exception e) {
                 IntentUtils.showErrorDialog(this);
             }
         });
         binding.driveField.setOnClickListener(v -> {
             try {
-            diskPicker.launch("*/*");
+                diskPicker.launch("*/*");
             } catch (Exception e) {
                 IntentUtils.showErrorDialog(this);
             }
@@ -339,7 +339,7 @@ public class VMCreatorActivity extends AppCompatActivity {
                 if (Objects.requireNonNull(getIntent().getStringExtra("romextra")).isEmpty()) {
                     setDefault();
                 } else {
-                    binding.qemu.setText(VmFileManager.textMarkToPath(vmID, Objects.requireNonNull(getIntent().getStringExtra("romextra"))));
+                    binding.qemu.setText(VmFileManager.textMarkToPath(this, vmID, Objects.requireNonNull(getIntent().getStringExtra("romextra"))));
                 }
 
                 binding.title.setText(getIntent().getStringExtra("romname"));
@@ -645,7 +645,7 @@ public class VMCreatorActivity extends AppCompatActivity {
             }
 
             if (current.itemExtra != null) {
-                binding.qemu.setText(VmFileManager.textMarkToPath(vmID, current.itemExtra));
+                binding.qemu.setText(VmFileManager.textMarkToPath(this, vmID, current.itemExtra));
             }
 
             cpu = current.cpu;
@@ -968,27 +968,27 @@ public class VMCreatorActivity extends AppCompatActivity {
                 }
             });
         } else {
-            if (!FileUtils.isValidFilePath(this, FileUtils.getPath(this, _content_describer), false)) {
-                DialogUtils.oneDialog(this,
-                        getString(R.string.problem_has_been_detected),
-                        getString(R.string.invalid_file_path_content),
-                        getString(R.string.ok),
-                        true,
-                        R.drawable.warning_48px,
-                        true,
-                        null,
-                        null);
-                return;
-            }
-
             ProgressDialog progressDialog1 = new ProgressDialog(this);
             progressDialog1.show();
             new Thread(() -> {
-                File selectedFilePath = new File(getPath(_content_describer));
+                String path = getPath(_content_describer);
                 runOnUiThread(() -> {
                     progressDialog1.reset();
-                    binding.drive.setText(selectedFilePath.getPath());
-                    binding.driveField.setEndIconDrawable(R.drawable.more_vert_24px);
+
+                    if (!FileUtils.isValidFilePath(this, path, false)) {
+                        DialogUtils.oneDialog(this,
+                                getString(R.string.problem_has_been_detected),
+                                getString(R.string.invalid_file_path_content),
+                                getString(R.string.ok),
+                                true,
+                                R.drawable.warning_48px,
+                                true,
+                                null,
+                                null);
+                    } else {
+                        binding.drive.setText(path);
+                        binding.driveField.setEndIconDrawable(R.drawable.more_vert_24px);
+                    }
                 });
             }).start();
         }
@@ -1121,7 +1121,7 @@ public class VMCreatorActivity extends AppCompatActivity {
                                 binding.qemu.setText(Objects.requireNonNull(getIntent().getStringExtra("romextra")).replaceAll(Objects.requireNonNull(getIntent().getStringExtra("finalromfilename")), "\"" + _getDiskFile + "\""));
                             } else {
                                 binding.drive.setText(_getDiskFile);
-                                binding.qemu.setText(VmFileManager.textMarkToPath(vmID, Objects.requireNonNull(getIntent().getStringExtra("romextra"))));
+                                binding.qemu.setText(VmFileManager.textMarkToPath(this, vmID, Objects.requireNonNull(getIntent().getStringExtra("romextra"))));
                             }
                         }
 
@@ -1204,11 +1204,13 @@ public class VMCreatorActivity extends AppCompatActivity {
         }
 
         if (VmFileManager.isCreateCommandConfigFileExists(vmID)) {
-            FileUtils.writeToFile(VmFileManager.getPath(vmID), VmFileManager.CREATE_COMMAND_CONFIG_FILE_NAME, VmFileManager.textMarkToPath(vmID, FileUtils.readAFile(VmFileManager.getCreateCommandConfigFile(vmID))));
+            FileUtils.writeToFile(VmFileManager.getPath(vmID), VmFileManager.CREATE_COMMAND_CONFIG_FILE_NAME, VmFileManager.textMarkToPath(this, vmID, FileUtils.readAFile(VmFileManager.getCreateCommandConfigFile(vmID))));
         }
 
         if (VmFileManager.isSnapshotShExists(vmID)) {
-            FileUtils.writeToFile(VmFileManager.getPath(vmID), VmFileManager.SNAPSHOT_SH_FILE_NAME, VmFileManager.textMarkToPath(vmID, FileUtils.readAFile(VmFileManager.getSnapshotSh(vmID))));
+            String snapshotParams = FileUtils.readAFile(VmFileManager.getSnapshotSh(vmID));
+            if (snapshotParams.isEmpty()) return;
+            FileUtils.writeToFile(VmFileManager.getPath(vmID), VmFileManager.SNAPSHOT_SH_FILE_NAME, VmFileManager.textMarkToPath(this, vmID, snapshotParams));
         }
     }
 
