@@ -21,6 +21,8 @@ public class VmFileManager {
     public static final String CREATE_COMMAND_CONFIG_FILE_NAME = "cqcm.json";
     public static final String LOG_FILE_NAME = "vm.log";
     public static final String TEXT_MARK_VM_PATH = "OhnoIjustrealizeditsmidnightandIstillhavetodothis";
+    public static final String TEXT_MARK_EXTERNAL_DATA_PATH = "%external_data%";
+    public static final String TEXT_MARK_VM_TEMP_PATH = "%vm_temp%";
     public static final String HIDE_VM_SUFFIX = "_";
 
 
@@ -198,11 +200,15 @@ public class VmFileManager {
         return VmFileManager.getPath(vmId, CREATE_COMMAND_CONFIG_FILE_NAME);
     }
 
-    public static String textMarkToPath(String vmId, String content) {
-        return content.replace(TEXT_MARK_VM_PATH, getPath(vmId));
+    public static String textMarkToPath(Context context, String vmId, String content) {
+        return content.replace(TEXT_MARK_VM_PATH, getPath(vmId))
+                .replace(TEXT_MARK_VM_TEMP_PATH, getTempPath(context, vmId))
+                .replace(TEXT_MARK_EXTERNAL_DATA_PATH, AppConfig.datadirpath(context) + "/");
     }
 
-    public static String pathToTextMark(String vmId, String content) {
-        return content.replace(getPath(vmId), TEXT_MARK_VM_PATH);
+    public static String pathToTextMark(Context context, String vmId, String content) {
+        return content.replace(getPath(vmId), TEXT_MARK_VM_PATH)
+                .replace(getTempPath(context, vmId), TEXT_MARK_VM_TEMP_PATH)
+                .replace(AppConfig.datadirpath(context) + "/", TEXT_MARK_EXTERNAL_DATA_PATH);
     }
 }

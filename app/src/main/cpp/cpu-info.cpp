@@ -1,9 +1,9 @@
 #include <jni.h>
 #include <unistd.h>
 #include <thread>
-#include <sys/auxv.h>
 
 #if defined(__aarch64__)
+    #include <sys/auxv.h>
     #include <asm/hwcap.h>
 #elif defined(__x86_64__)
     #include <cpuid.h>
