@@ -1204,4 +1204,16 @@ public class MainSettingsManager extends AppCompatActivity
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean("showVirtualMouse", false);
     }
+
+    public static void setVncRefreshRate(Context context, int value) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putInt("vncRefreshRate", value);
+        edit.apply();
+    }
+
+    public static int getVncRefreshRate(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getInt("vncRefreshRate", 4);
+    }
 }

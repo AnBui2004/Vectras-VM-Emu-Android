@@ -18,7 +18,7 @@ public class ConnectionBean {
 	private String address = "localhost";
 	private String password = "";
 	private int port = 5901;
-	private String colorModel = COLORMODEL.C64.nameString();
+	private String colorModel = COLORMODEL.C24bit.nameString();
 	private String InputMode = VncCanvasActivity.TOUCH_ZOOM_MODE;
 	private String scaleMode = "";
 	private String nickname = "vectras";

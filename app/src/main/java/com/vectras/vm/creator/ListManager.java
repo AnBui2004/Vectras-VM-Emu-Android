@@ -1,10 +1,12 @@
 package com.vectras.vm.creator;
 
+import android.app.Activity;
 import android.content.Context;
 
 import com.vectras.qemu.MainSettingsManager;
 import com.vectras.vm.R;
 import com.vectras.vm.utils.CpuHelper;
+import com.vectras.vm.utils.DeviceUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;

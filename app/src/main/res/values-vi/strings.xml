@@ -562,6 +562,9 @@
     <string name="cores">Nhân</string>
     <string name="thread">Luồng</string>
     <string name="threads">Luồng</string>
+    <string name="refresh_rate">Tần số quét</string>
+    <string name="low_refresh_rate">Tần số quét thấp</string>
+    <string name="low_refresh_rate_note">Nếu thiết bị quá tải khi phải vẽ quá nhiều khung hình, bạn có thể bật tính năng này để cải thiện hiệu năng cho máy ảo và tần số làm mới giảm còn 30.</string>
 
     <!--======================TERMUX STRINGS====================-->
     <string name="application_name" translatable="false">Vterm</string>

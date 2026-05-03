@@ -57,7 +57,7 @@ public class PendingCommand {
                 } else {
                     Log.i(TAG, "Run VM...");
 
-                    Config.vmID = "QuickRun/" + VMManager.idGenerator();
+                    Config.vmID = "quick_run_" + VMManager.idGenerator();
                     new Thread(() -> {
                         String env = StartVM.env(activity, command, "", true);
                         FileUtils.createDirectory(AppConfig.vmFolder + Config.vmID);

@@ -1,5 +1,6 @@
 package com.vectras.vm.utils;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.usage.StorageStatsManager;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.os.StatFs;
 import android.os.storage.StorageManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 
 import com.vectras.vm.VectrasApp;
 
@@ -95,5 +97,18 @@ public class DeviceUtils {
         int currentDpi = metrics.densityDpi;
         Log.i(TAG, "isHighDpi: " + currentDpi);
         return currentDpi >= 600;
+    }
+
+    public static int getMaxRefreshRate(Activity activity) {
+        Display display = activity.getWindowManager().getDefaultDisplay();
+        Display.Mode[] modes = display.getSupportedModes();
+
+        float maxHz = display.getRefreshRate();
+        for (Display.Mode mode : modes) {
+            if (mode.getRefreshRate() > maxHz) {
+                maxHz = mode.getRefreshRate();
+            }
+        }
+        return Math.round(maxHz);
     }
 }
