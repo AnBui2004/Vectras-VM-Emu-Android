@@ -50,7 +50,9 @@ public class VmFileManager {
         ArrayList<String> fileList = new ArrayList<>();
         FileUtils.getAListOfAllFilesAndFoldersInADirectory(AppConfig.vmFolder, fileList);
         for (int position = 0; position < fileList.size(); position++) {
-            if (FileUtils.isEmpty(fileList.get(position))) FileUtils.delete(fileList.get(position));
+            if (FileUtils.isEmpty(fileList.get(position))
+                    || fileList.get(position).startsWith("quick_run_"))
+                FileUtils.delete(fileList.get(position));
         }
 
         removeTemp(context, "");

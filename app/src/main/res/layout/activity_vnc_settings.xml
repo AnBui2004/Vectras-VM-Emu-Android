@@ -82,6 +82,15 @@
                     android:clickable="false"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <com.vectras.vm.view.SelectBoxView
+                android:id="@+id/sbv_refresh_rate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/object_shape_middle_high"
+                app:title="@string/refresh_rate"
+                app:subtitle="30"
+                android:layout_marginBottom="2dp" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/ln_external"
                 android:layout_width="match_parent"

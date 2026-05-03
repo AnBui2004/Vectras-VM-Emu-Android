@@ -9,9 +9,12 @@ import com.vectras.qemu.MainSettingsManager;
 import com.vectras.qemu.utils.RamInfo;
 import com.vectras.vm.creator.VMCreatorSelector;
 import com.vectras.vm.main.vms.DataMainRoms;
+import com.vectras.vm.manager.QemuManager;
 import com.vectras.vm.manager.VmFileManager;
+import com.vectras.vm.settings.ItemSettingsSelector;
 import com.vectras.vm.setupwizard.SetupFeatureCore;
 import com.vectras.vm.utils.CpuHelper;
+import com.vectras.vm.utils.DeviceUtils;
 import com.vectras.vm.utils.FileUtils;
 
 import java.io.File;
@@ -33,8 +36,8 @@ public class StartVM {
                 snapshotParams = removeQmpParams(snapshotParams);
                 snapshotParams = removeDisplayParams(snapshotParams);
                 snapshotParams = getQmpParams() + " " + snapshotParams;
-                snapshotParams = getQemuSystem(activity) + " " + snapshotParams;
-                snapshotParams += " " + getDisplayParams(activity);
+                snapshotParams = QemuManager.getQemuExecutableFile(activity) + " " + snapshotParams;
+                snapshotParams += " " + getDisplayParams(activity, vmConfigs.itemExtra);
                 if (!snapshotParams.contains("-incoming defer"))
                     snapshotParams += " -incoming defer";
                 Log.d("StartVM.env", snapshotParams);
@@ -297,7 +300,7 @@ public class StartVM {
             params.add(getQmpParams());
         }
 
-        params.add(getDisplayParams(activity));
+        params.add(getDisplayParams(activity, extras));
 
         if (VMManager.isNeedLoadMigrate()) {
             params.add("-incoming");
@@ -305,19 +308,6 @@ public class StartVM {
         }
 
         return String.join(" ", params);
-    }
-
-    public static String getQemuSystem(Context context) {
-        if (MainSettingsManager.getArch(context).equals("I386"))
-            return "qemu-system-i386";
-        else if (MainSettingsManager.getArch(context).equals("X86_64"))
-            return "qemu-system-x86_64";
-        else if (MainSettingsManager.getArch(context).equals("ARM64"))
-            return "qemu-system-aarch64";
-        else if (MainSettingsManager.getArch(context).equals("PPC"))
-            return "qemu-system-ppc";
-
-        return "qemu-system-x86_64";
     }
 
     public static String removeQemuSystem(String params) {
@@ -334,7 +324,7 @@ public class StartVM {
     }
 
 
-    public static String getDisplayParams(Context context) {
+    public static String getDisplayParams(Context context, String mainParams) {
         String params = "";
 
         if (MainSettingsManager.getVmUi(context).equals("VNC")) {
@@ -352,7 +342,10 @@ public class StartVM {
 
                 params += vncParams;
             } else {
-                params += "unix:" + Config.getLocalVNCSocketPath();
+                params += "unix:" + Config.getLocalVNCSocketPath() + ",lossy=off";
+
+                if (QemuManager.isSupportSetRefreshRate(context))
+                    params += ",refresh-rate=" + ((context instanceof Activity activity) ? QemuManager.getAppropriateRefreshRate(activity, mainParams, DeviceUtils.getMaxRefreshRate(activity)) : Integer.parseInt(ItemSettingsSelector.getVncRefreshRateValue(MainSettingsManager.getVncRefreshRate(context))));
             }
 
             params += " -monitor vc";

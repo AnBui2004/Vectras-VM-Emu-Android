@@ -573,6 +573,9 @@
     <string name="cores">Cores</string>
     <string name="thread">Thread</string>
     <string name="threads">Threads</string>
+    <string name="refresh_rate">Refresh rate</string>
+    <string name="low_refresh_rate">Low refresh rate</string>
+    <string name="low_refresh_rate_note">If your device is overloaded from drawing many frames, you can enable this feature to improve virtual machine performance and reduce the refresh rate to 30.</string>
 
 
     <!--======================TERMUX STRINGS====================-->
