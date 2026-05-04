@@ -21,15 +21,10 @@ package com.vectras.qemu;
 import android.androidVNC.COLORMODEL;
 import android.androidVNC.VncCanvasActivity;
 import android.graphics.Bitmap;
-import android.os.Environment;
 import android.widget.ImageView.ScaleType;
 
 import com.vectras.vm.AppConfig;
-import com.vectras.vm.SplashActivity;
 import com.vectras.vm.VectrasApp;
-
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
 
 /**
  *

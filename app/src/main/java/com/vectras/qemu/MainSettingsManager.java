@@ -1216,4 +1216,16 @@ public class MainSettingsManager extends AppCompatActivity
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getInt("vncRefreshRate", 4);
     }
+
+    public static void setEdgeToEdgeVnc(Context context, Boolean _boolean) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putBoolean("edgeToEdgeVnc", _boolean);
+        edit.apply();
+    }
+
+    public static Boolean getEdgeToEdgeVnc(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean("edgeToEdgeVnc", true);
+    }
 }

@@ -441,6 +441,14 @@ public class UIUtils {
         });
     }
 
+    public static void setOnApplyWindowInsetsListenerNoIme(View _view) {
+        ViewCompat.setOnApplyWindowInsetsListener(_view, (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
+
     public static void setOnApplyWindowInsetsListenerTop(View _view) {
         int originalPaddingLeft = _view.getPaddingLeft();
         int originalPaddingTop = _view.getPaddingTop();

@@ -590,6 +590,27 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/ln_edge_to_edge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="8dp"
+                    android:paddingHorizontal="16dp"
+                    android:background="?attr/selectableItemBackground">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/fit_screen_24px"/>
+                    <TextView
+                        android:id="@+id/tv_edge_to_edge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:textColor="?attr/colorControlNormal"
+                        android:text="@string/edge_to_edge"/>
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/ln_settings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

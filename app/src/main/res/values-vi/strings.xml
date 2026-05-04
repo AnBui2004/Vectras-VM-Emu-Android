@@ -565,6 +565,8 @@
     <string name="refresh_rate">Tần số quét</string>
     <string name="low_refresh_rate">Tần số quét thấp</string>
     <string name="low_refresh_rate_note">Nếu thiết bị quá tải khi phải vẽ quá nhiều khung hình, bạn có thể bật tính năng này để cải thiện hiệu năng cho máy ảo và tần số làm mới giảm còn 30.</string>
+    <string name="edge_to_edge">Tràn cạnh</string>
+    <string name="disable_edge_to_edge">Tắt tràn cạnh</string>
 
     <!--======================TERMUX STRINGS====================-->
     <string name="application_name" translatable="false">Vterm</string>

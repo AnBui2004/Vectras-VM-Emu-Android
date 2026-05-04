@@ -16,16 +16,16 @@
 
         <RelativeLayout
             android:id="@+id/vnc_canvas_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:orientation="vertical">
 
             <android.androidVNC.VncCanvas
                 android:id="@+id/vnc_canvas"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:keepScreenOn="true" />
@@ -44,6 +44,21 @@
                 android:id="@+id/sendkeysdialog"
                 layout="@layout/send_key_dialog" />
         </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/sceenshot_frame_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:id="@+id/sceenshot_frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/screenshot_frame"
+                android:orientation="horizontal"
+                android:visibility="gone"/>
+        </LinearLayout>
 
 
         <!--        <LinearLayout-->

@@ -576,6 +576,8 @@
     <string name="refresh_rate">Refresh rate</string>
     <string name="low_refresh_rate">Low refresh rate</string>
     <string name="low_refresh_rate_note">If your device is overloaded from drawing many frames, you can enable this feature to improve virtual machine performance and reduce the refresh rate to 30.</string>
+    <string name="edge_to_edge">Edge-to-edge</string>
+    <string name="disable_edge_to_edge">Disable edge-to-edge</string>
 
 
     <!--======================TERMUX STRINGS====================-->

@@ -125,8 +125,8 @@ public class StreamAudio {
 
     private boolean isContextDestroyed(Context context) {
         if (context instanceof Activity activity) {
-            isDestroyed = true;
-            return activity.isDestroyed() || activity.isFinishing();
+            isDestroyed = activity.isDestroyed() || activity.isFinishing();
+            return isDestroyed;
         }
         return false;
     }
