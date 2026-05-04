@@ -1836,8 +1836,8 @@ public abstract class VncCanvasActivity extends AppCompatActivity {
 
         // Add to parent
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
         );
         params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
 
@@ -1846,10 +1846,8 @@ public abstract class VncCanvasActivity extends AppCompatActivity {
         // Reassign reference variable
         vncCanvas = newCanvas;
 
-        vncCanvas.initializeVncCanvas(connection, new Runnable() {
-            public void run() {
-                setModes();
-            }
+        vncCanvas.initializeVncCanvas(connection, () -> {
+            setModes();
         });
     }
 

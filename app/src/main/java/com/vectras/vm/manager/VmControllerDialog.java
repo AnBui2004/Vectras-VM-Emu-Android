@@ -50,6 +50,7 @@ public class VmControllerDialog extends DialogFragment {
     public int position = -1;
     public StreamAudio streamAudio;
     public VncCanvas vncCanvas;
+    public View screenshotFrame;
 
     @NonNull
     @Override
@@ -121,7 +122,12 @@ public class VmControllerDialog extends DialogFragment {
                     });
                 }
 
-                binding.lnTakeScreenshot.setOnClickListener(v -> takeScreenshot());
+                if (screenshotFrame != null && screenshotFrame.getVisibility() == View.VISIBLE) {
+                    binding.lnTakeScreenshot.setVisibility(View.GONE);
+                } else {
+                    binding.lnTakeScreenshot.setOnClickListener(v -> takeScreenshot());
+                }
+
 
                 binding.lnConsole.setOnClickListener(v -> {
                     QemuConsoleDialog qemuConsoleDialog = new QemuConsoleDialog();
@@ -331,6 +337,8 @@ public class VmControllerDialog extends DialogFragment {
                             return;
 
                         MainSettingsManager.setVNCScaleMode(requireActivity(), VNCConfig.oneToOne);
+                        streamAudio.setCross(null);
+                        streamAudio.stop();
                         requireActivity().recreate();
                         dismiss();
                     });
@@ -340,6 +348,8 @@ public class VmControllerDialog extends DialogFragment {
                             return;
 
                         MainSettingsManager.setVNCScaleMode(requireActivity(), VNCConfig.fitToScreen);
+                        streamAudio.setCross(null);
+                        streamAudio.stop();
                         requireActivity().recreate();
                         dismiss();
                     });
@@ -349,9 +359,23 @@ public class VmControllerDialog extends DialogFragment {
                             return;
 
                         MainSettingsManager.setVNCScaleMode(requireActivity(), VNCConfig.scaleToFitScreen);
+                        streamAudio.setCross(null);
+                        streamAudio.stop();
                         requireActivity().recreate();
                         dismiss();
                     });
+
+                    boolean isEdgeToEdge = MainSettingsManager.getEdgeToEdgeVnc(getContext());
+
+                    binding.lnEdgeToEdge.setOnClickListener(v -> {
+                        MainSettingsManager.setEdgeToEdgeVnc(requireActivity(), !isEdgeToEdge);
+                        streamAudio.setCross(null);
+                        streamAudio.stop();
+                        requireActivity().recreate();
+                        dismiss();
+                    });
+
+                    if (isEdgeToEdge) binding.tvEdgeToEdge.setText(R.string.disable_edge_to_edge);
                 } else {
                     binding.lnUserInterface.setVisibility(View.GONE);
                 }
@@ -376,17 +400,40 @@ public class VmControllerDialog extends DialogFragment {
     }
 
     private void takeScreenshot() {
-        ProgressDialog progressDialog = new ProgressDialog(requireActivity());
-        progressDialog.setText(getString(R.string.taking_a_screenshot));
-        progressDialog.setFixTextColor(true);
-        progressDialog.show();
+        ProgressDialog progressDialog;
+
+        if (screenshotFrame == null) {
+            progressDialog = new ProgressDialog(requireActivity());
+            progressDialog.setText(getString(R.string.taking_a_screenshot));
+            progressDialog.setFixTextColor(true);
+            progressDialog.show();
+        } else {
+            progressDialog = null;
+
+            screenshotFrame.setVisibility(View.VISIBLE);
+            screenshotFrame.animate()
+                    .alpha(1f)
+                    .setDuration(300)
+                    .start();
+        }
 
         new Thread(() -> {
             boolean isSaved = VmActions.takeScreenshot(requireActivity(), true);
 
             new Handler(Looper.getMainLooper()).post(() -> {
                 if (!isAdded()) return;
-                progressDialog.reset();
+
+                if (progressDialog != null) progressDialog.reset();
+
+                if (screenshotFrame != null) {
+                    screenshotFrame.animate()
+                            .alpha(0f)
+                            .setDuration(300)
+                            .start();
+
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> screenshotFrame.setVisibility(View.GONE), 300);
+                }
+
                 Toast.makeText(requireActivity().getApplicationContext(), getString(isSaved ? R.string.saved_to_the_gallery : R.string.unable_to_take_a_screenshot), Toast.LENGTH_SHORT).show();
                 dismiss();
             });

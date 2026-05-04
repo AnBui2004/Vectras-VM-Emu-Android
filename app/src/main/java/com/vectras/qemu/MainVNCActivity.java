@@ -117,8 +117,12 @@ public class MainVNCActivity extends VncCanvasActivity {
         super.onCreate(b);
 
         getContext = this;
-        UIUtils.edgeToEdge(this);
-        UIUtils.setOnApplyWindowInsetsListener(binding.vncControlLayout);
+
+        if (MainSettingsManager.getEdgeToEdgeVnc(this)) {
+            UIUtils.edgeToEdge(this);
+            UIUtils.setOnApplyWindowInsetsListener(binding.vncControlLayout);
+        }
+
         initializeControlFragment();
         initializeDesktopControl();
         initializeGameControl();
@@ -181,9 +185,6 @@ public class MainVNCActivity extends VncCanvasActivity {
         });
 
         ConnectionBean.useLocalCursor = MainSettingsManager.getShowVirtualMouse(this) || VMManager.isNeedUseVirtualMouse();
-
-        streamAudio = new StreamAudio(this);
-        streamAudio.setFile(VmFileManager.findAudioRaw(this, Config.vmID));
 
         if (!isConnected) tryReconnect(false);
     }
@@ -314,6 +315,7 @@ public class MainVNCActivity extends VncCanvasActivity {
     public void onDestroy() {
         super.onDestroy();
         this.stopTimeListener();
+        if (streamAudio != null) streamAudio.stop();
         //Terminal.killQemuProcess();
     }
 
@@ -759,7 +761,7 @@ public class MainVNCActivity extends VncCanvasActivity {
             }
             started = false;
 
-            if (!VmAudioManager.currentVmId.equals(Config.vmID)) streamAudio.setCross(null);
+            if (streamAudio != null && !VmAudioManager.currentVmId.equals(Config.vmID)) streamAudio.setCross(null);
             finish();
         }
     }
@@ -783,9 +785,15 @@ public class MainVNCActivity extends VncCanvasActivity {
             this.vncCanvas.setFocusableInTouchMode(true);
 //            syncCursorViewWithBitmap();
 
-            if (VmAudioManager.currentVmId.equals(Config.vmID) && VmAudioManager.streamAudio.isPlaying())
-                streamAudio.setCross(VmAudioManager.streamAudio);
-            if (!streamAudio.isPlaying()) streamAudio.play();
+            if (streamAudio == null) {
+                streamAudio = new StreamAudio(this);
+                streamAudio.setFile(VmFileManager.findAudioRaw(this, Config.vmID));
+
+                if (VmAudioManager.currentVmId.equals(Config.vmID) && VmAudioManager.streamAudio.isPlaying())
+                    streamAudio.setCross(VmAudioManager.streamAudio);
+            }
+
+            playSound();
 
             unBlurLayout();
         });
@@ -799,7 +807,7 @@ public class MainVNCActivity extends VncCanvasActivity {
             if (started) isQMPPortOpening(firstConnection);
 
             if (!VmAudioManager.currentVmId.equals(Config.vmID)) streamAudio.setCross(null);
-            if (streamAudio.isPlaying()) streamAudio.stop();
+            if (streamAudio != null && streamAudio.isPlaying()) streamAudio.stop();
 
             blurLayout();
         });
@@ -874,6 +882,7 @@ public class MainVNCActivity extends VncCanvasActivity {
 
                     if (!isConnected) {
                         blurLayout();
+                        if (streamAudio != null && streamAudio.isPlaying()) streamAudio.stop();
                     } else {
                         unBlurLayout();
                     }
@@ -943,7 +952,7 @@ public class MainVNCActivity extends VncCanvasActivity {
             DialogUtils.twoDialog(this, "Exit", "You will be left here but the virtual machine will continue to run.", "Exit", getString(R.string.cancel), true, R.drawable.exit_to_app_24px, true,
                     () -> {
                         started = false;
-                        if (!VmAudioManager.currentVmId.equals(Config.vmID))
+                        if (streamAudio != null && !VmAudioManager.currentVmId.equals(Config.vmID))
                             streamAudio.setCross(null);
                         finish();
                     }, null, this::unBlurLayout);
@@ -979,6 +988,7 @@ public class MainVNCActivity extends VncCanvasActivity {
             VmControllerDialog vmControllerDialog = new VmControllerDialog();
             vmControllerDialog.vncCanvas = vncCanvas;
             vmControllerDialog.streamAudio = streamAudio;
+            vmControllerDialog.screenshotFrame = binding.sceenshotFrame;
             vmControllerDialog.show(getSupportFragmentManager(), "VmControllerDialog");
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -1485,6 +1495,19 @@ public class MainVNCActivity extends VncCanvasActivity {
         t.start();
         return true;
 
+    }
+
+    int playSoundRequests;
+
+    private void playSound() {
+        if (streamAudio == null || streamAudio.isPlaying() || playSoundRequests > 0) return;
+        playSoundRequests++;
+
+        streamAudio.stop();
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (!streamAudio.isPlaying()) streamAudio.play();
+            playSoundRequests--;
+        }, 100);
     }
 
     public String getPath(Uri uri) {
