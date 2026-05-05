@@ -19,7 +19,6 @@ import com.anbui.elephant.interaction.Interaction;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.vectras.qemu.MainSettingsManager;
 import com.vectras.vm.creator.VMCreatorActivity;
 import com.vectras.vm.databinding.ActivityRomInfoBinding;
 import com.vectras.vm.utils.DialogUtils;
@@ -29,7 +28,6 @@ import com.vectras.vm.utils.IntentUtils;
 import com.vectras.vm.utils.PackageUtils;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,7 +37,7 @@ public class RomInfo extends AppCompatActivity {
     public static boolean isFinishNow = false;
     private String contentID = "";
     private boolean isAnBuiContent;
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private Interaction interaction;
 
     @Override
@@ -330,9 +328,8 @@ public class RomInfo extends AppCompatActivity {
             interaction.initialize((isSuccess, views, likes) -> {
                 if (isSuccess) {
                     binding.btnLike.setVisibility(View.VISIBLE);
-                    String likeContent = getString(R.string.like);
                     boolean isLiked = interaction.isLiked();
-                    likeContent = (likes == 0) ? getString(R.string.like) : interaction.getFormatedLikeCount();
+                    String likeContent = (likes == 0) ? getString(R.string.like) : interaction.getFormatedLikeCount();
                     if (isLiked)
                         binding.btnLike.setIcon(ContextCompat.getDrawable(RomInfo.this, R.drawable.thumb_up_filled_24px));
                     binding.btnLike.setText(likeContent);
@@ -357,10 +354,8 @@ public class RomInfo extends AppCompatActivity {
         interaction.like((isSuccess, views, likes) -> {
             if (isSuccess) {
                 binding.btnLike.setVisibility(View.VISIBLE);
-                String likeContent = getString(R.string.like);
-                boolean isLiked = interaction.isLiked();
-                likeContent = (likes == 0) ? getString(R.string.like) : interaction.getFormatedLikeCount();
-                binding.btnLike.setIcon(ContextCompat.getDrawable(RomInfo.this, !isLiked ? R.drawable.thumb_up_filled_24px : R.drawable.thumb_up_24px));
+                String likeContent = (likes == 0) ? getString(R.string.like) : interaction.getFormatedLikeCount();
+                binding.btnLike.setIcon(ContextCompat.getDrawable(RomInfo.this, interaction.isLiked() ? R.drawable.thumb_up_filled_24px : R.drawable.thumb_up_24px));
                 binding.btnLike.setText(likeContent);
 
                 binding.lnAllViews.setVisibility(View.VISIBLE);

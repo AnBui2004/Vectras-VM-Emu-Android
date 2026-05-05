@@ -51,7 +51,7 @@ public class VmFileManager {
         FileUtils.getAListOfAllFilesAndFoldersInADirectory(AppConfig.vmFolder, fileList);
         for (int position = 0; position < fileList.size(); position++) {
             if (FileUtils.isEmpty(fileList.get(position))
-                    || fileList.get(position).startsWith("quick_run_"))
+                    || new File(fileList.get(position)).getName().startsWith("quick_run_"))
                 FileUtils.delete(fileList.get(position));
         }
 

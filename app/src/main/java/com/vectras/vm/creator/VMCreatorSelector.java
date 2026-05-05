@@ -34,7 +34,8 @@ public class VMCreatorSelector {
     }
 
     public static HashMap<String, Object> getCpu(Context context, String arch, int position) {
-        return ListManager.cpus(context, arch).get(position);
+        ArrayList<HashMap<String, Object>> list = ListManager.cpus(context, arch);
+        return list.get(position < 0 ? 0 : Math.min(position, list.size() - 1));
     }
 
     public static void cpuCore(Activity activity, String arch, int position, SelectorCallback callback) {
@@ -48,7 +49,8 @@ public class VMCreatorSelector {
     }
 
     public static HashMap<String, Object> getCpuCore(String arch, int position) {
-        return ListManager.cores(arch).get(position);
+        ArrayList<HashMap<String, Object>> list = ListManager.cores(arch);
+        return list.get(position < 0 ? 0 : Math.min(position, list.size() - 1));
     }
 
     public static void cpuThread(Activity activity, String arch, int position, SelectorCallback callback) {
