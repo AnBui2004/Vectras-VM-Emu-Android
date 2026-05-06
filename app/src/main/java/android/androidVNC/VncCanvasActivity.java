@@ -1055,15 +1055,15 @@ public abstract class VncCanvasActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent evt) {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            MotionEvent e = MotionEvent.obtain(1000, 1000, MotionEvent.ACTION_DOWN, vncCanvas.mouseX, vncCanvas.mouseY,
+            /*MotionEvent e = MotionEvent.obtain(1000, 1000, MotionEvent.ACTION_DOWN, vncCanvas.mouseX, vncCanvas.mouseY,
                     0);
-            ((TouchpadInputHandler) this.inputHandler).rightClick(e);
-            return true;
+            ((TouchpadInputHandler) this.inputHandler).rightClick(e);*/
+            return false;
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            MotionEvent e = MotionEvent.obtain(1000, 1000, MotionEvent.ACTION_DOWN, vncCanvas.mouseX, vncCanvas.mouseY,
+            /*MotionEvent e = MotionEvent.obtain(1000, 1000, MotionEvent.ACTION_DOWN, vncCanvas.mouseX, vncCanvas.mouseY,
                     0);
-            ((TouchpadInputHandler) this.inputHandler).leftClick(e);
-            return true;
+            ((TouchpadInputHandler) this.inputHandler).leftClick(e);*/
+            return false;
         } else if (keyCode == KeyEvent.KEYCODE_MENU) {
             return super.onKeyDown(keyCode, evt);
         }

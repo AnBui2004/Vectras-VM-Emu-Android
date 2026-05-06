@@ -987,6 +987,48 @@ public class VncCanvas extends AppCompatImageView {
                     Log.e(TAG, "processPointerEvent: ", e);
                 }
                 panToMouse();
+
+				if (getScaleX() > scalingX) {
+					if (getScaleType() == STRETCH_TO_FIT_MODE) {
+						float scaleX = getScaleX();
+						float scaleY = getScaleY();
+
+						float centerX = getWidth() / 2f;
+						float centerY = getHeight() / 2f;
+
+						float tx = centerX - (mouseX * (scaleX / (scaleX / scalingX)));
+						float ty = centerY - (mouseY * (scaleY / (scaleY / scalingY)));
+
+						setTranslationX(tx);
+						setTranslationY(ty);
+					} else {
+						setPivotX(0);
+						setPivotY(0);
+
+						float scaleX = getScaleX();
+						float scaleY = getScaleY();
+						float centerX = getWidth() / 2f;
+						float centerY = getHeight() / 2f;
+
+						float imageWidth = getImageWidth();
+						float imageHeight = getImageHeight();
+
+						float fitScale = Math.min((float) getWidth() / imageWidth, (float) getHeight() / imageHeight);
+
+						float offsetX = (getWidth() - (imageWidth * fitScale)) / 2f;
+						float offsetY = (getHeight() - (imageHeight * fitScale)) / 2f;
+
+						float mouseOnScreenX = (mouseX * fitScale + offsetX);
+						float mouseOnScreenY = (mouseY * fitScale + offsetY);
+
+						setTranslationX(centerX - mouseOnScreenX * scaleX);
+						setTranslationY(centerY - mouseOnScreenY * scaleY);
+					}
+				} else {
+					setTranslationX(0);
+					setTranslationY(0);
+				}
+
                 return true;
             }
 
@@ -2180,6 +2222,9 @@ public class VncCanvas extends AppCompatImageView {
 
     }
 
+	public float scalingX = 1;
+	public float scalingY = 1;
+
 	public void setupScaleMode() {
 		if (parentView != null) {
 			setupScaleMode(parentView);
@@ -2190,8 +2235,11 @@ public class VncCanvas extends AppCompatImageView {
 			post(() -> {
 				if (getWidth() == 0 || getHeight() == 0 || getImageWidth() == 0 || getImageHeight() == 0) return;
 
-				setScaleX((float) getWidth() / getImageWidth());
-				setScaleY((float) getHeight() / getImageHeight());
+				scalingX = (float) getWidth() / getImageWidth();
+				scalingY = (float) getHeight() / getImageHeight();
+
+				setScaleX(scalingX);
+				setScaleY(scalingY);
 			});
 		} else if (getScaleType() == ScaleType.FIT_CENTER || getScaleType() == ScaleType.FIT_START) {
 			setScaleX(1);
@@ -2208,8 +2256,11 @@ public class VncCanvas extends AppCompatImageView {
 			post(() -> {
 				if (parent.getWidth() == 0 || parent.getHeight() == 0 || getImageWidth() == 0 || getImageHeight() == 0) return;
 
-				setScaleX((float) parent.getWidth() / getImageWidth());
-				setScaleY((float) parent.getHeight() / getImageHeight());
+				scalingX = (float) parent.getWidth() / getImageWidth();
+				scalingY = (float) parent.getHeight() / getImageHeight();
+
+				setScaleX(scalingX);
+				setScaleY(scalingY);
 			});
 		} else if (getScaleType() == ScaleType.FIT_CENTER || getScaleType() == ScaleType.FIT_START) {
 			setScaleX(1);

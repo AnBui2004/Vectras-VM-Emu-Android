@@ -495,6 +495,7 @@
     <string name="threedfx_is_not_available">3dfx is not available.</string>
     <string name="refresh">Refresh</string>
     <string name="last_crash_note">We are very sorry about an incident that occurred and app crashed earlier.</string>
+    <string name="virtual_mouse">Virtual mouse</string>
     <string name="show_virtual_mouse">Show virtual mouse</string>
     <string name="hide_virtual_mouse">Hide virtual mouse</string>
     <string name="this_bootstrap_file_is_invalid">This bootstrap file is invalid.</string>
@@ -578,6 +579,7 @@
     <string name="low_refresh_rate_note">If your device is overloaded from drawing many frames, you can enable this feature to improve virtual machine performance and reduce the refresh rate to 30.</string>
     <string name="edge_to_edge">Edge-to-edge</string>
     <string name="disable_edge_to_edge">Disable edge-to-edge</string>
+    <string name="pinch_to_zoom">Pinch to zoom</string>
 
 
     <!--======================TERMUX STRINGS====================-->

@@ -1228,4 +1228,16 @@ public class MainSettingsManager extends AppCompatActivity
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean("edgeToEdgeVnc", true);
     }
+
+    public static void setVncPinchToZoom(Context context, Boolean _boolean) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putBoolean("vncPinchToZoom", _boolean);
+        edit.apply();
+    }
+
+    public static Boolean getVncPinchToZoom(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean("vncPinchToZoom", false);
+    }
 }

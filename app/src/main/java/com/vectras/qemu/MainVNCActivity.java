@@ -37,6 +37,7 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -112,6 +113,10 @@ public class MainVNCActivity extends VncCanvasActivity {
 
     private StreamAudio streamAudio;
 
+    private ScaleGestureDetector scaleDetector;
+    private boolean isScaling = false;
+    private boolean isPinchToZoom;
+
     @Override
     public void onCreate(Bundle b) {
         super.onCreate(b);
@@ -184,7 +189,45 @@ public class MainVNCActivity extends VncCanvasActivity {
 
         });
 
+        isPinchToZoom = MainSettingsManager.getVncPinchToZoom(this);
+
         ConnectionBean.useLocalCursor = MainSettingsManager.getShowVirtualMouse(this) || VMManager.isNeedUseVirtualMouse();
+
+        scaleDetector = new ScaleGestureDetector(this, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScaleBegin(@NonNull ScaleGestureDetector detector) {
+                isScaling = true;
+                return true;
+            }
+
+            @Override
+            public boolean onScale(@NonNull ScaleGestureDetector detector) {
+                float scale = detector.getScaleFactor();
+
+                if (vncCanvas.getScaleX() * scale <= 8) {
+                    vncCanvas.setScaleY(vncCanvas.getScaleY() * scale);
+                    vncCanvas.setScaleX(vncCanvas.getScaleX() * scale);
+                }
+
+                return true;
+            }
+
+            @Override
+            public void onScaleEnd(@NonNull ScaleGestureDetector detector) {
+                isScaling = false;
+                if (vncCanvas.getScaleX() <= vncCanvas.scalingX) {
+                    vncCanvas.animate()
+                            .scaleY(vncCanvas.scalingY)
+                            .setDuration(300)
+                            .start();
+
+                    vncCanvas.animate()
+                            .scaleX(vncCanvas.scalingX)
+                            .setDuration(300)
+                            .start();
+                }
+            }
+        });
 
         if (!isConnected) tryReconnect(false);
     }
@@ -193,7 +236,7 @@ public class MainVNCActivity extends VncCanvasActivity {
 
 
         // Fit to Screen
-        AbstractScaling.getById(R.id.itemFitToScreen).setScaleTypeForActivity(this);
+        AbstractScaling.getById(R.id.itemOneToOne).setScaleTypeForActivity(this);
         showPanningState();
 
 //        screenMode = VNCScreenMode.FitToScreen;
@@ -806,8 +849,11 @@ public class MainVNCActivity extends VncCanvasActivity {
             binding.lnNosignal.setVisibility(View.VISIBLE);
             if (started) isQMPPortOpening(firstConnection);
 
-            if (!VmAudioManager.currentVmId.equals(Config.vmID)) streamAudio.setCross(null);
-            if (streamAudio != null && streamAudio.isPlaying()) streamAudio.stop();
+
+            if (streamAudio != null) {
+                if (!VmAudioManager.currentVmId.equals(Config.vmID)) streamAudio.setCross(null);
+                if (streamAudio.isPlaying()) streamAudio.stop();
+            }
 
             blurLayout();
         });
@@ -823,22 +869,26 @@ public class MainVNCActivity extends VncCanvasActivity {
     }
 
     private void isQMPPortOpening(boolean isFinish) {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        if (!FileUtils.isFileExists(Config.getLocalQMPSocketPath())) {
-            // Finish when the virtual machine is shut down.
-            started = false;
-            if (isFinish) {
-                finish();
-            }
-//            } else {
-//                DialogUtils.oneDialog(activity, getResources().getString(R.string.there_seems_to_be_no_signal), getResources().getString(R.string.do_you_want_to_exit), getString(R.string.ok), true, R.drawable.cast_24px, true,
-//                        this::finish, null);
-//            }
-        } else {
-            // Try reconnect.
-            tryReconnect(true);
-        }
+        blurLayout();
+        binding.lnNosignal.setVisibility(View.GONE);
+        binding.lnConnecting.setVisibility(View.VISIBLE);
+
+        new Thread(() -> {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+
+            boolean isVMRunning = FileUtils.isFileExists(Config.getLocalQMPSocketPath());
+            runOnUiThread(() -> {
+                if (isVMRunning) {
+                    // Try reconnect.
+                    tryReconnect(true);
+                } else if (isFinish) {
+                    // Finish when the virtual machine is shut down.
+                    started = false;
+                    finish();
+                }
+            });
+        }).start();
     }
 
     private boolean isTrying;
@@ -894,6 +944,8 @@ public class MainVNCActivity extends VncCanvasActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (isPinchToZoom) scaleDetector.onTouchEvent(event);
+
         int pointerCount = event.getPointerCount();
 
         switch (event.getActionMasked()) {
@@ -907,7 +959,7 @@ public class MainVNCActivity extends VncCanvasActivity {
                     } catch (Exception e) {
                         VMManager.sendMiddleMouseKey();
                     }
-                } else if (pointerCount == 2) {
+                } else if (pointerCount == 2 && !isScaling) {
                     try {
                         MotionEvent e = MotionEvent.obtain(1000, 1000, MotionEvent.ACTION_DOWN, vncCanvas.mouseX, vncCanvas.mouseY,
                                 0);
@@ -994,7 +1046,10 @@ public class MainVNCActivity extends VncCanvasActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 getSupportFragmentManager().executePendingTransactions();
                 blurLayout();
-                vmControllerDialog.setOnDismissCallback(this::unBlurLayout);
+                vmControllerDialog.setOnDismissCallback(() -> {
+                    isPinchToZoom = MainSettingsManager.getVncPinchToZoom(this);
+                    unBlurLayout();
+                });
             }
         });
     }

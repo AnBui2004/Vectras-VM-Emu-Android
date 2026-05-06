@@ -297,19 +297,17 @@ public class VmControllerDialog extends DialogFragment {
                         dismiss();
                     });
 
-                    if (ConnectionBean.useLocalCursor) {
-                        binding.tvVirtualmouse.setText(getString(R.string.hide_virtual_mouse));
-                    }
+                    binding.swVirtualmouse.setChecked(ConnectionBean.useLocalCursor);
 
-                    binding.lnVirtualmouse.setOnClickListener(v -> {
-                        MainSettingsManager.setShowVirtualMouse(requireActivity(), !ConnectionBean.useLocalCursor);
-                        ConnectionBean.useLocalCursor = !ConnectionBean.useLocalCursor;
-                        dismiss();
+                    binding.swVirtualmouse.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                        MainSettingsManager.setShowVirtualMouse(requireActivity(), isChecked);
+                        ConnectionBean.useLocalCursor = isChecked;
                     });
+
+                    binding.lnVirtualmouse.setOnClickListener(v -> binding.swVirtualmouse.toggle());
 
                     binding.lnMouse.setOnClickListener(v -> {
                         MainVNCActivity.getContext.onMouseMode();
-                        dismiss();
                     });
 
                     binding.lnSettings.setOnClickListener(v -> {
@@ -367,6 +365,8 @@ public class VmControllerDialog extends DialogFragment {
 
                     boolean isEdgeToEdge = MainSettingsManager.getEdgeToEdgeVnc(getContext());
 
+                    binding.swEdgeToEdge.setChecked(isEdgeToEdge);
+
                     binding.lnEdgeToEdge.setOnClickListener(v -> {
                         MainSettingsManager.setEdgeToEdgeVnc(requireActivity(), !isEdgeToEdge);
                         streamAudio.setCross(null);
@@ -375,7 +375,21 @@ public class VmControllerDialog extends DialogFragment {
                         dismiss();
                     });
 
-                    if (isEdgeToEdge) binding.tvEdgeToEdge.setText(R.string.disable_edge_to_edge);
+                    binding.swPinchToZoom.setChecked(MainSettingsManager.getVncPinchToZoom(getContext()));
+
+                    binding.swPinchToZoom.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                        MainSettingsManager.setVncPinchToZoom(requireActivity(), isChecked);
+
+                        if (!isChecked) {
+                            vncCanvas.setScaleY(vncCanvas.scalingY);
+                            vncCanvas.setScaleX(vncCanvas.scalingX);
+
+                            vncCanvas.setTranslationY(0);
+                            vncCanvas.setTranslationX(0);
+                        }
+                    });
+
+                    binding.lnPinchToZoom.setOnClickListener(v -> binding.swPinchToZoom.toggle());
                 } else {
                     binding.lnUserInterface.setVisibility(View.GONE);
                 }
