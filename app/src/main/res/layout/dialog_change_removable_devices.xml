@@ -529,6 +529,90 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/ln_virtualmouse"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="8dp"
+                    android:paddingHorizontal="16dp"
+                    android:background="?attr/selectableItemBackground">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/highlight_mouse_cursor_24px"/>
+                    <TextView
+                        android:id="@+id/tv_virtualmouse"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:layout_weight="1"
+                        android:textColor="?attr/colorControlNormal"
+                        android:text="@string/virtual_mouse"/>
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/sw_virtualmouse"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ln_pinch_to_zoom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="8dp"
+                    android:paddingHorizontal="16dp"
+                    android:background="?attr/selectableItemBackground">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/pinch_24px"/>
+                    <TextView
+                        android:id="@+id/tv_pinch_to_zoom"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:layout_weight="1"
+                        android:textColor="?attr/colorControlNormal"
+                        android:text="@string/pinch_to_zoom"/>
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/sw_pinch_to_zoom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ln_edge_to_edge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="8dp"
+                    android:paddingHorizontal="16dp"
+                    android:background="?attr/selectableItemBackground">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/fit_screen_24px"/>
+                    <TextView
+                        android:id="@+id/tv_edge_to_edge"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:layout_weight="1"
+                        android:textColor="?attr/colorControlNormal"
+                        android:text="@string/edge_to_edge"/>
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/sw_edge_to_edge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"/>
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/ln_refresh"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -549,27 +633,6 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/ln_virtualmouse"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="8dp"
-                    android:paddingHorizontal="16dp"
-                    android:background="?attr/selectableItemBackground">
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/highlight_mouse_cursor_24px"/>
-                    <TextView
-                        android:id="@+id/tv_virtualmouse"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="8dp"
-                        android:textColor="?attr/colorControlNormal"
-                        android:text="@string/show_virtual_mouse"/>
-                </LinearLayout>
-
-                <LinearLayout
                     android:id="@+id/ln_mouse"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -587,27 +650,6 @@
                         android:padding="8dp"
                         android:textColor="?attr/colorControlNormal"
                         android:text="@string/mouse_mode"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ln_edge_to_edge"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="8dp"
-                    android:paddingHorizontal="16dp"
-                    android:background="?attr/selectableItemBackground">
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/fit_screen_24px"/>
-                    <TextView
-                        android:id="@+id/tv_edge_to_edge"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="8dp"
-                        android:textColor="?attr/colorControlNormal"
-                        android:text="@string/edge_to_edge"/>
                 </LinearLayout>
 
                 <LinearLayout

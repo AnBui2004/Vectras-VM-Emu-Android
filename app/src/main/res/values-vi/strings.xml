@@ -484,6 +484,7 @@
     <string name="threedfx_is_not_available">3dfx không có sẵn.</string>
     <string name="refresh">Làm mới</string>
     <string name="last_crash_note">Xin lỗi nhé! Cơn ngất xỉu đã đến quá bất ngờ.</string>
+    <string name="virtual_mouse">Chuột ảo</string>
     <string name="show_virtual_mouse">Hiện chuột ảo</string>
     <string name="hide_virtual_mouse">Ẩn chuột ảo</string>
     <string name="this_bootstrap_file_is_invalid">Tệp khởi động này không hợp lệ.</string>
@@ -567,6 +568,7 @@
     <string name="low_refresh_rate_note">Nếu thiết bị quá tải khi phải vẽ quá nhiều khung hình, bạn có thể bật tính năng này để cải thiện hiệu năng cho máy ảo và tần số làm mới giảm còn 30.</string>
     <string name="edge_to_edge">Tràn cạnh</string>
     <string name="disable_edge_to_edge">Tắt tràn cạnh</string>
+    <string name="pinch_to_zoom">Chụm ngón tay để thu phóng</string>
 
     <!--======================TERMUX STRINGS====================-->
     <string name="application_name" translatable="false">Vterm</string>
