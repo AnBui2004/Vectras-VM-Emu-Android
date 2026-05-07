@@ -37,7 +37,7 @@
   },
   {
     "rom_name": "Android 4.4 r1",
-    "rom_icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Android_KitKat_logo.svg/1200px-Android_KitKat_logo.svg.png",
+    "rom_icon": "https://static.wikia.nocookie.net/android/images/f/f4/Android_Kitkat_Platform_Logo.png/revision/latest/scale-to-width-down/250?cb=20250617090400",
     "rom_url": "https://anbui.ovh/get/vec/community/android/44r1.html",
     "rom_path": "Android 4.4 r1.cvbi",
     "rom_avail": true,
@@ -308,7 +308,7 @@
   },
   {
     "rom_name": "elementary OS 5.1",
-    "rom_icon": "https://static-00.iconduck.com/assets.00/elementary-os-icon-2048x2048-r076wdiz.png",
+    "rom_icon": "https://dashboard.snapcraft.io/site_media/appmedia/2025/06/distributor-logo-elementary.svg.png",
     "rom_url": "https://anbui.ovh/get/vec/community/linux/elementaryos51.html",
     "rom_path": "elementary OS 5.1.cvbi",
     "rom_avail": true,
@@ -344,7 +344,7 @@
   },
   {
     "rom_name": "FreeBSD 14",
-    "rom_icon": "https://cdn.freebiesupply.com/logos/large/2x/freebsd-logo-png-transparent.png",
+    "rom_icon": "https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/3/freebsd-8y7gucsndcusnf9xj4hjz.png/freebsd-vmjeunkuo75o39xenh9ie.png?_a=DATAiZAAZAA0",
     "rom_url": "https://anbui.ovh/get/vec/community/bsd/freebsd14cli.html",
     "rom_path": "FreeBSD.14.CLI.cvbi",
     "rom_avail": true,
@@ -362,7 +362,7 @@
   },
   {
     "rom_name": "Gentoo Linux",
-    "rom_icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Gentoo_Linux_logo_matte.svg/1200px-Gentoo_Linux_logo_matte.svg.png",
+    "rom_icon": "https://avatars.githubusercontent.com/u/52242?s=280&v=4",
     "rom_url": "https://anbui.ovh/get/vec/community/linux/gentoo.html",
     "rom_path": "Gentoo Linux.cvbi",
     "rom_avail": true,
@@ -542,7 +542,7 @@
   },
   {
     "rom_name": "Lubuntu 16.04",
-    "rom_icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Lubuntu.svg/1200px-Lubuntu.svg.png",
+    "rom_icon": "https://zeth.net/_images/Lubuntu_logo500.png",
     "rom_url": "https://youtu.be/usid0P7oePU",
     "rom_path": "Lubuntu 16.04.cvbi",
     "rom_avail": true,
@@ -560,7 +560,7 @@
   },
   {
     "rom_name": "Lubuntu 18.04",
-    "rom_icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Lubuntu.svg/1200px-Lubuntu.svg.png",
+    "rom_icon": "https://zeth.net/_images/Lubuntu_logo500.png",
     "rom_url": "https://anbui.ovh/get/vec/community/linux/lubuntu1804.html",
     "rom_path": "Lubuntu 18.04.cvbi",
     "rom_avail": true,
@@ -578,7 +578,7 @@
   },
   {
     "rom_name": "Mac OS 9.1",
-    "rom_icon": "https://www.macintoshrepository.org/_resize.php?w=640&h=480&bg_color=333333&imgenc=ZmlsZ8faXMvdXBsb2Fkcy9zY3JlZW5zaG90cy8xNjI4OTQ4MTE0LjUxNDFwMzU5MDBfMXUyLS0uLS1hLnBuZ3x3d3cubWFjaW50b3NocmVwb3NpdG9yeS5vcmcvMzU5MDAtbWFjLW9zLTktMS1zeXN0ZW0tZm9sZGVyLWZvci1tYWMtb3MteC1jbGFzc2ljLWVudmlyb25tZW50LQ%3D%3D",
+    "rom_icon": "https://w7.pngwing.com/pngs/305/751/png-transparent-macintosh-operating-systems-macos-mac-os-x-lion-apple-apple-angle-computer-os-x-thumbnail.png",
     "rom_url": "https://youtu.be/To_qgUH-RpM",
     "rom_path": "Mac OS 9.1.cvbi",
     "rom_avail": true,
@@ -704,7 +704,7 @@
   },
   {
     "rom_name": "NetBSD",
-    "rom_icon": "https://media.licdn.com/dms/image/D4E12AQEdTG-WPc-GXg/article-cover_image-shrink_600_2000/0/1708992537786?e=2147483647&v=beta&t=3FDiRUhohJB7SsZ4YWSfn8A9UFQ3ESafOChHkJdaDXc",
+    "rom_icon": "https://www.shareicon.net/data/512x512/2015/09/11/99325_netbsd_512x512.png",
     "rom_url": "https://anbui.ovh/get/vec/community/bsd/netbsd.html",
     "rom_path": "NetBSD.cvbi",
     "rom_avail": true,
@@ -848,7 +848,7 @@
   },
   {
     "rom_name": "ReactOS",
-    "rom_icon": "https://www.linuxinsider.com/wp-content/uploads/sites/2/2021/05/2016-react-os-1.jpg",
+    "rom_icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0hxmjdOsICi4v1FOz3fBbCSUSkmGGyzeQ7g&s",
     "rom_url": "https://anbui.ovh/get/vec/community/linux/reactos.html",
     "rom_path": "ReactOS.cvbi",
     "rom_avail": true,
@@ -866,7 +866,7 @@
   },
   {
     "rom_name": "Red Star OS",
-    "rom_icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Red_Star_OS_Logo.svg/263px-Red_Star_OS_Logo.svg.png",
+    "rom_icon": "https://images.seeklogo.com/logo-png/42/2/red-star-os-logo-png_seeklogo-427811.png",
     "rom_url": "https://anbui.ovh/get/vec/community/linux/redstaros.html",
     "rom_path": "RedStar OS.cvbi",
     "rom_avail": true,
@@ -1766,7 +1766,7 @@
   },
   {
     "rom_name": "Windows 7 Starter",
-    "rom_icon": "https://upload.wikimedia.org/wikipedia/de/thumb/c/c2/Microsoft_Windows_7_logo.svg/2296px-Microsoft_Windows_7_logo.svg.png",
+    "rom_icon": "https://vuetiwuvbyxywfukompp.supabase.co/storage/v1/object/public/getmyos/v1/files/2018/10/15/windows_logo_2006_1_c0e5e8a8271301cfed289ab6118e38b2.png",
     "rom_url": "https://anbui.ovh/get/vec/community/win/nt6/7starter.html",
     "rom_path": "Windows 7 Starter.cvbi",
     "rom_avail": true,
@@ -1784,7 +1784,7 @@
   },
   {
     "rom_name": "Windows 7 Super Nano Lite (x64)",
-    "rom_icon": "https://upload.wikimedia.org/wikipedia/de/thumb/c/c2/Microsoft_Windows_7_logo.svg/2296px-Microsoft_Windows_7_logo.svg.png",
+    "rom_icon": "https://vuetiwuvbyxywfukompp.supabase.co/storage/v1/object/public/getmyos/v1/files/2018/10/15/windows_logo_2006_1_c0e5e8a8271301cfed289ab6118e38b2.png",
     "rom_url": "https://anbui.ovh/get/vec/community/win/nt6/7snlx64.html",
     "rom_path": "Windows 7 Super Nano Lite (x64).cvbi",
     "rom_avail": true,
@@ -1802,7 +1802,7 @@
   },
   {
     "rom_name": "Windows 7 Super Nano Lite (x86)",
-    "rom_icon": "https://upload.wikimedia.org/wikipedia/de/thumb/c/c2/Microsoft_Windows_7_logo.svg/2296px-Microsoft_Windows_7_logo.svg.png",
+    "rom_icon": "https://vuetiwuvbyxywfukompp.supabase.co/storage/v1/object/public/getmyos/v1/files/2018/10/15/windows_logo_2006_1_c0e5e8a8271301cfed289ab6118e38b2.png",
     "rom_url": "https://anbui.ovh/get/vec/community/win/nt6/7snlx86.html",
     "rom_path": "Windows 7 Super Nano Lite (x86).cvbi",
     "rom_avail": true,
@@ -1982,7 +1982,7 @@
   },
   {
     "rom_name": "Windows 95",
-    "rom_icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Windows_Logo_%281992-2001%29.svg/2368px-Windows_Logo_%281992-2001%29.svg.png",
+    "rom_icon": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/f4c4498f-f0a5-4c50-aed5-5ac63c62a584/dfh0l57-c8831536-3a32-4afa-991e-7d53b23c6e7d.png/v1/fill/w_970,h_824/windows_98_logo_by_itzzezzo_dfh0l57-pre.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTI4MiIsInBhdGgiOiIvZi9mNGM0NDk4Zi1mMGE1LTRjNTAtYWVkNS01YWM2M2M2MmE1ODQvZGZoMGw1Ny1jODgzMTUzNi0zYTMyLTRhZmEtOTkxZS03ZDUzYjIzYzZlN2QucG5nIiwid2lkdGgiOiI8PTE1MTAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.W6fmE2AyFTMXuc7rFBDGAuQEi36q7NlgoNPvu8aH0D0",
     "rom_url": "https://anbui.ovh/get/vec/community/win/msdos/w95.html",
     "rom_path": "Windows 95.cvbi",
     "rom_avail": true,
@@ -2000,7 +2000,7 @@
   },
   {
     "rom_name": "Windows 98 Plus!",
-    "rom_icon": "https://www.getmyos.com/upload/files/2018/10/04/windows_logo_1995_1_21eb221818c6620a5391a14ce1b0fc51.png",
+    "rom_icon": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/f4c4498f-f0a5-4c50-aed5-5ac63c62a584/dfh0l57-c8831536-3a32-4afa-991e-7d53b23c6e7d.png/v1/fill/w_970,h_824/windows_98_logo_by_itzzezzo_dfh0l57-pre.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTI4MiIsInBhdGgiOiIvZi9mNGM0NDk4Zi1mMGE1LTRjNTAtYWVkNS01YWM2M2M2MmE1ODQvZGZoMGw1Ny1jODgzMTUzNi0zYTMyLTRhZmEtOTkxZS03ZDUzYjIzYzZlN2QucG5nIiwid2lkdGgiOiI8PTE1MTAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.W6fmE2AyFTMXuc7rFBDGAuQEi36q7NlgoNPvu8aH0D0",
     "rom_url": "https://www.mediafire.com/file/8cndpbaaallbqws/98PLUS%2521.qcow2/file",
     "rom_path": "98PLUS!.qcow2",
     "rom_avail": true,
@@ -2054,7 +2054,7 @@
   },
   {
     "rom_name": "Windows Longhorn build 4001",
-    "rom_icon": "https://ia903405.us.archive.org/5/items/winlonghorn/longhorn.png",
+    "rom_icon": "https://static.wikia.nocookie.net/windows-vista-dies/images/5/54/Windows_Longhorn.png/revision/latest?cb=20230924004845",
     "rom_url": "https://youtu.be/bVcPAdV3fk0",
     "rom_path": "Windows Longhorn build 4001.cvbi",
     "rom_avail": true,

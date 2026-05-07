@@ -73,7 +73,9 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="8dp"
-                android:src="@drawable/more_vert_24px" />
+                android:src="@drawable/more_vert_24px"
+                android:visibility="gone"
+                tools:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

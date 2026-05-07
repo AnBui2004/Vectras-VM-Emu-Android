@@ -2,6 +2,7 @@ package com.vectras.vm.manager;
 
 import android.androidVNC.ConnectionBean;
 import android.androidVNC.VncCanvas;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -36,6 +37,8 @@ import com.vectras.vm.utils.ProgressDialog;
 import com.vectras.vm.utils.StreamAudio;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -109,6 +112,41 @@ public class VmControllerDialog extends DialogFragment {
                         }
                         dismiss();
                     });
+
+                    binding.lnSwitch.setVisibility(View.GONE);
+                } else if (requireActivity() instanceof MainVNCActivity) {
+                    ArrayList<HashMap<String, Object>> list = VmListManager.getAllVmForPickRunningVncSocketOnly(requireActivity());
+
+                    if (list.isEmpty() || (list.size() == 1 && Objects.requireNonNull(list.get(0).get("value")).toString().equals(Config.vmID))) {
+                        binding.lnManage.setVisibility(View.GONE);
+                    } else {
+                        binding.lnSwitch.setOnClickListener(v -> {
+                            if (isAdded()) {
+                                VmPicker vmPicker = new VmPicker(requireActivity());
+                                vmPicker.currentVmId= Config.vmID;
+                                vmPicker.listVm = list;
+                                vmPicker.pick((position, name, value) -> {
+                                    if (Config.vmID.equals(value)) return;
+
+                                    if (position < 0) {
+                                        DialogUtils.oopsDialog(requireActivity(), getString(R.string.no_vms_are_available));
+                                        return;
+                                    }
+
+                                    Config.vmID = value;
+                                    streamAudio.setCross(null);
+                                    streamAudio.stop();
+                                    requireActivity().recreate();
+
+                                    dismiss();
+                                });
+                            }
+                        });
+
+                        binding.lnConnect.setVisibility(View.GONE);
+                        binding.lnEdit.setVisibility(View.GONE);
+                        binding.lnRemove.setVisibility(View.GONE);
+                    }
                 } else {
                     binding.lnManage.setVisibility(View.GONE);
                 }

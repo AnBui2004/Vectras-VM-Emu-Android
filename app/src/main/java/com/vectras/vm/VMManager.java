@@ -29,6 +29,7 @@ import com.vectras.vm.main.vms.DataMainRoms;
 import com.vectras.vm.manager.QmpSender;
 import com.vectras.vm.manager.VmFileManager;
 import com.vectras.vm.manager.VmActions;
+import com.vectras.vm.manager.VmServiceManager;
 import com.vectras.vm.settings.X11DisplaySettingsActivity;
 import com.vectras.vm.utils.DialogUtils;
 import com.vectras.vm.utils.FileUtils;
@@ -656,6 +657,8 @@ public class VMManager {
             isQemuStopedWithError = false;
             return false;
         }
+
+        VmServiceManager.stopService(_activity);
 
         if (_command.contains("qemu-system") && _result.contains("Killed")) {
             isQemuStopedWithError = true;

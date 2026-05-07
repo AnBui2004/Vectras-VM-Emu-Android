@@ -55,7 +55,7 @@ public class SoftwareStoreHomeAdapter extends RecyclerView.Adapter<RecyclerView.
         // Get current position of item in recyclerview to bind data and assign values from list
         final MyHolder myHolder = (MyHolder) holder;
         final DataRoms current = displayList.get(position);
-        Glide.with(context).load(current.romIcon).override(180, 180).placeholder(R.drawable.ic_computer_180dp_with_padding).error(R.drawable.ic_computer_180dp_with_padding).into(myHolder.ivIcon);
+        Glide.with(context).load(current.romIcon).override(180, 180).placeholder(R.drawable.ic_deployed_code_180px_with_padding).error(R.drawable.ic_deployed_code_180px_with_padding).into(myHolder.ivIcon);
         myHolder.textName.setText(current.romName);
         myHolder.textSize.setText(current.romSize);
         if (current.romAvail) {

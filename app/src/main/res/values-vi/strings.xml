@@ -569,6 +569,10 @@
     <string name="edge_to_edge">Tràn cạnh</string>
     <string name="disable_edge_to_edge">Tắt tràn cạnh</string>
     <string name="pinch_to_zoom">Chụm ngón tay để thu phóng</string>
+    <string name="vm_picker">Trình chọn máy ảo</string>
+    <string name="switchtext">Chuyển đổi</string>
+    <string name="switch_to">Chuyển sang</string>
+    <string name="no_vms_are_available">Không có máy ảo nào khả dụng.</string>
 
     <!--======================TERMUX STRINGS====================-->
     <string name="application_name" translatable="false">Vterm</string>

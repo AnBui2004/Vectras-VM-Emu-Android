@@ -90,6 +90,26 @@
                         android:textColor="?attr/colorError"
                         android:text="@string/remove"/>
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ln_switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="8dp"
+                    android:paddingHorizontal="16dp"
+                    android:background="?attr/selectableItemBackground">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/compare_arrows_24px"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:textColor="?attr/colorControlNormal"
+                        android:text="@string/switchtext"/>
+                </LinearLayout>
             </LinearLayout>
 
         <LinearLayout

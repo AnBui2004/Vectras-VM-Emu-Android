@@ -864,7 +864,6 @@ public class MainVNCActivity extends VncCanvasActivity {
         bindingSendKey.sendtextEdittext.setEnabled(false);
         QmpSender.quickShutdown();
         Config.setDefault();
-        MainService.stopService();
         finish();
     }
 

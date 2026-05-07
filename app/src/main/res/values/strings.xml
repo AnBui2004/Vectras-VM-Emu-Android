@@ -580,6 +580,10 @@
     <string name="edge_to_edge">Edge-to-edge</string>
     <string name="disable_edge_to_edge">Disable edge-to-edge</string>
     <string name="pinch_to_zoom">Pinch to zoom</string>
+    <string name="vm_picker">VM picker</string>
+    <string name="switchtext">Switch</string>
+    <string name="switch_to">Switch to</string>
+    <string name="no_vms_are_available">No virtual machines are available.</string>
 
 
     <!--======================TERMUX STRINGS====================-->
