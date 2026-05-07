@@ -16,7 +16,7 @@ import com.vectras.vm.manager.VmAudioManager;
 import com.vectras.vm.manager.VmControllerDialog;
 
 public class RomOptionsDialog {
-    public static void showNow(Activity activity, int position, String vmID, String vmName) {
+    public static void show(Activity activity, int position, String vmID, String vmName) {
         if (VMManager.isVMRunning(activity, vmID)) {
             VmControllerDialog vmControllerDialog = new VmControllerDialog();
             vmControllerDialog.streamAudio = VmAudioManager.streamAudio;

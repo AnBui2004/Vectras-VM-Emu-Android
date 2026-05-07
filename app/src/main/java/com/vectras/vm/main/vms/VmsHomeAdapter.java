@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.vectras.qemu.Config;
-import com.vectras.vm.AppConfig;
 import com.vectras.vm.R;
 import com.vectras.vm.StartVM;
 import com.vectras.vm.VMManager;
@@ -78,7 +77,6 @@ public class VmsHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else {
             VMManager.setIconWithName(myHolder.ivIcon, current.itemName);
         }
-        myHolder.optionsBtn.setOnClickListener(view -> RomOptionsDialog.showNow(activity, position, current.vmID, current.itemName));
 
         myHolder.cdRoms.setOnClickListener(view -> {
             VMManager.setArch(current.itemArch, activity);
@@ -96,8 +94,8 @@ public class VmsHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         });
 
         myHolder.cdRoms.setOnLongClickListener(v -> {
-            VMManager.deleteVMDialog(current.itemName, position, activity);
-            return false;
+            RomOptionsDialog.show(activity, position, current.vmID, current.itemName);
+            return true;
         });
     }
 

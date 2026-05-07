@@ -157,6 +157,10 @@ public class Config {
         return Config.getCacheDir()+ "/" + vmID + "/vncsocket";
     }
 
+    public static String getLocalVNCSocketPath(String vmId) {
+        return Config.getCacheDir()+ "/" + vmId + "/vncsocket";
+    }
+
     public static String getCacheVMPath() {
         return Config.getCacheDir()+ "/" + vmID + "/";
     }
