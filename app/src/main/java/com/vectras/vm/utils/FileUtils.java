@@ -76,8 +76,7 @@ public class FileUtils {
                 uri.toString().startsWith("content://com.android.fileexplorer.myprovider") ||
                 uri.toString().startsWith("content://com.estrongs.files") ||
                 uri.toString().startsWith("content://me.zhanghai.android")) &&
-                uri.getPath() != null &&
-                isFileExists(uri.getPath())) {
+                uri.getPath() != null) {
             String path = uri.getPath();
 
             if (uri.toString().startsWith("content://com.android.fileexplorer.myprovider/external_files")) {
@@ -86,7 +85,7 @@ public class FileUtils {
                 path = new File(Uri.decode(path).substring("file://".length())).getAbsolutePath();
             }
 
-            return path;
+            if (isFileExists(path)) return path;
         }
 
         // check here to KITKAT or new version
