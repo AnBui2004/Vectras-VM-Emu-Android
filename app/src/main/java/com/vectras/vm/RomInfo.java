@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
@@ -15,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.anbui.elephant.content.ContentManager;
 import com.anbui.elephant.interaction.Interaction;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -29,6 +32,7 @@ import com.vectras.vm.utils.PackageUtils;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -156,12 +160,7 @@ public class RomInfo extends AppCompatActivity {
     private void initialize() {
         binding.toolbar.setNavigationOnClickListener(v -> finish());
 
-        binding.btnDownload.setOnClickListener(v -> {
-            Intent openurl = new Intent();
-            openurl.setAction(Intent.ACTION_VIEW);
-            openurl.setData(Uri.parse(getIntent().getStringExtra("getrom")));
-            startActivity(openurl);
-        });
+        binding.btnDownload.setOnClickListener(v -> download());
 
         if (getIntent().hasExtra("isRomInfo") && getIntent().getBooleanExtra("isRomInfo", false)) {
             binding.btnPick.setOnClickListener(v -> {
@@ -365,6 +364,60 @@ public class RomInfo extends AppCompatActivity {
                 binding.btnLike.setVisibility(View.GONE);
             }
         });
+    }
+
+    String[] anbuiContentUrls = null;
+    boolean isAllowGetAnbuiContentUrls = true;
+
+    private void download() {
+        if (isAnBuiContent && isAllowGetAnbuiContentUrls) {
+            if (anbuiContentUrls == null) {
+                binding.btnDownload.setVisibility(View.GONE);
+                binding.cvIcon.animate().scaleY(0.5f).setDuration(200).start();
+                binding.cvIcon.animate().scaleX(0.5f).setDuration(200).start();
+                binding.cpiDownloading.setVisibility(View.VISIBLE);
+                binding.cpiDownloading.animate().alpha(1).setDuration(200).start();
+
+                ContentManager.getUrls(this, contentID, ((urls) -> {
+                    if (isFinishing() || isDestroyed()) return;
+
+                    openAnBuiContentUrl(urls);
+                    anbuiContentUrls = urls;
+
+                    runOnUiThread(() -> {
+                        binding.btnDownload.setVisibility(View.VISIBLE);
+                        binding.cvIcon.animate().scaleY(1).setDuration(200).start();
+                        binding.cvIcon.animate().scaleX(1).setDuration(200).start();
+                        binding.cpiDownloading.animate().alpha(0).setDuration(200).start();
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> binding.cpiDownloading.setVisibility(View.GONE), 200);
+                    });
+                }));
+            } else {
+                openAnBuiContentUrl(anbuiContentUrls);
+            }
+        } else {
+            Intent openurl = new Intent();
+            openurl.setAction(Intent.ACTION_VIEW);
+            openurl.setData(Uri.parse(getIntent().getStringExtra("getrom")));
+            startActivity(openurl);
+        }
+    }
+
+    private void openAnBuiContentUrl(String[] urls) {
+        if (isFinishing() || isDestroyed()) return;
+
+        Intent openurl = new Intent();
+        openurl.setAction(Intent.ACTION_VIEW);
+
+        if (urls != null && urls.length > 0 && !urls[0].isEmpty()) {
+            openurl.setData(Uri.parse(urls[new Random().nextInt(urls.length)]));
+            startActivity(openurl);
+        } else {
+            isAllowGetAnbuiContentUrls = false;
+
+            openurl.setData(Uri.parse(getIntent().getStringExtra("getrom")));
+            startActivity(openurl);
+        }
     }
 
     @NonNull
