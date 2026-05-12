@@ -213,6 +213,8 @@
     <string name="clean_up_content">ROMs, files and folders that are no longer in use will be deleted.</string>
     <string name="go_to_rom_store">Go to ROM store</string>
     <string name="file_format_is_not_supported">Things may not work because the file format is not supported. Do you want to continue?</string>
+    <string name="file_format_is_not_supported_hard_drive">Things may not work because the file format is not supported. Commonly supported formats include qcow2, img, vhd, vhdx, vdi, qcow, vmdk and vpc. Do you want to continue?</string>
+    <string name="file_format_is_not_supported_optical_drive">Things may not work because the file format is not supported. Commonly supported formats include iso, img, cdr, and toast. Do you want to continue?</string>
     <string name="you_cannot_use_IDE_hard_drive_type_with_ARM64">You cannot use IDE hard drive type with ARM64. If you continue, the default hard drive type will be used.</string>
     <string name="error_PROOT_IS_MISSING_0">The system is not working, necessary files are missing. This problem may be caused by incorrect setup. Do you want to try the setup again? Error code: PROOT_IS_MISSING_0.</string>
     <string name="error_DRIVE_INDEX_0_EXISTS">An error occurred and the virtual machine cannot start. There are two or more drives that cannot be plugged into the same slot. Please check your virtual machine settings and make sure all drives are not plugged into the same slot. Error code: DRIVE_INDEX_0_EXISTS.</string>
@@ -584,6 +586,9 @@
     <string name="switchtext">Switch</string>
     <string name="switch_to">Switch to</string>
     <string name="no_vms_are_available">No virtual machines are available.</string>
+    <string name="hard_drive_0">Hard drive 0</string>
+    <string name="hard_drive_1">Hard drive 1</string>
+    <string name="optical_drive">Optical drive</string>
 
 
     <!--======================TERMUX STRINGS====================-->

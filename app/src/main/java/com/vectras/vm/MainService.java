@@ -15,14 +15,18 @@ import androidx.core.app.NotificationCompat;
 
 import com.vectras.vterm.Terminal;
 
+import java.util.Objects;
+
 public class MainService extends Service {
     public static String CHANNEL_ID = "Vectras VM Service";
-    private static final int NOTIFICATION_ID = 1;
-    private static final String MACHINE_NAME = "Vectras VM";
+    private final int NOTIFICATION_ID = 1;
+    private final String MACHINE_NAME = "Vectras VM";
     public static String env = null;
     private String TAG = "MainService";
     public static MainService service;
     public static Context activityContext;
+
+    private final String STOP_ACTION = "STOP";
 
     @Override
     public void onCreate() {
@@ -31,7 +35,7 @@ public class MainService extends Service {
         createNotificationChannel();
 
         Intent stopSelf = new Intent(this, MainService.class);
-        stopSelf.setAction("STOP");
+        stopSelf.setAction(STOP_ACTION);
         PendingIntent pStopSelf = PendingIntent.getService(
                 this, 0, stopSelf, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
         );
@@ -56,20 +60,18 @@ public class MainService extends Service {
     }
 
     public static void stopService() {
-        Thread t = new Thread(() -> {
+        new Thread(() -> {
             if (service != null) {
                 service.stopForeground(true);
                 service.stopSelf();
                 VMManager.killallqemuprocesses(activityContext);
             }
-        });
-        t.setName("HomeStartVM");
-        t.start();
+        }).start();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null && "STOP".equals(intent.getAction())) {
+        if (intent != null && Objects.equals(intent.getAction(), STOP_ACTION)) {
             VMManager.killallqemuprocesses(this);
             stopForeground(true);
             stopSelf();

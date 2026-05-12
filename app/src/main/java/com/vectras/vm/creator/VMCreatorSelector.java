@@ -17,6 +17,7 @@ import com.google.android.material.color.MaterialColors;
 import com.vectras.vm.R;
 import com.vectras.vm.databinding.DialogListSelectorLayoutBinding;
 import com.vectras.vm.databinding.SimpleLayoutListViewWithCheckBinding;
+import com.vectras.vm.utils.UniversalPickerDialog;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,11 +26,7 @@ import java.util.Objects;
 public class VMCreatorSelector {
     private static final String TAG = "VMCreatorSelector";
 
-    public interface SelectorCallback {
-        void onSelected(int position, String name, String value);
-    }
-
-    public static void cpu(Activity activity, String arch, int position, SelectorCallback callback) {
+    public static void cpu(Activity activity, String arch, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback) {
         showDialog(activity, ListManager.cpus(activity, arch), position, callback, activity.getString(R.string.processor));
     }
 
@@ -38,7 +35,7 @@ public class VMCreatorSelector {
         return list.get(position < 0 ? 0 : Math.min(position, list.size() - 1));
     }
 
-    public static void cpuCore(Activity activity, String arch, int position, SelectorCallback callback) {
+    public static void cpuCore(Activity activity, String arch, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback) {
         showDialog(activity, ListManager.cores(arch), position, callback, activity.getString(R.string.core));
     }
 
@@ -53,7 +50,7 @@ public class VMCreatorSelector {
         return list.get(position < 0 ? 0 : Math.min(position, list.size() - 1));
     }
 
-    public static void cpuThread(Activity activity, String arch, int position, SelectorCallback callback) {
+    public static void cpuThread(Activity activity, String arch, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback) {
         showDialog(activity, ListManager.threads(arch), position, callback, activity.getString(R.string.thread));
     }
 
@@ -61,96 +58,11 @@ public class VMCreatorSelector {
         return ListManager.bootFrom(context).get(position);
     }
 
-    public static void bootFrom(Activity activity, int position, SelectorCallback callback) {
+    public static void bootFrom(Activity activity, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback) {
         showDialog(activity, ListManager.bootFrom(activity), position, callback, activity.getString(R.string.boot_from));
     }
 
-    public static void showDialog(Activity activity, ArrayList<HashMap<String, Object>> list, int position, SelectorCallback callback, String title) {
-        if (activity.isFinishing() || activity.isDestroyed()) return;
-        LinearLayoutManager layoutmanager = new LinearLayoutManager(activity);
-        DialogListSelectorLayoutBinding binding = DialogListSelectorLayoutBinding.inflate(activity.getLayoutInflater());
-
-        AlertDialog dialog = new AlertDialog.Builder(activity)
-                .setView(binding.getRoot())
-                .create();
-
-        binding.tvTitle.setText(title);
-        binding.btnClose.setOnClickListener(v -> dialog.dismiss());
-
-        binding.list.setAdapter(new RecyclerviewAdapter(activity, dialog, list, position, callback));
-        binding.list.setLayoutManager(layoutmanager);
-
-        if (activity.isFinishing() || activity.isDestroyed()) return;
-        dialog.show();
-
-        binding.list.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
-                boolean canScrollUp = rv.canScrollVertically(-1);
-                boolean canScrollDown = rv.canScrollVertically(1);
-
-                binding.dvTop.setVisibility(canScrollUp ? View.VISIBLE : View.INVISIBLE);
-                binding.dvBottom.setVisibility(canScrollDown ? View.VISIBLE : View.INVISIBLE);
-            }
-        });
-
-        if (position > -1) binding.list.scrollToPosition(position);
-    }
-
-    private static class RecyclerviewAdapter extends RecyclerView.Adapter<RecyclerviewAdapter.ViewHolder> {
-
-        Activity activity;
-        ArrayList<HashMap<String, Object>> data;
-        int currentPosition;
-        AlertDialog dialog;
-        SelectorCallback callback;
-
-        public RecyclerviewAdapter(Activity activity, AlertDialog alertDialog, ArrayList<HashMap<String, Object>> arr, int position, SelectorCallback callback) {
-            this.activity = activity;
-            data = arr;
-            currentPosition = position > -1 ? position : 0;
-            dialog = alertDialog;
-            this.callback = callback;
-        }
-
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            LayoutInflater inflater = activity.getLayoutInflater();
-            SimpleLayoutListViewWithCheckBinding simpleLayoutListViewWithCheckBinding =
-                    SimpleLayoutListViewWithCheckBinding.inflate(inflater, parent, false);
-            return new ViewHolder(simpleLayoutListViewWithCheckBinding.getRoot());
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, final int position) {
-            View view = holder.itemView;
-            TextView title = view.findViewById(R.id.textview);
-            ImageView check = view.findViewById(R.id.iv_check);
-            title.setText(Objects.requireNonNull(data.get(position).get("name")).toString());
-            title.setTextColor(MaterialColors.getColor(title, position == currentPosition ? androidx.appcompat.R.attr.colorPrimary : com.google.android.material.R.attr.colorOnSurface));
-            view.setBackgroundResource(position == currentPosition ? R.drawable.dialog_shape_single_button : R.drawable.dialog_shape_click_effect_button);
-            check.setVisibility(position == currentPosition ? View.VISIBLE : View.INVISIBLE);
-            view.findViewById(R.id.main).setOnClickListener(v -> {
-                if (activity.isFinishing() || activity.isDestroyed()) return;
-                callback.onSelected(
-                        position,
-                        Objects.requireNonNull(data.get(position).get("name")).toString(),
-                        Objects.requireNonNull(data.get(position).get("value")).toString()
-                );
-                dialog.dismiss();
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return data.size();
-        }
-
-        public static class ViewHolder extends RecyclerView.ViewHolder {
-            public ViewHolder(View v) {
-                super(v);
-            }
-        }
+    public static void showDialog(Activity activity, ArrayList<HashMap<String, Object>> list, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback, String title) {
+        UniversalPickerDialog.show(activity, list, position, callback, title);
     }
 }

@@ -25,15 +25,13 @@ public class DataMainRoms {
     )
     public String itemArch = "";
 
-    public String itemCpu = "";
-
     @SerializedName(
             value = "drive",
             alternate = { "imgPath" }
     )
     public String itemPath = "";
 
-    public String itemDrv1 = "";
+    public String hd1 = "";
 
     @SerializedName(
             value = "qemu",

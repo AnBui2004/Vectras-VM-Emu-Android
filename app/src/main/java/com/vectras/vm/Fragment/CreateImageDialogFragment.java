@@ -20,6 +20,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.vectras.vm.AppConfig;
 import com.vectras.vm.R;
+import com.vectras.vm.manager.VmFileManager;
 import com.vectras.vm.utils.DialogUtils;
 import com.vectras.vm.utils.ProgressDialog;
 import com.vectras.vterm.Terminal;
@@ -35,6 +36,7 @@ public class CreateImageDialogFragment extends DialogFragment {
     public String filename = "disk";
     public TextInputEditText drive;
     public TextInputLayout driveLayout;
+    public boolean isMarkPendingAdd;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -99,6 +101,8 @@ public class CreateImageDialogFragment extends DialogFragment {
             new Thread(() -> {
                 String result = Terminal.executeShellCommandWithResult("qemu-img create -f qcow2 \"" + folder + Objects.requireNonNull(imageName.getText()) + ".qcow2\" " +
                         Objects.requireNonNull(imageSize.getText()) + "G", requireActivity()).trim();
+
+                if (isMarkPendingAdd) VmFileManager.markPendingAdd(folder + Objects.requireNonNull(imageName.getText()) + ".qcow2");
                 requireActivity().runOnUiThread(() -> {
                     progressDialog.dismiss();
                     if (result.endsWith("_bits=16")) {

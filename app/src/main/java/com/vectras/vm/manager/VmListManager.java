@@ -6,9 +6,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.vectras.qemu.Config;
 import com.vectras.vm.AppConfig;
-import com.vectras.vm.creator.ListManager;
 import com.vectras.vm.main.vms.DataMainRoms;
 import com.vectras.vm.utils.FileUtils;
+import com.vectras.vm.utils.UniversalPickerDialog;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -50,7 +50,7 @@ public class VmListManager {
         List<DataMainRoms> data = getAllVm(context);
 
         for (int i = 0; i < data.size(); i++) {
-            ListManager.putToList(list, data.get(i).itemName, data.get(i).vmID);
+            UniversalPickerDialog.putToList(list, data.get(i).itemName, data.get(i).vmID);
         }
 
         return list;
