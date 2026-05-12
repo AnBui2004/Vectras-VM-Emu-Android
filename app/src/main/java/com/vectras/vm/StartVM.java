@@ -120,16 +120,33 @@ public class StartVM {
                     hdd0 += " '" + img + "'";
                 } else {
                     hdd0 = "-drive";
-                    hdd0 += " index=0";
-                    hdd0 += ",media=disk";
+                    hdd0 += " media=disk";
                     hdd0 += ",if=" + ifType;
                     hdd0 += ",file='" + img + "'";
 
                     if ((MainSettingsManager.getArch(activity).equals("ARM64") && ifType.equals("ide")) || MainSettingsManager.getArch(activity).equals("PPC")) {
                         hdd0 = "-drive";
-                        hdd0 += " index=0";
-                        hdd0 += ",media=disk";
+                        hdd0 += " media=disk";
                         hdd0 += ",file='" + img + "'";
+                    }
+                }
+                params.add(hdd0);
+            }
+
+            if (!vmConfigs.hd1.isEmpty()) {
+                if (ifType.isEmpty()) {
+                    hdd0 = "-hdb";
+                    hdd0 += " '" + vmConfigs.hd1 + "'";
+                } else {
+                    hdd0 = "-drive";
+                    hdd0 += " media=disk";
+                    hdd0 += ",if=" + ifType;
+                    hdd0 += ",file='" + vmConfigs.hd1 + "'";
+
+                    if ((MainSettingsManager.getArch(activity).equals("ARM64") && ifType.equals("ide")) || MainSettingsManager.getArch(activity).equals("PPC")) {
+                        hdd0 = "-drive";
+                        hdd0 += " media=disk";
+                        hdd0 += ",file='" + vmConfigs.hd1 + "'";
                     }
                 }
                 params.add(hdd0);
@@ -156,8 +173,7 @@ public class StartVM {
                             cdrom += " '" + cdromFile.getPath() + "'";
                         } else {
                             cdrom = "-drive";
-                            cdrom += " index=1";
-                            cdrom += ",media=cdrom";
+                            cdrom += " media=cdrom";
                             cdrom += ",file='" + cdromFile.getPath() + "'";
                         }
                     }
@@ -178,8 +194,7 @@ public class StartVM {
                         cdrom += " '" + vmConfigs.imgCdrom + "'";
                     } else {
                         cdrom = "-drive";
-                        cdrom += " index=1";
-                        cdrom += ",media=cdrom";
+                        cdrom += " media=cdrom";
                         cdrom += ",file='" + vmConfigs.imgCdrom + "'";
                     }
                 }
@@ -194,8 +209,7 @@ public class StartVM {
                     hdd1 += " '" + hdd1File.getPath() + "'";
                 } else {
                     hdd1 = "-drive";
-                    hdd1 += " index=2";
-                    hdd1 += ",media=disk";
+                    hdd1 += " media=disk";
                     hdd1 += ",if=" + ifType;
                     hdd1 += ",file='" + hdd1File.getPath() + "'";
                 }
@@ -284,12 +298,12 @@ public class StartVM {
             params.add(memoryStr);
 
             if (ifType.isEmpty()) {
-                if (extras.contains("-drive index=1,media=cdrom,file=")) {
-                    finalextra = extras.replace("-drive index=1,media=cdrom,file=", "-cdrom ");
+                if (extras.contains("-drive media=cdrom,file=")) {
+                    finalextra = extras.replace("-drive media=cdrom,file=", "-cdrom ");
                 }
             } else {
                 if (extras.contains("-cdrom ")) {
-                    finalextra = extras.replace("-cdrom ", "-drive index=1,media=cdrom,file=");
+                    finalextra = extras.replace("-cdrom ", "-drive media=cdrom,file=");
                 }
             }
         }

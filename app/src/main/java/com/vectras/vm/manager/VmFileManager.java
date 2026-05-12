@@ -24,6 +24,8 @@ public class VmFileManager {
     public static final String TEXT_MARK_EXTERNAL_DATA_PATH = "%external_data%";
     public static final String TEXT_MARK_VM_TEMP_PATH = "%vm_temp%";
     public static final String HIDE_VM_SUFFIX = "_";
+    public static final String PENDING_DELETE_SUFFIX = "_delete_";
+    public static final String PENDING_ADD_SUFFIX = "_add_";
 
 
     public static boolean hide(String vmId) {
@@ -44,6 +46,36 @@ public class VmFileManager {
 
     public static boolean visible(String vmId) {
         return FileUtils.rename(getPath(HIDE_VM_SUFFIX + vmId), vmId);
+    }
+
+    public static boolean mark(String filePath, String mark) {
+        String fileName = new File (filePath).getName();
+        String parent = new File (filePath).getParent();
+        return FileUtils.move(filePath, new File(parent, mark + fileName).getAbsolutePath());
+    }
+
+    public static boolean unMark(String filePath, String mark) {
+        String fileName = new File (filePath).getName().substring(mark.length());
+        String parent = new File (filePath).getParent();
+        return FileUtils.move(filePath, new File(parent, fileName).getAbsolutePath());
+    }
+
+    public static void unMarkAll(String vmId, String mark) {
+        ArrayList<String> fileList = new ArrayList<>();
+        FileUtils.getAListOfAllFilesAndFoldersInADirectory(quickGetPath(vmId), fileList);
+        for (int position = 0; position < fileList.size(); position++) {
+            if (new File(fileList.get(position)).getName().startsWith(mark))
+                unMark(fileList.get(position), mark);
+        }
+    }
+
+    public static void removeAllMarkFiles(String vmId, String mark) {
+        ArrayList<String> fileList = new ArrayList<>();
+        FileUtils.getAListOfAllFilesAndFoldersInADirectory(quickGetPath(vmId), fileList);
+        for (int position = 0; position < fileList.size(); position++) {
+            if (new File(fileList.get(position)).getName().startsWith(mark))
+                FileUtils.delete(fileList.get(position));
+        }
     }
 
     public static void quickCleanUp(Context context) {
@@ -89,6 +121,38 @@ public class VmFileManager {
     public static boolean delete(Context context, String vmId) {
         VmFileManager.removeTemp(context, vmId);
         return FileUtils.delete(getPath(vmId));
+    }
+
+    public static boolean markPendingDelete(String filePath) {
+        return mark(filePath, PENDING_DELETE_SUFFIX);
+    }
+
+    public static boolean unMarkPendingDelete(String filePath) {
+        return unMark(filePath, PENDING_DELETE_SUFFIX);
+    }
+
+    public static void unMarkAllPendingDelete(String vmId) {
+        unMarkAll(vmId, PENDING_DELETE_SUFFIX);
+    }
+
+    public static void removeAllPendingDeleteMarkFiles(String vmId) {
+        removeAllMarkFiles(vmId, PENDING_DELETE_SUFFIX);
+    }
+
+    public static boolean markPendingAdd(String filePath) {
+        return mark(filePath, PENDING_ADD_SUFFIX);
+    }
+
+    public static boolean unMarkPendingAdd(String filePath) {
+        return unMark(filePath, PENDING_ADD_SUFFIX);
+    }
+
+    public static void unMarkAllPendingAdd(String vmId) {
+        unMarkAll(vmId, PENDING_ADD_SUFFIX);
+    }
+
+    public static void removeAllPendingAddMarkFiles(String vmId) {
+        removeAllMarkFiles(vmId, PENDING_ADD_SUFFIX);
     }
 
     public static String getTempPath(Context context, String vmId, String childFilePath) {

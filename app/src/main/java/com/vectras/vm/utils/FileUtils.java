@@ -559,7 +559,7 @@ public class FileUtils {
         return true;
     }
 
-    static void copy(File src, File dst) throws IOException {
+    public static void copy(File src, File dst) throws IOException {
         if (!src.exists()) return;
         if (src.isDirectory()) {
             if (!dst.exists()) dst.mkdirs();
@@ -593,7 +593,7 @@ public class FileUtils {
         }
     }
 
-    static boolean copyFile(String filePath, String destFolderPath) {
+    public static boolean copyFile(String filePath, String destFolderPath) {
         File file = new File(filePath);
 
         if (!file.exists()) return false;

@@ -17,11 +17,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -36,6 +36,7 @@ import com.vectras.vm.main.vms.DataMainRoms;
 import com.vectras.vm.databinding.ActivityVmCreatorBinding;
 import com.vectras.vm.databinding.DialogProgressStyleBinding;
 import com.vectras.vm.main.MainActivity;
+import com.vectras.vm.manager.FormatManager;
 import com.vectras.vm.manager.VmFileManager;
 import com.vectras.vm.utils.ClipboardUltils;
 import com.vectras.vm.utils.CpuHelper;
@@ -53,7 +54,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.HashMap;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -138,88 +140,7 @@ public class VMCreatorActivity extends AppCompatActivity {
 
         binding.btnCreate.setOnClickListener(v -> startCreateVM());
 
-        binding.drive.setOnClickListener(v -> {
-            try {
-                diskPicker.launch("*/*");
-            } catch (Exception e) {
-                IntentUtils.showErrorDialog(this);
-            }
-        });
-        binding.driveField.setOnClickListener(v -> {
-            try {
-                diskPicker.launch("*/*");
-            } catch (Exception e) {
-                IntentUtils.showErrorDialog(this);
-            }
-        });
-
-        binding.driveField.setEndIconOnClickListener(v -> {
-            if (Objects.requireNonNull(binding.drive.getText()).toString().isEmpty()) {
-                CreateImageDialogFragment dialogFragment = new CreateImageDialogFragment();
-                dialogFragment.folder = VmFileManager.getPath(vmID);
-                dialogFragment.customRom = true;
-                dialogFragment.filename = Objects.requireNonNull(binding.title.getText()).toString();
-                dialogFragment.drive = binding.drive;
-                dialogFragment.driveLayout = binding.driveField;
-                dialogFragment.show(getSupportFragmentManager(), "CreateImageDialogFragment");
-            } else {
-                DialogUtils.threeDialog(this,
-                        getString(R.string.change_hard_drive),
-                        getString(R.string.do_you_want_to_change_create_or_remove),
-                        getString(R.string.change), getString(R.string.remove),
-                        getString(R.string.create),
-                        true,
-                        R.drawable.hard_drive_24px,
-                        true,
-                        () -> {
-                            try {
-                                diskPicker.launch("*/*");
-                            } catch (Exception e) {
-                                IntentUtils.showErrorDialog(this);
-                            }
-                        },
-                        () -> {
-                            if (binding.drive.getText().toString().contains(VmFileManager.quickGetPath(vmID))) {
-                                ProgressDialog progressDialog1 = new ProgressDialog(this);
-                                progressDialog1.show();
-                                new Thread(() -> {
-                                    FileUtils.delete(new File(Objects.requireNonNull(binding.drive.getText()).toString()));
-                                    runOnUiThread(progressDialog1::reset);
-                                }).start();
-                            }
-                            binding.drive.setText("");
-                            binding.driveField.setEndIconDrawable(R.drawable.add_24px);
-                        },
-                        () -> {
-                            if (createVMFolder(true)) {
-                                CreateImageDialogFragment dialogFragment = new CreateImageDialogFragment();
-                                dialogFragment.customRom = true;
-                                dialogFragment.filename = Objects.requireNonNull(binding.title.getText()).toString();
-                                dialogFragment.drive = binding.drive;
-                                dialogFragment.driveLayout = binding.driveField;
-                                dialogFragment.show(getSupportFragmentManager(), "CreateImageDialogFragment");
-                            }
-                        }, null);
-            }
-        });
-
-        View.OnClickListener cdromClickListener = v -> {
-            try {
-                isoPicker.launch("*/*");
-            } catch (Exception e) {
-                IntentUtils.showErrorDialog(this);
-            }
-        };
-
-        binding.cdrom.setOnClickListener(cdromClickListener);
-        binding.cdromField.setOnClickListener(cdromClickListener);
-
-        binding.cdromField.setEndIconOnClickListener(v -> {
-            if (!Objects.requireNonNull(binding.cdrom.getText()).toString().isEmpty()) {
-                binding.cdrom.setText("");
-                binding.cdromField.setEndIconMode(TextInputLayout.END_ICON_NONE);
-            }
-        });
+        setupStorageUi();
 
         binding.qemu.setOnClickListener(v -> {
             iseditparams = true;
@@ -277,6 +198,8 @@ public class VMCreatorActivity extends AppCompatActivity {
                             thumbnailPath = "";
                             binding.ivAddThubnail.setImageResource(R.drawable.add_24px);
                             VMManager.setIconWithName(binding.ivIcon, Objects.requireNonNull(binding.title.getText()).toString());
+
+                            if (FileUtils.isFileExists(VmFileManager.getThumbnail(vmID))) markDelete(VmFileManager.getThumbnail(vmID));
                         }, null);
             }
         });
@@ -319,6 +242,8 @@ public class VMCreatorActivity extends AppCompatActivity {
             binding.sbvBootfrom.setSubtitle(name);
         })));
 
+        VmFileManager.removeTemp(this, vmID, peddingTempFolder);
+
         modify = getIntent().getBooleanExtra("MODIFY", false);
         if (modify) {
             binding.collapsingToolbarLayout.setTitle(getString(R.string.edit));
@@ -360,14 +285,9 @@ public class VMCreatorActivity extends AppCompatActivity {
                         selectedDiskFile(Uri.fromFile(new File((Objects.requireNonNull(getIntent().getStringExtra("rompath"))))), false);
                     }
                     if (!Objects.requireNonNull(getIntent().getStringExtra("addtodrive")).isEmpty()) {
-                        binding.drive.setText(VmFileManager.getPath(vmID, getIntent().getStringExtra("romfilename")));
-                        if (Objects.requireNonNull(binding.drive.getText()).toString().isEmpty()) {
-                            binding.driveField.setEndIconDrawable(R.drawable.add_24px);
-                        } else {
-                            binding.driveField.setEndIconDrawable(R.drawable.more_vert_24px);
-                        }
+                        setDrive(SELECT_DISK_0_FILE_MODE, VmFileManager.getPath(vmID, getIntent().getStringExtra("romfilename")));
                     } else {
-                        binding.driveField.setEndIconDrawable(R.drawable.add_24px);
+                        setDrive(SELECT_DISK_0_FILE_MODE, null);
                     }
                 }
 
@@ -387,7 +307,7 @@ public class VMCreatorActivity extends AppCompatActivity {
                         binding.drive.setText(VmFileManager.getPath(vmID, "disk.qcow2"));
                     }
                 } else {
-                    binding.driveField.setEndIconDrawable(R.drawable.add_24px);
+                    setDrive(SELECT_DISK_0_FILE_MODE, null);
                 }
 
             }
@@ -410,8 +330,6 @@ public class VMCreatorActivity extends AppCompatActivity {
                 }
             });
         }
-
-        binding.svSharedFolder.setSubTitle(AppConfig.sharedFolder);
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -444,8 +362,16 @@ public class VMCreatorActivity extends AppCompatActivity {
     public void onDestroy() {
         if (!created && !modify) {
             new Thread(() -> VmFileManager.delete(this, vmID)).start();
+        } else {
+            new Thread(() -> {
+                VmFileManager.unMarkAllPendingDelete(vmID);
+                VmFileManager.removeAllPendingAddMarkFiles(vmID);
+            }).start();
         }
+
         modify = false;
+        new Thread(() -> VmFileManager.removeTemp(getApplicationContext(), vmID)).start();
+
         super.onDestroy();
     }
 
@@ -466,75 +392,63 @@ public class VMCreatorActivity extends AppCompatActivity {
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri == null) return;
 
-                if (MainSettingsManager.copyFile(this)) {
-                    showProgressDialog(getString(R.string.copying_file));
-
-                    executor.execute(() -> {
-                        try {
-                            isProcessingFile = true;
-                            String _filename = FileUtils.getFileNameFromUri(this, uri);
-                            if (_filename == null || _filename.isEmpty()) {
-                                _filename = String.valueOf(System.currentTimeMillis());
-                            }
-
-                            FileUtils.copyFileFromUri(this, uri, VmFileManager.getPath(vmID, _filename));
-
-                            String final_filename = _filename;
-                            runOnUiThread(() -> {
-                                binding.cdrom.setText(VmFileManager.getPath(vmID, final_filename));
-                                binding.cdromField.setEndIconMode(TextInputLayout.END_ICON_CUSTOM);
-                                binding.cdromField.setEndIconDrawable(R.drawable.close_24px);
-                                changeOnClickCdrom();
-                            });
-                        } catch (Exception e) {
-                            runOnUiThread(() -> DialogUtils.oneDialog(this,
-                                    getString(R.string.oops),
-                                    getString(R.string.unable_to_copy_iso_file_content),
-                                    getString(R.string.ok),
-                                    true,
-                                    R.drawable.warning_48px,
-                                    true,
-                                    null,
-                                    null));
-                            Log.e(TAG, "isoPicker: " + e.getMessage());
-                        } finally {
-                            isProcessingFile = false;
-                            runOnUiThread(() -> DialogUtils.safeDismiss(this, progressDialog));
-                        }
-                    });
+                String fileName = FileUtils.getFileNameFromUri(this, uri);
+                if (fileName != null && !fileName.isEmpty() && !FormatManager.isOpticalFileFormat(fileName)) {
+                    DialogUtils.twoDialog(this, getString(R.string.problem_has_been_detected), getString(R.string.file_format_is_not_supported_optical_drive), getResources().getString(R.string.continuetext), getResources().getString(R.string.cancel), true, R.drawable.album_24px, true,
+                            () -> handleOpticalFile(uri), null, null);
                 } else {
-                    executor.execute(() -> {
-                        if (!FileUtils.isValidFilePath(this, FileUtils.getPath(this, uri), false)) {
-                            runOnUiThread(() -> DialogUtils.oneDialog(this,
-                                    getString(R.string.problem_has_been_detected),
-                                    getString(R.string.invalid_file_path_content),
-                                    getString(R.string.ok),
-                                    true,
-                                    R.drawable.warning_48px,
-                                    true,
-                                    null,
-                                    null)
-                            );
-                            return;
-                        }
-                        File selectedFilePath = new File(getPath(uri));
-                        if (selectedFilePath.getName().toLowerCase().endsWith(".iso")) {
-                            runOnUiThread(() -> binding.cdrom.setText(selectedFilePath.getPath()));
-                        } else {
-                            runOnUiThread(() -> DialogUtils.oneDialog(this,
-                                    getString(R.string.problem_has_been_detected),
-                                    getString(R.string.invalid_iso_file_path_content),
-                                    getString(R.string.ok),
-                                    true,
-                                    R.drawable.warning_48px,
-                                    true,
-                                    null,
-                                    null)
-                            );
-                        }
-                    });
+                    handleOpticalFile(uri);
                 }
             });
+
+
+    private void handleOpticalFile(Uri uri) {
+        if (MainSettingsManager.copyFile(this)) {
+            showProgressDialog(getString(R.string.copying_file));
+
+            executor.execute(() -> {
+                try {
+                    isProcessingFile = true;
+
+                    String path = copyToTemp(uri);
+
+                    runOnUiThread(() -> setDrive(this.SELECT_CDROM_0_FILE_MODE, path));
+                } catch (Exception e) {
+                    runOnUiThread(() -> DialogUtils.oneDialog(this,
+                            getString(R.string.oops),
+                            getString(R.string.unable_to_copy_iso_file_content),
+                            getString(R.string.ok),
+                            true,
+                            R.drawable.warning_48px,
+                            true,
+                            null,
+                            null));
+                    Log.e(TAG, "isoPicker: " + e.getMessage());
+                } finally {
+                    isProcessingFile = false;
+                    runOnUiThread(() -> DialogUtils.safeDismiss(this, progressDialog));
+                }
+            });
+        } else {
+            executor.execute(() -> {
+                if (!FileUtils.isValidFilePath(this, FileUtils.getPath(this, uri), false)) {
+                    runOnUiThread(() -> DialogUtils.oneDialog(this,
+                            getString(R.string.problem_has_been_detected),
+                            getString(R.string.invalid_file_path_content),
+                            getString(R.string.ok),
+                            true,
+                            R.drawable.warning_48px,
+                            true,
+                            null,
+                            null)
+                    );
+                } else {
+                    runOnUiThread(() -> binding.cdrom.setText(new File(getPath(uri)).getAbsolutePath()));
+                }
+            });
+        }
+    }
+
 
     private final ActivityResultLauncher<String> cvbiPicker =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
@@ -564,14 +478,8 @@ public class VMCreatorActivity extends AppCompatActivity {
                 executor.execute(() -> {
                     try {
                         isProcessingFile = true;
-                        String _filename = FileUtils.getFileNameFromUri(this, uri);
-                        if (_filename == null || _filename.isEmpty()) {
-                            _filename = String.valueOf(System.currentTimeMillis());
-                        }
 
-                        String filePath = VmFileManager.getPath(vmID, _filename);
-
-                        FileUtils.copyFileFromUri(this, uri, filePath);
+                        String filePath = copyToTemp(uri);
 
                         runOnUiThread(() -> DialogUtils.twoDialog(this,
                                 getString(R.string.file_added),
@@ -620,28 +528,20 @@ public class VMCreatorActivity extends AppCompatActivity {
             }
 
             if (current.itemPath != null && !current.itemPath.isEmpty()) {
-                binding.drive.setText((current.itemPath.contains("/") ? "" : VmFileManager.getPath(vmID)).concat(current.itemPath));
+                setDrive(SELECT_DISK_0_FILE_MODE, (current.itemPath.contains("/") ? "" : VmFileManager.getPath(vmID)).concat(current.itemPath));
             }
 
-            if (Objects.requireNonNull(binding.drive.getText()).toString().isEmpty()) {
-                binding.driveField.setEndIconDrawable(R.drawable.add_24px);
-            } else {
-                binding.driveField.setEndIconDrawable(R.drawable.more_vert_24px);
+            if (current.hd1 != null && !current.hd1.isEmpty()) {
+                setDrive(SELECT_DISK_1_FILE_MODE, (current.hd1.contains("/") ? "" : VmFileManager.getPath(vmID)).concat(current.hd1));
             }
 
             if (current.imgCdrom != null && !current.imgCdrom.isEmpty()) {
-                binding.cdrom.setText((current.imgCdrom.contains("/") ? "" : VmFileManager.getPath(vmID)).concat(current.imgCdrom));
-            }
-
-            if (!Objects.requireNonNull(binding.cdrom.getText()).toString().isEmpty()) {
-                binding.cdromField.setEndIconMode(TextInputLayout.END_ICON_CUSTOM);
-                binding.cdromField.setEndIconDrawable(R.drawable.close_24px);
-                changeOnClickCdrom();
+                setDrive(SELECT_CDROM_0_FILE_MODE, (current.imgCdrom.contains("/") ? "" : VmFileManager.getPath(vmID)).concat(current.imgCdrom));
             }
 
             if (current.itemIcon != null && !current.itemIcon.isEmpty()) {
-                thumbnailPath = (current.itemIcon.contains("/") ? "" : VmFileManager.getPath(vmID)) + current.itemIcon;
-                thumbnailProcessing();
+                thumbnailPath = (current.itemIcon.contains("/") ? current.itemIcon : VmFileManager.getPath(vmID, current.itemIcon));
+                thumbnailProcessing("");
             }
 
             if (current.itemExtra != null) {
@@ -755,7 +655,7 @@ public class VMCreatorActivity extends AppCompatActivity {
                 _contentDialog = getResources().getString(R.string.qemu_params_is_empty);
             }
 
-            if ((Objects.requireNonNull(binding.drive.getText()).toString().isEmpty()) && (Objects.requireNonNull(binding.cdrom.getText()).toString().isEmpty())) {
+            if ((Objects.requireNonNull(binding.drive.getText()).toString().isEmpty()) && (Objects.requireNonNull(binding.tieHd1.getText()).toString().isEmpty()) && (Objects.requireNonNull(binding.cdrom.getText()).toString().isEmpty())) {
                 if (!VMManager.isHaveADisk(Objects.requireNonNull(binding.qemu.getText()).toString())) {
                     if (!_contentDialog.isEmpty()) {
                         _contentDialog += "\n\n";
@@ -800,35 +700,27 @@ public class VMCreatorActivity extends AppCompatActivity {
         }
 
         modify = false;
-        if (!MainActivity.isActivate) {
-            startActivity(new Intent(this, SplashActivity.class));
-        } else {
-            Intent intent = new Intent();
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            intent.setClass(this, MainActivity.class);
-            startActivity(intent);
-        }
-        finish();
-    }
 
-    private HashMap<String, Object> finalDataConfig() {
-        HashMap<String, Object> vmConfigMap = new HashMap<>();
-        vmConfigMap.put("imgName", Objects.requireNonNull(binding.title.getText()).toString());
-        vmConfigMap.put("imgIcon", thumbnailPath);
+        showProgressDialog(getString(R.string.just_a_sec));
+        new Thread(() -> {
+            moveAllFromTemp();
+            VmFileManager.unMarkAllPendingAdd(vmID);
+            VmFileManager.removeAllPendingDeleteMarkFiles(vmID);
 
-        vmConfigMap.put("imgPath", Objects.requireNonNull(binding.drive.getText()).toString());
-        vmConfigMap.put("imgCdrom", Objects.requireNonNull(binding.cdrom.getText()).toString());
-        vmConfigMap.put("sharedFolder", sharedFolder);
-        vmConfigMap.put("imgExtra", Objects.requireNonNull(binding.qemu.getText()).toString());
-        vmConfigMap.put("imgArch", MainSettingsManager.getArch(this));
-        vmConfigMap.put("bootFrom", bootFrom);
-        vmConfigMap.put("isShowBootMenu", isShowBootMenu);
-        vmConfigMap.put("isUseUefi", isUseUefi);
-        vmConfigMap.put("isUseDefaultBios", isUseDefaultBios);
-        vmConfigMap.put("isUseLocalTime", isUseLocalTime);
-        vmConfigMap.put("vmID", vmID);
-        vmConfigMap.put("qmpPort", 8080);
-        return vmConfigMap;
+            runOnUiThread(() -> {
+                DialogUtils.safeDismiss(this, progressDialog);
+                if (!MainActivity.isActivate) {
+                    startActivity(new Intent(this, SplashActivity.class));
+                } else {
+                    Intent intent = new Intent();
+                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    intent.setClass(this, MainActivity.class);
+                    startActivity(intent);
+                }
+
+                finish();
+            });
+        }).start();
     }
 
     private DataMainRoms finalVmConfig() {
@@ -838,6 +730,7 @@ public class VMCreatorActivity extends AppCompatActivity {
         current.cores = cores;
         current.threads = threads;
         current.itemPath = Objects.requireNonNull(binding.drive.getText()).toString();
+        current.hd1 = Objects.requireNonNull(binding.tieHd1.getText()).toString();
         current.imgCdrom = Objects.requireNonNull(binding.cdrom.getText()).toString();
         current.sharedFolder = sharedFolder;
         current.itemExtra = Objects.requireNonNull(binding.qemu.getText()).toString();
@@ -859,10 +752,16 @@ public class VMCreatorActivity extends AppCompatActivity {
         executor.execute(() -> {
             try {
                 isProcessingFile = true;
-                ImageUtils.convertToPng(this, uri, VmFileManager.getThumbnail(vmID));
+
+                if (FileUtils.isFileExists(VmFileManager.getThumbnail(vmID)))
+                    VmFileManager.markPendingDelete(VmFileManager.getThumbnail(vmID));
+
+                String tempPath = VmFileManager.getTempPath(this, vmID, peddingTempFolder + VmFileManager.THUMBNAIL_FILE_NAME);
+
+                ImageUtils.convertToPng(this, uri, tempPath);
 
                 thumbnailPath = VmFileManager.getThumbnail(vmID);
-                runOnUiThread(this::thumbnailProcessing);
+                runOnUiThread(() -> thumbnailProcessing(tempPath));
             } catch (Exception e) {
                 runOnUiThread(() -> DialogUtils.oneDialog(this,
                         getString(R.string.oops),
@@ -880,15 +779,16 @@ public class VMCreatorActivity extends AppCompatActivity {
         });
     }
 
-    private void thumbnailProcessing() {
+    private void thumbnailProcessing(String path) {
         if (isFinishing() || isDestroyed()) return;
-        if (!thumbnailPath.isEmpty()) {
+
+        if (!thumbnailPath.isEmpty() || !path.isEmpty()) {
             binding.ivAddThubnail.setImageResource(R.drawable.edit_24px);
-            File imgFile = new File(thumbnailPath);
+            File imgFile = new File(path.isEmpty() ? thumbnailPath : path);
 
             if (imgFile.exists()) {
                 Glide.with(this)
-                        .load(new File(thumbnailPath))
+                        .load(imgFile)
                         .placeholder(R.drawable.ic_computer_180dp_with_padding)
                         .error(R.drawable.ic_computer_180dp_with_padding)
                         .skipMemoryCache(true)
@@ -912,10 +812,10 @@ public class VMCreatorActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     progressDialog1.reset();
 
-                    if (VMManager.isADiskFile(selectedFilePath.getPath())) {
+                    if (FormatManager.isHardDriveFileFormat(selectedFilePath.getName())) {
                         startProcessingHardDriveFile(_content_describer, _addtodrive);
                     } else {
-                        DialogUtils.twoDialog(this, getString(R.string.problem_has_been_detected), getString(R.string.file_format_is_not_supported), getResources().getString(R.string.continuetext), getResources().getString(R.string.cancel), true, R.drawable.hard_drive_24px, true,
+                        DialogUtils.twoDialog(this, getString(R.string.problem_has_been_detected), getString(R.string.file_format_is_not_supported_hard_drive), getResources().getString(R.string.continuetext), getResources().getString(R.string.cancel), true, R.drawable.hard_drive_24px, true,
                                 () -> startProcessingHardDriveFile(_content_describer, _addtodrive), null, null);
                     }
                 });
@@ -939,7 +839,7 @@ public class VMCreatorActivity extends AppCompatActivity {
                         _filename = String.valueOf(System.currentTimeMillis());
                     }
 
-                    FileUtils.copyFileFromUri(this, _content_describer, VmFileManager.getPath(vmID, _filename));
+                    String path = copyToTemp(_content_describer);
 
                     String final_filename = _filename;
                     runOnUiThread(() -> {
@@ -949,8 +849,7 @@ public class VMCreatorActivity extends AppCompatActivity {
                             return;
                         }
                         if (_addtodrive) {
-                            binding.drive.setText(VmFileManager.getPath(vmID, final_filename));
-                            binding.driveField.setEndIconDrawable(R.drawable.more_vert_24px);
+                            setDrive(PENDING_SELECT_FILE_MODE, path);
                         }
                     });
                 } catch (Exception e) {
@@ -986,21 +885,11 @@ public class VMCreatorActivity extends AppCompatActivity {
                                 null,
                                 null);
                     } else {
-                        binding.drive.setText(path);
-                        binding.driveField.setEndIconDrawable(R.drawable.more_vert_24px);
+                        setDrive(PENDING_SELECT_FILE_MODE, path);
                     }
                 });
             }).start();
         }
-    }
-
-    private void changeOnClickCdrom() {
-        binding.cdromField.setEndIconOnClickListener(v -> {
-            if (!Objects.requireNonNull(binding.cdrom.getText()).toString().isEmpty()) {
-                binding.cdrom.setText("");
-                binding.cdromField.setEndIconMode(TextInputLayout.END_ICON_NONE);
-            }
-        });
     }
 
     @SuppressLint("SetTextI18n")
@@ -1220,7 +1109,207 @@ public class VMCreatorActivity extends AppCompatActivity {
         progressDialog.show();
     }
 
+    private String copyToTemp(Uri uri) throws IOException {
+        String fileName = FileUtils.getFileNameFromUri(this, uri);
+
+        if (fileName == null || fileName.isEmpty()) {
+            fileName = String.valueOf(System.currentTimeMillis());
+        }
+
+        FileUtils.copyFileFromUri(this, uri, VmFileManager.getTempPath(this, vmID, peddingTempFolder + fileName));
+        return VmFileManager.getPath(vmID, fileName);
+    }
+
     public String getPath(Uri uri) {
         return FileUtils.getPath(this, uri);
+    }
+
+    String peddingTempFolder = "pedding/";
+
+    private void onFileChange(String fileName) {
+        markDelete(VmFileManager.getPath(vmID, fileName));
+    }
+
+    private void markDelete(String path) {
+        VmFileManager.markPendingDelete(path);
+        VmFileManager.removeTemp(this, vmID, peddingTempFolder + new File(path).getName());
+    }
+
+    public void moveAllFromTemp() {
+        ArrayList<String> fileList = new ArrayList<>();
+        FileUtils.getAListOfAllFilesAndFoldersInADirectory(VmFileManager.getTempPath(this, vmID, peddingTempFolder), fileList);
+        for (int position = 0; position < fileList.size(); position++) {
+            FileUtils.moveToFolder(fileList.get(position), VmFileManager.getPath(vmID));
+        }
+
+        ArrayList<String> fileListInternal = new ArrayList<>();
+        FileUtils.getAListOfAllFilesAndFoldersInADirectory(VmFileManager.getInternalTempPath(this, vmID, peddingTempFolder), fileListInternal);
+        for (int position = 0; position < fileListInternal.size(); position++) {
+            FileUtils.moveToFolder(fileListInternal.get(position), VmFileManager.getPath(vmID));
+        }
+    }
+
+    // STORAGE LOGIC CORE
+
+    private void setupStorageUi() {
+        binding.drive.setOnClickListener(v -> pickStorageFile(SELECT_DISK_0_FILE_MODE));
+        binding.driveField.setOnClickListener(v -> pickStorageFile(SELECT_DISK_0_FILE_MODE));
+        binding.driveField.setEndIconOnClickListener(v -> {
+            if (Objects.requireNonNull(binding.drive.getText()).toString().isEmpty()) {
+                callQcow2CreatorDialog(SELECT_DISK_0_FILE_MODE);
+            } else {
+                storageFileOptionDialog(SELECT_DISK_0_FILE_MODE);
+            }
+        });
+
+
+
+        binding.tieHd1.setOnClickListener(v -> pickStorageFile(SELECT_DISK_1_FILE_MODE));
+        binding.tilHd1.setOnClickListener(v -> pickStorageFile(SELECT_DISK_1_FILE_MODE));
+        binding.tilHd1.setEndIconOnClickListener(v -> {
+            if (Objects.requireNonNull(binding.tieHd1.getText()).toString().isEmpty()) {
+                callQcow2CreatorDialog(SELECT_DISK_1_FILE_MODE);
+            } else {
+                storageFileOptionDialog(SELECT_DISK_1_FILE_MODE);
+            }
+        });
+
+
+
+        binding.cdrom.setOnClickListener(v -> pickStorageFile(SELECT_CDROM_0_FILE_MODE));
+        binding.cdromField.setOnClickListener(v -> pickStorageFile(SELECT_CDROM_0_FILE_MODE));
+        binding.cdromField.setEndIconOnClickListener(v -> setDrive(SELECT_CDROM_0_FILE_MODE, null));
+
+        binding.svSharedFolder.setSubTitle(AppConfig.sharedFolder);
+    }
+
+    private final int SELECT_DISK_0_FILE_MODE = 0;
+    private final int SELECT_DISK_1_FILE_MODE = 1;
+    public final int SELECT_CDROM_0_FILE_MODE = 2;
+    private int PENDING_SELECT_FILE_MODE = 0;
+    private String PENDING_OLD_FILE_AFTER_SELECTED_NEW_FILE = "";
+
+    private void pickStorageFile(int mode) {
+        PENDING_SELECT_FILE_MODE = mode;
+        PENDING_OLD_FILE_AFTER_SELECTED_NEW_FILE = Objects.requireNonNull(getPeddingStorageEditText().getText()).toString();
+
+        try {
+            if (PENDING_SELECT_FILE_MODE == SELECT_CDROM_0_FILE_MODE) {
+                isoPicker.launch("*/*");
+            } else {
+                diskPicker.launch("*/*");
+            }
+        } catch (Exception e) {
+            IntentUtils.showErrorDialog(this);
+        }
+    }
+
+    private void storageFileOptionDialog(int mode) {
+        PENDING_SELECT_FILE_MODE = mode;
+
+        //TextInputLayout peddingTextInputLayout = getPeddingStorageInputLayout();
+        TextInputEditText peddingTextInputEditText = getPeddingStorageEditText();
+
+        DialogUtils.threeDialog(this,
+                getString(R.string.change_hard_drive),
+                getString(R.string.do_you_want_to_change_create_or_remove),
+                getString(R.string.change), getString(R.string.remove),
+                getString(R.string.create),
+                true,
+                R.drawable.hard_drive_24px,
+                true,
+                () -> pickStorageFile(mode),
+                () -> {
+                    String path = new File(Objects.requireNonNull(peddingTextInputEditText.getText()).toString()).getAbsolutePath();
+                    if (path.startsWith(VmFileManager.quickGetPath(vmID)))  {
+                        ProgressDialog progressDialog1 = new ProgressDialog(this);
+                        progressDialog1.show();
+                        new Thread(() -> {
+                            markDelete(path);
+                            runOnUiThread(progressDialog1::reset);
+                        }).start();
+                    }
+
+                    setDrive(mode, "");
+                },
+                () -> {
+                    if (createVMFolder(true)) {
+                        callQcow2CreatorDialog(PENDING_SELECT_FILE_MODE);
+                    }
+                }, null);
+    }
+
+    private void callQcow2CreatorDialog(int mode) {
+        PENDING_SELECT_FILE_MODE = mode;
+
+        TextInputLayout peddingTextInputLayout = getPeddingStorageInputLayout();
+        TextInputEditText peddingTextInputEditText = getPeddingStorageEditText();
+
+        CreateImageDialogFragment dialogFragment = new CreateImageDialogFragment();
+        dialogFragment.folder = VmFileManager.getPath(vmID);
+        dialogFragment.customRom = true;
+        dialogFragment.filename = Objects.requireNonNull(binding.title.getText()).toString();
+        dialogFragment.drive = peddingTextInputEditText;
+        dialogFragment.driveLayout = peddingTextInputLayout;
+        dialogFragment.isMarkPendingAdd = true;
+        dialogFragment.show(getSupportFragmentManager(), "CreateImageDialogFragment");
+    }
+
+    private void setCdromEndIconOnClickListener(int mode, TextInputLayout textInputLayout) {
+        textInputLayout.setEndIconOnClickListener(v -> {
+            PENDING_SELECT_FILE_MODE = SELECT_CDROM_0_FILE_MODE;
+            PENDING_OLD_FILE_AFTER_SELECTED_NEW_FILE = Objects.requireNonNull(getPeddingStorageEditText().getText()).toString();
+            setDrive(mode, null);
+        });
+    }
+
+    private void setDrive(Integer mode, String path) {
+        if (mode != null) PENDING_SELECT_FILE_MODE = mode;
+
+        TextInputLayout peddingTextInputLayout = getPeddingStorageInputLayout();
+        TextInputEditText peddingTextInputEditText = getPeddingStorageEditText();
+
+        peddingTextInputEditText.setText(path != null ? path : "");
+
+        if (path == null || path.isEmpty()) {
+            if (PENDING_SELECT_FILE_MODE == SELECT_CDROM_0_FILE_MODE) {
+                peddingTextInputLayout.setEndIconMode(TextInputLayout.END_ICON_NONE);
+            } else {
+                peddingTextInputLayout.setEndIconDrawable(R.drawable.add_24px);
+            }
+        } else {
+            if (PENDING_SELECT_FILE_MODE == SELECT_CDROM_0_FILE_MODE) {
+                peddingTextInputLayout.setEndIconMode(TextInputLayout.END_ICON_CUSTOM);
+                peddingTextInputLayout.setEndIconDrawable(R.drawable.close_24px);
+                setCdromEndIconOnClickListener(PENDING_SELECT_FILE_MODE, peddingTextInputLayout);
+            } else {
+                peddingTextInputLayout.setEndIconDrawable(R.drawable.more_vert_24px);
+            }
+        }
+
+        if (!PENDING_OLD_FILE_AFTER_SELECTED_NEW_FILE.isEmpty()) {
+            onFileChange(new File(PENDING_OLD_FILE_AFTER_SELECTED_NEW_FILE).getName());
+            PENDING_OLD_FILE_AFTER_SELECTED_NEW_FILE = "";
+        }
+    }
+
+    private TextInputLayout getPeddingStorageInputLayout() {
+        if (PENDING_SELECT_FILE_MODE == SELECT_DISK_1_FILE_MODE) {
+            return binding.tilHd1;
+        } else if (PENDING_SELECT_FILE_MODE == SELECT_CDROM_0_FILE_MODE) {
+            return binding.cdromField;
+        } else {
+            return binding.driveField;
+        }
+    }
+
+    private TextInputEditText getPeddingStorageEditText() {
+        if (PENDING_SELECT_FILE_MODE == SELECT_DISK_1_FILE_MODE) {
+            return binding.tieHd1;
+        } else if (PENDING_SELECT_FILE_MODE == SELECT_CDROM_0_FILE_MODE) {
+            return binding.cdrom;
+        } else {
+            return binding.drive;
+        }
     }
 }

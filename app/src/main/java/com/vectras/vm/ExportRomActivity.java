@@ -138,6 +138,10 @@ public class ExportRomActivity extends AppCompatActivity {
             vmConfigMap.put("drive", isUsingDiskInQemuExtraParams ? "" : VMManager.quickScanDiskFileInFolder(getRomPath));
         }
 
+        if (FileUtils.isFileExists(current.hd1)) {
+            vmConfigMap.put("hd1", new File(Objects.requireNonNull(Uri.parse(current.hd1).getPath())).getName());
+        }
+
         if (FileUtils.isFileExists(current.imgCdrom)) {
             vmConfigMap.put("cdrom", new File(Objects.requireNonNull(Uri.parse(current.imgCdrom).getPath())).getName());
         } else {

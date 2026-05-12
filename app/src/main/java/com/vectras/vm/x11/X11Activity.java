@@ -1481,7 +1481,6 @@ public class X11Activity extends AppCompatActivity implements View.OnApplyWindow
     private void shutdownthisvm() {
         QmpSender.quickShutdown();
         Config.setDefault();
-        MainService.stopService();
         finish();
     }
 }
