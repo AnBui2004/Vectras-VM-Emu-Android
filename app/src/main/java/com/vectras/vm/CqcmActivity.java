@@ -66,13 +66,6 @@ public class CqcmActivity extends AppCompatActivity {
     private void startAdd() {
         HashMap<String, Object> mapForCreateNewVM;
         String _map;
-        String imgName = "";
-        String imgIcon = "";
-        String imgPath = "";
-        String imgArch = "";
-        String imgCdrom = "";
-        String imgExtra = "";
-        String vmID = VMManager.idGenerator();
 
         if (!FileUtils.isFileExists(AppConfig.romsdatajson)) {
             FileUtils.writeToFile(AppConfig.maindirpath, "roms-data.json", "[]");
@@ -82,24 +75,23 @@ public class CqcmActivity extends AppCompatActivity {
             if (getIntent().hasExtra("content")) {
                 if (getIntent().hasExtra("cqcmcontent")) {
                     if (JSONUtils.isValidFromString(getIntent().getStringExtra("content"))) {
-                        String vmId;
+                        String vmId = Objects.requireNonNull(getIntent().getStringExtra("vmId")).isEmpty() ? VMManager.idGenerator() : getIntent().getStringExtra("vmId");
                         boolean isForceCreateNew = getIntent().hasExtra("forceCreateNew") && getIntent().getBooleanExtra("forceCreateNew", false);
                         if (!isForceCreateNew && VMManager.isVMExist(getIntent().getStringExtra("vmId"))) {
-                            vmId = getIntent().getStringExtra("vmId");
                             if (VMManager.replaceToVMList(-1, getIntent().getStringExtra("vmId"), getIntent().getStringExtra("content"))) {
                                 Toast.makeText(getApplicationContext(), getString(R.string.vm_has_been_edited), Toast.LENGTH_LONG).show();
                             } else {
                                 Toast.makeText(getApplicationContext(), getString(R.string.an_error_occurred_and_vm_was_not_modified), Toast.LENGTH_LONG).show();
                             }
                         } else {
-                            vmId = VMManager.isVMExist(getIntent().getStringExtra("vmId")) ? VMManager.idGenerator() : getIntent().getStringExtra("vmId");
+                            vmId = VmFileManager.isInUse(getIntent().getStringExtra("vmId")) ? VMManager.idGenerator() : getIntent().getStringExtra("vmId");
                             if (VMManager.addToVMList(getIntent().getStringExtra("content"), vmId)) {
                                 Toast.makeText(getApplicationContext(), getString(R.string.vm_has_been_created), Toast.LENGTH_LONG).show();
                             } else {
                                 Toast.makeText(getApplicationContext(), getString(R.string.an_error_occurred_and_vm_was_not_created), Toast.LENGTH_LONG).show();
                             }
                         }
-                        FileUtils.writeToFile(VmFileManager.getPath(vmID), "cqcm.json", getIntent().getStringExtra("cqcmcontent"));
+                        FileUtils.writeToFile(VmFileManager.getPath(vmId), VmFileManager.CREATE_COMMAND_CONFIG_FILE_NAME, getIntent().getStringExtra("cqcmcontent"));
                     } else {
                         Toast.makeText(getApplicationContext(), "An error occurred and it was not possible to create or edit a virtual machine.", Toast.LENGTH_LONG).show();
                     }

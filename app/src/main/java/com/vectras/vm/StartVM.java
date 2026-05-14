@@ -217,10 +217,19 @@ public class StartVM {
                 params.add(hdd1);
             }
 
+            if (!vmConfigs.fda.isEmpty() && !MainSettingsManager.getArch(activity).equals("ARM64")) {
+                if (extras.contains("-fda ")) {
+                    params.add("-drive if=floppy,file='" + vmConfigs.fda + "'");
+                } else {
+                    params.add("-fda");
+                    params.add("'" + vmConfigs.fda + "'");
+                }
+            }
+
             if (vmConfigs.sharedFolder) {
                 String driveParams = "-drive ";
-                driveParams += "file=fat:rw:\""; //Disk Drives are always Read/Write
-                driveParams += AppConfig.sharedFolder + "\",format=raw";
+                driveParams += "file=fat:rw:'"; //Disk Drives are always Read/Write
+                driveParams += AppConfig.sharedFolder + "',format=raw";
                 params.add(driveParams);
             }
 

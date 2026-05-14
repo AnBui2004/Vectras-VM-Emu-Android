@@ -19,4 +19,11 @@ public class FormatManager {
                 || lower.endsWith(".cdr")
                 || lower.endsWith(".toast");
     }
+
+    public static boolean isFloppyFileFormat(String fileName) {
+        String lower = fileName.toLowerCase();
+        return lower.endsWith(".img")
+                || lower.endsWith(".flp")
+                || lower.endsWith(".ima");
+    }
 }

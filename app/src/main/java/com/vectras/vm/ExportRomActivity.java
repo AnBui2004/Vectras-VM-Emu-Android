@@ -148,6 +148,12 @@ public class ExportRomActivity extends AppCompatActivity {
             vmConfigMap.put("cdrom", isUsingDiskInQemuExtraParams || FileUtils.isFileExists(Objects.requireNonNull(vmConfigMap.get("drive")).toString()) ? "" : VMManager.quickScanISOFileInFolder(getRomPath));
         }
 
+        if (FileUtils.isFileExists(current.fda)) {
+            vmConfigMap.put("fda", new File(Objects.requireNonNull(Uri.parse(current.fda).getPath())).getName());
+        } else {
+            vmConfigMap.put("fda", "");
+        }
+
         vmConfigMap.put("sharedFolder", current.sharedFolder);
         vmConfigMap.put("bootFrom", current.bootFrom);
         vmConfigMap.put("isShowBootMenu", current.isShowBootMenu);
