@@ -14,6 +14,8 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -25,7 +27,9 @@ import com.vectras.qemu.Config;
 import com.vectras.qemu.MainSettingsManager;
 import com.vectras.qemu.utils.QmpClient;
 import com.vectras.vm.main.MainActivity;
+import com.vectras.vm.main.core.Event;
 import com.vectras.vm.main.core.MainStartVM;
+import com.vectras.vm.main.core.SharedViewModel;
 import com.vectras.vm.main.vms.DataMainRoms;
 import com.vectras.vm.manager.QmpSender;
 import com.vectras.vm.manager.VmFileManager;
@@ -336,7 +340,10 @@ public class VMManager {
                         boolean result = deleteVm(_activity, _position, false);
                         _activity.runOnUiThread(() -> new Handler(Looper.getMainLooper()).postDelayed(() -> {
                             progressDialog.reset();
-                            MainActivity.refeshVMListNow();
+
+                            SharedViewModel sharedViewModel = new ViewModelProvider((ViewModelStoreOwner) _activity).get(SharedViewModel.class);
+                            sharedViewModel.requestRefreshVmList.setValue(new Event<>(true));
+
                             if (!result) {
                                 DialogUtils.oopsDialog(_activity, _activity.getString(R.string.an_error_occurred_while_deleting_the_vm));
                             } else if (isKeptSomeFiles) {
@@ -354,7 +361,10 @@ public class VMManager {
                         boolean result = deleteVm(_activity, _position, true);
                         _activity.runOnUiThread(() -> new Handler(Looper.getMainLooper()).postDelayed(() -> {
                             progressDialog.reset();
-                            MainActivity.refeshVMListNow();
+
+                            SharedViewModel sharedViewModel = new ViewModelProvider((ViewModelStoreOwner) _activity).get(SharedViewModel.class);
+                            sharedViewModel.requestRefreshVmList.setValue(new Event<>(true));
+
                             if (!result)
                                 DialogUtils.oopsDialog(_activity, _activity.getString(R.string.an_error_occurred_while_deleting_the_vm));
                         }, 500));
@@ -793,7 +803,10 @@ public class VMManager {
                 restoredVMs == 0 ? _context.getString(R.string.roms_data_json_fixed_unsuccessfully) : _context.getString(R.string.roms_data_json_fixed_successfully),
                 R.drawable.error_96px
         );
-        MainActivity.refeshVMListNow();
+
+        SharedViewModel sharedViewModel = new ViewModelProvider((ViewModelStoreOwner) _context).get(SharedViewModel.class);
+        sharedViewModel.requestRefreshVmList.setValue(new Event<>(true));
+
         moveAllBrokenVMRecycleBin();
     }
 

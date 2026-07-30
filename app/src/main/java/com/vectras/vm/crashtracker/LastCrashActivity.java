@@ -98,7 +98,7 @@ public class LastCrashActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     Terminal2 terminal2 = new Terminal2(this);
                     terminal2.setDefaultShellBash();
-                    terminal2.execute("curl -F \"file=@/tmp/" + fileName + "\" -H \"X-Upload-Token:2026_07_21\" https://go.anbui.ovh/uploadlog; rm /tmp/" + fileName, new Terminal2.Terminal2Callback() {
+                    terminal2.execute("curl -F \"file=@/tmp/" + fileName + "\" -H \"X-Upload-Token:2026_07_30\" https://go.anbui.ovh/uploadlog; rm /tmp/" + fileName, new Terminal2.Terminal2Callback() {
                         @Override
                         public void onRunning(String command, String newLine) {
                             // Nothing to do.

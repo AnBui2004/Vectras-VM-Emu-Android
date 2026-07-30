@@ -276,7 +276,7 @@
     <string name="i_agree">I agree</string>
     <string name="dont_miss_out">Don\'t miss out!</string>
     <string name="disclaimer_here">When you import any ROM or use files that contain anything, you accept all of this. Click here to read it all.</string>
-    <string name="join_now_on_telegram_if_you_want">Join now on Telegram if you want.</string>
+    <string name="join_now_on_telegram_if_you_want">We\'re always here. You can join anytime.</string>
     <string name="donate">Donate</string>
     <string name="donatecontent">If you really like Vectras VM, you can donate to us on Patreon. Thanks a lot!</string>
     <string name="you_are_ready_to_go">You are ready to go!</string>
@@ -317,7 +317,7 @@
     <string name="search">Search</string>
     <string name="no_matching_results_found">No matching results found.</string>
     <string name="no_matching_results_found_search_content">No matching results found.\nTry adding or removing the filters below.</string>
-    <string name="unknow">Unknow</string>
+    <string name="unknow">Unknown</string>
     <string name="verified">Verified</string>
     <string name="verified_content">It has been tested to work and is not harmful to the device. But it may not work on your device.</string>
     <string name="not_verified">Not verified</string>
@@ -713,6 +713,8 @@
     <string name="tcg_multi_thread">TCG (multi-threaded)</string>
     <string name="bubble">Bubble</string>
     <string name="bubble_setting_note">Use bubble to show hidden controls instead of using the back button.</string>
+    <string name="links">Links</string>
+    <string name="community">Community</string>
 
 
     <!--======================TERMUX STRINGS====================-->
@@ -873,6 +875,9 @@ E.g. <b>META</b> for <i>META key</i>, \n
 <b>PREFERENCES</b> for <i>preferences opening key</i>, \n
 <b>MOUSE_HELPER</b> for <i>mouse helper toggling key</i>, \n
 <b>STYLUS_HELPER</b> for <i>stylus click override overlay toggling key</i>, \n
+<b>ZOOM_IN</b> for <i>zoom in key</i>, \n
+<b>ZOOM_OUT</b> for <i>zoom out key</i>, \n
+<b>ZOOM_RESET</b> for <i>zoom reset key</i>, \n
 <b>EXIT</b> for <i>application exit key</i>.</string>
     <string name="lorie_notification_content_text">Pull down to show options</string>
     <string name="lorie_notification_open_preferences">Preferences</string>
@@ -974,11 +979,16 @@ E.g. <b>META</b> for <i>META key</i>, \n
     <string name="lorie_pref_summary_requiresIntercepting">Requires intercepting system shortcuts with Dex mode or with Accessibility service</string>
     <string name="lorie_pref_summary_requiresTrackpadAndNative">Requires "Touchscreen input mode" to be "Trackpad" and "Display resolution mode" to be not "native"</string>
 
+    <string name="github" translatable="false">GitHub</string>
+    <string name="nguyen_bao_an_bui" translatable="false">Nguyen Bao An Bui</string>
+    <string name="internet_archive" translatable="false">Internet Archive</string>
+    <string name="pixeldrain" translatable="false">Pixeldrain</string>
+    <string name="google_drive" translatable="false">Google Drive</string>
+
     <string name="usb" translatable="false">USB</string>
     <string name="ps_2" translatable="false">PS/2</string>
 
     <string name="opengl" translatable="false">OpenGL</string>
-
 
     <!-- CPUs -->
     <string name="max_cpu" translatable="false">Max</string>

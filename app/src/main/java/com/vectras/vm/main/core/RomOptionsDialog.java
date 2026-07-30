@@ -23,6 +23,7 @@ import com.vectras.vm.ExportRomActivity;
 import com.vectras.vm.R;
 import com.vectras.vm.VMManager;
 import com.vectras.vm.file.FilePickerDialog;
+import com.vectras.vm.main.MainActivity;
 import com.vectras.vm.main.vms.DataMainRoms;
 import com.vectras.vm.manager.FirmwareManager;
 import com.vectras.vm.manager.VmAudioManager;
@@ -163,6 +164,10 @@ public class RomOptionsDialog {
 
             v.findViewById(R.id.ln_remove).setOnClickListener(v1 -> {
                 VMManager.deleteVMDialog(vmConfig.itemName, position, activity);
+
+                if (activity instanceof MainActivity mainActivity)
+                    mainActivity.binding.searchview.hide();
+
                 bottomSheetDialog.cancel();
             });
 

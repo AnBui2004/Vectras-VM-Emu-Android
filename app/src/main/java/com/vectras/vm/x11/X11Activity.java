@@ -14,6 +14,7 @@ import android.app.AppOpsManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PictureInPictureParams;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.Context;
@@ -22,6 +23,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.net.Uri;
@@ -36,6 +38,8 @@ import android.os.SystemClock;
 import android.service.notification.StatusBarNotification;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Rational;
+import android.util.TypedValue;
 import android.view.DragEvent;
 import android.view.InputDevice;
 import android.view.KeyEvent;
@@ -46,6 +50,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -66,6 +71,7 @@ import com.vectras.vm.x11.input.InputEventSender;
 import com.vectras.vm.x11.input.InputStub;
 import com.vectras.vm.x11.input.TouchInputHandler;
 import com.vectras.vm.x11.utils.FullscreenWorkaround;
+import com.vectras.vm.x11.utils.ImeHeightProvider;
 import com.vectras.vm.x11.utils.KeyInterceptor;
 import com.vectras.vm.x11.utils.TermuxX11ExtraKeys;
 import com.vectras.vm.x11.utils.X11ToolbarViewPager;
@@ -93,6 +99,11 @@ public class X11Activity extends AppCompatActivity {
     private boolean filterOutWinKey = false;
     boolean useTermuxEKBarBehaviour = false;
     private boolean isInPictureInPictureMode = false;
+    /**
+     * Aspect ratios outside of the range the device is configured with are rejected by the system.
+     */
+    private static final float MIN_PIP_ASPECT_RATIO = getSystemDimenFloat("config_pictureInPictureMinAspectRatio", 1.f / 2.39f);
+    private static final float MAX_PIP_ASPECT_RATIO = getSystemDimenFloat("config_pictureInPictureMaxAspectRatio", 2.39f);
 
     public static Prefs prefs = null;
 
@@ -177,13 +188,15 @@ public class X11Activity extends AppCompatActivity {
 
         prefs.get().registerOnSharedPreferenceChangeListener(preferencesChangedListener);
 
-        getWindow().setFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS | FLAG_KEEP_SCREEN_ON | FLAG_TRANSLUCENT_STATUS, 0);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         binding = ActivityX11Binding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        applyWindowSettings();
 
         frm = findViewById(R.id.frame);
-        findViewById(R.id.preferences_button).setOnClickListener((l) -> startActivity(new Intent(this, LoriePreferences.class) {{ setAction(Intent.ACTION_MAIN); }}));
+        findViewById(R.id.preferences_button).setOnClickListener((l) -> startActivity(new Intent(this, LoriePreferences.class) {{
+            setAction(Intent.ACTION_MAIN);
+        }}));
         findViewById(R.id.help_button).setOnClickListener((l) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/termux/termux-x11/blob/master/README.md#running-graphical-applications"))));
         //findViewById(R.id.exit_button).setOnClickListener((l) -> finish());
 
@@ -230,8 +243,7 @@ public class X11Activity extends AppCompatActivity {
 
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        // Taken from Stackoverflow answer https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible/7509285#
-        FullscreenWorkaround.assistActivity(this);
+        ImeHeightProvider.assistActivity(this);
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotification = buildNotification();
         mNotificationManager.notify(mNotificationId, mNotification);
@@ -251,7 +263,7 @@ public class X11Activity extends AppCompatActivity {
         if (SDK_INT >= VERSION_CODES.TIRAMISU
                 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PERMISSION_GRANTED
                 && !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-            requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, 0);
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 0);
         }
 
         onReceiveConnection(getIntent());
@@ -339,7 +351,8 @@ public class X11Activity extends AppCompatActivity {
         visibility.setOnLongClickListener(v -> {
             if (SDK_INT >= VERSION_CODES.N) {
                 v.startDragAndDrop(ClipData.newPlainText("", ""), new View.DragShadowBuilder(visibility) {
-                    public void onDrawShadow(@NonNull Canvas canvas) {}
+                    public void onDrawShadow(@NonNull Canvas canvas) {
+                    }
                 }, null, View.DRAG_FLAG_GLOBAL);
             }
 
@@ -465,7 +478,7 @@ public class X11Activity extends AppCompatActivity {
         if (SDK_INT >= VERSION_CODES.N) {
             Map.of(left, InputStub.BUTTON_LEFT, middle, InputStub.BUTTON_MIDDLE, right, InputStub.BUTTON_RIGHT)
                     .forEach((v, b) -> v.setOnTouchListener((__, e) -> {
-                        switch(e.getAction()) {
+                        switch (e.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                             case MotionEvent.ACTION_POINTER_DOWN:
                                 getLorieView().sendMouseEvent(0, 0, b, true, true);
@@ -487,9 +500,10 @@ public class X11Activity extends AppCompatActivity {
             final float[] startOffset = new float[2];
             final int[] startPosition = new int[2];
             long startTime;
+
             @Override
             public boolean onTouch(View v, MotionEvent e) {
-                switch(e.getAction()) {
+                switch (e.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         primaryLayer.getLocationInWindow(startPosition);
                         startOffset[0] = e.getX();
@@ -541,9 +555,13 @@ public class X11Activity extends AppCompatActivity {
                 service = null;
 
                 Log.v("Lorie", "Disconnected");
-                runOnUiThread(() -> { LorieView.connect(-1); clientConnectedStateChanged();} );
+                runOnUiThread(() -> {
+                    LorieView.connect(-1);
+                    clientConnectedStateChanged();
+                });
             }, 0);
-        } catch (RemoteException ignored) {}
+        } catch (RemoteException ignored) {
+        }
 
         try {
             if (service != null && service.asBinder().isBinderAlive()) {
@@ -605,7 +623,13 @@ public class X11Activity extends AppCompatActivity {
     void onPreferencesChangedCallback() {
         prefs.recheckStoringSecondaryDisplayPreferences();
 
-        onWindowFocusChanged(hasWindowFocus());
+        // There is no way back to the normal size from picture-in-picture, so the window is closed.
+        if (isInPictureInPictureMode && !prefs.PIP.get()) {
+            finish();
+            return;
+        }
+
+        applyWindowSettings();
         LorieView lorieView = getLorieView();
 
         mInputHandler.reloadPreferences(prefs);
@@ -628,12 +652,12 @@ public class X11Activity extends AppCompatActivity {
         showMouseAuxButtons(prefs.showMouseHelper.get());
         showStylusAuxButtons(prefs.showStylusClickOverride.get());
 
-        getTerminalToolbarViewPager().setAlpha(isInPictureInPictureMode ? 0.f : ((float) prefs.opacityEKBar.get())/100);
+        getTerminalToolbarViewPager().setAlpha(isInPictureInPictureMode ? 0.f : ((float) prefs.opacityEKBar.get()) / 100);
 
         lorieView.requestLayout();
         lorieView.invalidate();
 
-        for (StatusBarNotification notification: mNotificationManager.getActiveNotifications())
+        for (StatusBarNotification notification : mNotificationManager.getActiveNotifications())
             if (notification.getId() == mNotificationId) {
                 mNotification = buildNotification();
                 mNotificationManager.notify(mNotificationId, mNotification);
@@ -655,7 +679,7 @@ public class X11Activity extends AppCompatActivity {
     public void onPause() {
         inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getRootView().getWindowToken(), 0);
 
-        for (StatusBarNotification notification: mNotificationManager.getActiveNotifications())
+        for (StatusBarNotification notification : mNotificationManager.getActiveNotifications())
             if (notification.getId() == mNotificationId)
                 mNotificationManager.cancel(mNotificationId);
 
@@ -695,8 +719,37 @@ public class X11Activity extends AppCompatActivity {
                 (TermuxX11ExtraKeys.getExtraKeysInfo() == null ? 0 : TermuxX11ExtraKeys.getExtraKeysInfo().getMatrix().length));
         pager.setLayoutParams(layoutParams);
 
-        getLorieView().setContentInsets(0, 0, 0, prefs.adjustHeightForEK.get() && showNow ? layoutParams.height : 0);
+        ekbarContentInset = prefs.adjustHeightForEK.get() && showNow ? layoutParams.height : 0;
+        applyContentInsets();
         getLorieView().requestFocus();
+    }
+
+    private int ekbarContentInset = 0;
+    private int imeHeight = 0;
+    private int captionHeight = 0;
+
+    private void applyContentInsets() {
+        int imeContentInset = prefs.Reseed.get() ? imeHeight : 0;
+        getLorieView().setContentInsets(0, captionHeight, 0, ekbarContentInset + imeContentInset);
+
+        ViewPager pager = getTerminalToolbarViewPager();
+        ViewGroup.MarginLayoutParams pagerParams = (ViewGroup.MarginLayoutParams) pager.getLayoutParams();
+        if (pagerParams.bottomMargin != imeHeight) {
+            pagerParams.bottomMargin = imeHeight;
+            pager.setLayoutParams(pagerParams);
+        }
+    }
+
+    public void setImeHeight(int height) {
+        imeHeight = height;
+        applyContentInsets();
+    }
+
+    // The window header of desktop windowing can not be hidden, so its space has to be given up even
+    // in fullscreen mode, where fitsSystemWindows does not apply system insets.
+    public void setCaptionHeight(int height) {
+        captionHeight = height;
+        applyContentInsets();
     }
 
     public void toggleExtraKeys(boolean visible, boolean saveState) {
@@ -721,7 +774,7 @@ public class X11Activity extends AppCompatActivity {
 
     @SuppressLint("ObsoleteSdkInt")
     Notification buildNotification() {
-        NotificationCompat.Builder builder =  new NotificationCompat.Builder(this, getNotificationChannel(mNotificationManager))
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getNotificationChannel(mNotificationManager))
                 .setContentTitle("Termux:X11")
                 .setSmallIcon(R.drawable.vectras_vm_24px)
                 .setContentText(getResources().getText(R.string.lorie_notification_content_text))
@@ -733,7 +786,7 @@ public class X11Activity extends AppCompatActivity {
         return mInputHandler.setupNotification(prefs, builder).build();
     }
 
-    private String getNotificationChannel(NotificationManager notificationManager){
+    private String getNotificationChannel(NotificationManager notificationManager) {
         String channelId = getResources().getString(R.string.app_name);
         String channelName = getResources().getString(R.string.app_name);
         NotificationChannel channel = null;
@@ -759,7 +812,7 @@ public class X11Activity extends AppCompatActivity {
             inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getRootView().getWindowToken(), 0);
 
         orientation = newConfig.orientation;
-        onWindowFocusChanged(hasWindowFocus());
+        applyWindowSettings();
         setTerminalToolbarView();
     }
 
@@ -768,14 +821,40 @@ public class X11Activity extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         KeyInterceptor.recheck();
-        prefs.recheckStoringSecondaryDisplayPreferences();
+        // The system bars come back when the window loses focus.
+        if (hasFocus)
+            applyImmersiveMode();
+    }
+
+    private void applyImmersiveMode() {
+        getWindow().getDecorView().setSystemUiVisibility(!prefs.fullscreen.get() ? 0 :
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
+
+    private void setWindowFlag(int flag, boolean enabled) {
+        if (((getWindow().getAttributes().flags & flag) != 0) == enabled)
+            return;
+
+        if (enabled)
+            getWindow().addFlags(flag);
+        else
+            getWindow().clearFlags(flag);
+    }
+
+    void applyWindowSettings() {
         Window window = getWindow();
         View decorView = window.getDecorView();
         boolean fullscreen = prefs.fullscreen.get();
         boolean hideCutout = prefs.hideCutout.get();
         boolean reseed = prefs.Reseed.get();
 
-        if (oldHideCutout != hideCutout || oldFullscreen != fullscreen) {
+        // Recreating would take the window out of picture-in-picture, so it waits for the normal size.
+        if (!isInPictureInPictureMode && (oldHideCutout != hideCutout || oldFullscreen != fullscreen)) {
             oldHideCutout = hideCutout;
             oldFullscreen = fullscreen;
             // For some reason cutout or fullscreen change makes layout calculations wrong and invalid.
@@ -786,62 +865,58 @@ public class X11Activity extends AppCompatActivity {
 
         int requestedOrientation;
         switch (SDK_INT >= VERSION_CODES.N ? (isInMultiWindowMode() ? "auto" : prefs.forceOrientation.get()) : prefs.forceOrientation.get()) {
-            case "portrait": requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT; break;
-            case "landscape": requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE; break;
-            case "reverse portrait": requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT; break;
-            case "reverse landscape": requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE; break;
-            default: requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+            case "portrait":
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                break;
+            case "landscape":
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                break;
+            case "reverse portrait":
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                break;
+            case "reverse landscape":
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                break;
+            default:
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
         }
 
         if (getRequestedOrientation() != requestedOrientation)
             setRequestedOrientation(requestedOrientation);
 
-        if (hasFocus) {
-            if (SDK_INT >= VERSION_CODES.P) {
-                if (hideCutout)
-                    getWindow().getAttributes().layoutInDisplayCutoutMode = (SDK_INT >= VERSION_CODES.R) ?
-                            LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS :
-                            LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-                else
-                    getWindow().getAttributes().layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
-            }
-
-            window.setStatusBarColor(Color.BLACK);
-            window.setNavigationBarColor(Color.BLACK);
-        }
-
-        window.setFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS | FLAG_KEEP_SCREEN_ON | FLAG_TRANSLUCENT_STATUS, 0);
-        if (hasFocus) {
-            if (fullscreen) {
-                window.addFlags(FLAG_FULLSCREEN);
-                decorView.setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-            } else {
-                window.clearFlags(FLAG_FULLSCREEN);
-                decorView.setSystemUiVisibility(0);
+        if (SDK_INT >= VERSION_CODES.P) {
+            WindowManager.LayoutParams attributes = window.getAttributes();
+            int cutoutMode = !hideCutout ? LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER :
+                    (SDK_INT >= VERSION_CODES.R ? LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS : LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES);
+            if (attributes.layoutInDisplayCutoutMode != cutoutMode) {
+                attributes.layoutInDisplayCutoutMode = cutoutMode;
+                window.setAttributes(attributes);
             }
         }
 
-        if (prefs.keepScreenOn.get())
-            window.addFlags(FLAG_KEEP_SCREEN_ON);
-        else
-            window.clearFlags(FLAG_KEEP_SCREEN_ON);
-
-        window.setSoftInputMode(reseed ? SOFT_INPUT_ADJUST_RESIZE : SOFT_INPUT_ADJUST_PAN);
+        setWindowFlag(FLAG_FULLSCREEN, fullscreen);
+        setWindowFlag(FLAG_KEEP_SCREEN_ON, prefs.keepScreenOn.get());
+        applyImmersiveMode();
 
         View contentChild = ((FrameLayout) findViewById(android.R.id.content)).getChildAt(0);
-        contentChild.setFitsSystemWindows(!fullscreen);
-        ViewCompat.requestApplyInsets(contentChild);
+        if (contentChild.getFitsSystemWindows() == fullscreen) {
+            contentChild.setFitsSystemWindows(!fullscreen);
+            ViewCompat.requestApplyInsets(contentChild);
+        }
     }
 
     @Override
     public void onBackPressed() {
         if (addIn != null) addIn.handleOnBack();
+    }
+
+    private static float getSystemDimenFloat(String name, float fallback) {
+        Resources resources = Resources.getSystem();
+        TypedValue value = new TypedValue();
+        int id = resources.getIdentifier(name, "dimen", "android");
+        if (id != 0)
+            resources.getValue(id, value, true);
+        return value.type == TypedValue.TYPE_FLOAT ? value.getFloat() : fallback;
     }
 
     public static boolean hasPipPermission(@NonNull Context context) {
@@ -857,31 +932,47 @@ public class X11Activity extends AppCompatActivity {
     @Override
     public void onUserLeaveHint() {
         super.onUserLeaveHint();
-        if (prefs.PIP.get() && hasPipPermission(this)) {
-            if (SDK_INT >= VERSION_CODES.N) {
-                enterPictureInPictureMode();
-            }
+        if (!prefs.PIP.get() || !hasPipPermission(this) || SDK_INT < VERSION_CODES.O)
+            return;
+
+        PictureInPictureParams.Builder params = new PictureInPictureParams.Builder();
+        Rational aspectRatio = getLorieView().getScreenAspectRatio();
+        if (aspectRatio != null) {
+            float clamped = MathUtils.clamp(aspectRatio.floatValue(), MIN_PIP_ASPECT_RATIO, MAX_PIP_ASPECT_RATIO);
+            if (clamped != aspectRatio.floatValue())
+                // Truncating instead of rounding keeps the ratio from landing back outside of the range.
+                aspectRatio = clamped > 1 ? new Rational((int) (clamped * 1000), 1000) : new Rational(1000, (int) (1000 / clamped));
+            params.setAspectRatio(aspectRatio);
         }
+
+        getLorieView().freezeDimensions(true);
+        if (!enterPictureInPictureMode(params.build()))
+            getLorieView().freezeDimensions(false);
     }
 
     @Override
     public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, @NonNull Configuration newConfig) {
         this.isInPictureInPictureMode = isInPictureInPictureMode;
+        getLorieView().onPictureInPictureModeChanged(isInPictureInPictureMode);
         final ViewPager pager = getTerminalToolbarViewPager();
-        pager.setAlpha(isInPictureInPictureMode ? 0.f : ((float) prefs.opacityEKBar.get())/100);
+        pager.setAlpha(isInPictureInPictureMode ? 0.f : ((float) prefs.opacityEKBar.get()) / 100);
         findViewById(R.id.mouse_buttons).setAlpha(isInPictureInPictureMode ? 0.f : 0.7f);
         findViewById(R.id.mouse_helper_visibility).setAlpha(isInPictureInPictureMode ? 0.f : 1.f);
+        setTerminalToolbarView();
+        if (!isInPictureInPictureMode)
+            applyWindowSettings();
 
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
     }
 
     /**
      * Manually toggle soft keyboard visibility
+     *
      * @param context calling context
      */
     public static void toggleKeyboardVisibility(Context context) {
         Log.d("X11Activity", "Toggling keyboard visibility");
-        if(inputMethodManager != null) {
+        if (inputMethodManager != null) {
             android.util.Log.d("toggleKeyboardVisibility", "externalKeyboardConnected " + externalKeyboardConnected + " showIMEWhileExternalConnected " + showIMEWhileExternalConnected);
             if (!externalKeyboardConnected || showIMEWhileExternalConnected)
                 inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
@@ -894,12 +985,12 @@ public class X11Activity extends AppCompatActivity {
 
     @SuppressWarnings("SameParameterValue")
     void clientConnectedStateChanged() {
-        runOnUiThread(()-> {
+        runOnUiThread(() -> {
             boolean connected = LorieView.connected();
             setTerminalToolbarView();
             findViewById(R.id.mouse_buttons).setVisibility(prefs.showMouseHelper.get() && "1".equals(prefs.touchMode.get()) && connected ? View.VISIBLE : View.GONE);
-            findViewById(R.id.stub).setVisibility(connected?View.INVISIBLE:View.VISIBLE);
-            getLorieView().setVisibility(connected?View.VISIBLE:View.INVISIBLE);
+            findViewById(R.id.stub).setVisibility(connected ? View.INVISIBLE : View.VISIBLE);
+            getLorieView().setVisibility(connected ? View.VISIBLE : View.INVISIBLE);
 
             // We should recover connection in the case if file descriptor for some reason was broken...
             if (!connected) {
@@ -912,7 +1003,7 @@ public class X11Activity extends AppCompatActivity {
                 if (addIn != null) addIn.unBlurLayout();
             }
 
-            onWindowFocusChanged(hasWindowFocus());
+            applyWindowSettings();
         });
     }
 

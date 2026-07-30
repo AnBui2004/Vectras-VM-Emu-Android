@@ -2,7 +2,6 @@ package com.vectras.vm.setupwizard;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
@@ -18,7 +17,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
 
 import com.anbui.elephant.retrofit2utils.Retrofit2Utils;
 import com.google.gson.Gson;
@@ -62,8 +60,7 @@ public class SetupWizard2Activity extends AppCompatActivity {
     final int STEP_INSTALLING_PACKAGES = 5;
     final int STEP_ERROR = 6;
     final int STEP_JOIN_COMMUNITY = 7;
-    final int STEP_PATERON = 8;
-    final int STEP_FINISH = 9;
+    final int STEP_FINISH = 8;
     final int STEP_SYSTEM_UPDATE = -1;
     int currentStep = 0;
     String logs = "";
@@ -173,7 +170,7 @@ public class SetupWizard2Activity extends AppCompatActivity {
                 uiController(STEP_SYSTEM_UPDATE);
                 binding.btnSkipSystemUpdate.setVisibility(View.GONE);
             } else if (isLibProotError) {
-                IntentUtils.openTelegramLink(this);
+                IntentUtils.openUrl(this, AppConfig.community);
             } else if (SetupFeatureCore.isInstalledSystemFiles(this)) {
                 getDataForStandardSetup();
             } else {
@@ -187,15 +184,7 @@ public class SetupWizard2Activity extends AppCompatActivity {
         bindingFinalSteps.btnContinue.setOnClickListener(v -> {
             if (currentStep == STEP_JOIN_COMMUNITY) {
                 uiControllerFinalSteps(currentStep + 1);
-                IntentUtils.openTelegramLink(this);
-                //Don't show join Telegram dialog again
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-                SharedPreferences.Editor edit = prefs.edit();
-                edit.putBoolean("tgDialog", true);
-                edit.apply();
-            } else if (currentStep == STEP_PATERON) {
-                uiControllerFinalSteps(currentStep + 1);
-                IntentUtils.openUrl(this, AppConfig.patreonLink);
+                IntentUtils.openUrl(this, AppConfig.community);
             } else {
                 startActivity(new Intent(this, MainActivity.class));
                 finish();
@@ -343,17 +332,12 @@ public class SetupWizard2Activity extends AppCompatActivity {
         TransitionManager.beginDelayedTransition(bindingFinalSteps.mainContent);
 
         bindingFinalSteps.linearcommunity.setVisibility(View.GONE);
-        bindingFinalSteps.lineardonate.setVisibility(View.GONE);
         bindingFinalSteps.linearwelcomehome.setVisibility(View.GONE);
 
         TransitionManager.beginDelayedTransition(bindingFinalSteps.mainContent);
 
         if (step == STEP_JOIN_COMMUNITY) {
             bindingFinalSteps.linearcommunity.setVisibility(View.VISIBLE);
-            bindingFinalSteps.tvLater.setVisibility(View.VISIBLE);
-            bindingFinalSteps.btnContinue.setText(getString(R.string.join));
-        } else if (step == STEP_PATERON) {
-            bindingFinalSteps.lineardonate.setVisibility(View.VISIBLE);
             bindingFinalSteps.tvLater.setVisibility(View.VISIBLE);
             bindingFinalSteps.btnContinue.setText(getString(R.string.join));
         } else if (step == STEP_FINISH) {

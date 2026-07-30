@@ -260,22 +260,6 @@ public class DialogUtils {
         return dialog.getWindow().getDecorView().getWindowToken() != null;
     }
 
-    public static void joinTelegram(Context _context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(_context);
-        if (!prefs.getBoolean("tgDialog", false)) {
-            threeDialog(_context, _context.getResources().getString(R.string.join_us_on_telegram),
-                    _context.getResources().getString(R.string.join_us_on_telegram_where_we_publish_all_the_news_and_updates_and_receive_your_opinions_and_bugs),
-                    _context.getResources().getString(R.string.join), _context.getResources().getString(R.string.cancel), _context.getResources().getString(R.string.dont_show_again),
-                    true, R.drawable.send_24px, true,
-                    () -> IntentUtils.openTelegramLink(_context), null,
-                    () -> {
-                        SharedPreferences.Editor edit = prefs.edit();
-                        edit.putBoolean("tgDialog", true);
-                        edit.apply();
-                    }, null);
-        }
-    }
-
     public static void needInstallTermuxX11(Context _context) {
         twoDialog(_context, _context.getResources().getString(R.string.action_needed),
                 _context.getResources().getString(R.string.need_install_termux_x11_content),

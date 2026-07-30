@@ -18,6 +18,8 @@ import com.google.android.material.transition.MaterialFadeThrough;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.vectras.vm.AppConfig;
+import com.vectras.vm.main.core.Event;
+import com.vectras.vm.main.core.SharedViewModel;
 import com.vectras.vm.main.romstore.DataRoms;
 import com.vectras.vm.databinding.FragmentHomeSoftwareStoreBinding;
 import com.vectras.vm.main.core.SharedData;
@@ -34,11 +36,6 @@ public class SoftwareStoreFragment extends Fragment {
     SoftwareStoreHomeAdapter mAdapter;
     List<DataRoms> data = new ArrayList<>();
     LinearLayoutManager layoutManager;
-
-    public static SoftwareStoreFragment.SoftwareStoreCallToHomeListener softwareStoreCallToHomeListener;
-    public interface SoftwareStoreCallToHomeListener {
-        void updateSearchStatus(boolean isReady);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,7 +90,9 @@ public class SoftwareStoreFragment extends Fragment {
     }
 
     private void loadFromServer() {
-        softwareStoreCallToHomeListener.updateSearchStatus(false);
+        SharedViewModel sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+        sharedViewModel.onSoftwareStoreLoaded.setValue(new Event<>(true));
+
         binding.linearload.setVisibility(View.VISIBLE);
 
         Retrofit2Utils.get(AppConfig.vectrasRaw + "software-store.json", ((isSuccess, body, status, error) -> {
@@ -128,6 +127,9 @@ public class SoftwareStoreFragment extends Fragment {
 
         SharedData.dataSoftwareStore.clear();
         SharedData.dataSoftwareStore.addAll(dataSoftware);
-        softwareStoreCallToHomeListener.updateSearchStatus(true);
+
+        SharedViewModel sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+        sharedViewModel.onSoftwareStoreLoaded.setValue(new Event<>(true));
+
     }
 }

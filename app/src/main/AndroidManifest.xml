@@ -241,7 +241,7 @@
             android:screenOrientation="sensorLandscape"
             android:supportsPictureInPicture="true"
             android:taskAffinity="com.vectras.vm.x11.X11Activity"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden|adjustNothing" />
         <activity
             android:name=".x11.LoriePreferences"
             android:excludeFromRecents="true"

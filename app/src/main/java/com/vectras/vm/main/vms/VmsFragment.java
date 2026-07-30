@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.util.Log;
@@ -20,16 +21,13 @@ import com.vectras.vm.AppConfig;
 import com.vectras.vm.R;
 import com.vectras.vm.VMManager;
 import com.vectras.vm.databinding.FragmentHomeVmsBinding;
-import com.vectras.vm.main.MainActivity;
-import com.vectras.vm.main.core.CallbackInterface;
+import com.vectras.vm.main.core.Event;
+import com.vectras.vm.main.core.SharedData;
+import com.vectras.vm.main.core.SharedViewModel;
 import com.vectras.vm.utils.DeviceUtils;
 import com.vectras.vm.utils.DialogUtils;
 import com.vectras.vm.utils.FileUtils;
 import com.vectras.vm.utils.PermissionUtils;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -38,19 +36,15 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class VmsFragment extends Fragment implements CallbackInterface.HomeCallToVmsListener {
+public class VmsFragment extends Fragment {
     private final String TAG = "VmsFragment";
     FragmentHomeVmsBinding binding;
-    private JSONArray jArray;
     private final List<DataMainRoms> data = new ArrayList<>();
     private VmsHomeAdapter vmsHomeAdapter;
     private int spanCount = 0;
     ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    public static VmsCallToHomeListener vmsCallToHomeListener;
-    public interface VmsCallToHomeListener {
-        void openRomStore();
-    }
+    SharedViewModel sharedViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,14 +74,14 @@ public class VmsFragment extends Fragment implements CallbackInterface.HomeCallT
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        MainActivity.homeCallToVmsListener = this;
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
         binding.rvRomlist.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
         if (!isAdded()) return;
         vmsHomeAdapter = new VmsHomeAdapter(requireActivity(), data);
         binding.rvRomlist.setAdapter(vmsHomeAdapter);
 
-        binding.bnRomstore.setOnClickListener(v -> vmsCallToHomeListener.openRomStore());
+        binding.bnRomstore.setOnClickListener(v -> sharedViewModel.openRomStore.setValue(new Event<>(true)));
 
         binding.bnRepair.setOnClickListener(V -> {
             VMManager.startFixRomsDataJson();
@@ -122,11 +116,20 @@ public class VmsFragment extends Fragment implements CallbackInterface.HomeCallT
 
                 tempdata = gson.fromJson(json, listType);
 
+                SharedData.dataVms.clear();
+                SharedData.dataVms.addAll(tempdata);
+
                 if (!isAdded()) return;
-                requireActivity().runOnUiThread(() -> binding.lnError.setVisibility(View.GONE));
+                requireActivity().runOnUiThread(() -> {
+                    binding.lnError.setVisibility(View.GONE);
+                    sharedViewModel.onVmsLoaded.setValue(new Event<>(true));
+                });
             } catch (Exception e) {
                 if (!isAdded()) return;
-                requireActivity().runOnUiThread(() -> binding.lnError.setVisibility(View.VISIBLE));
+                requireActivity().runOnUiThread(() -> {
+                    binding.lnError.setVisibility(View.VISIBLE);
+                    sharedViewModel.onVmsLoaded.setValue(new Event<>(false));
+                });
                 Log.e(TAG, "loadDataVbi: ", e);
             }
 
@@ -137,6 +140,7 @@ public class VmsFragment extends Fragment implements CallbackInterface.HomeCallT
                 if (finalTempdata == null || finalTempdata.isEmpty()) {
                     binding.rvRomlist.setVisibility(View.GONE);
                     binding.lnNothinghere.setVisibility(View.VISIBLE);
+                    sharedViewModel.onVmsLoaded.setValue(new Event<>(false));
                 } else {
                     binding.rvRomlist.setVisibility(View.VISIBLE);
                     binding.lnNothinghere.setVisibility(View.GONE);
@@ -171,15 +175,14 @@ public class VmsFragment extends Fragment implements CallbackInterface.HomeCallT
         }
     }
 
-    @Override
-    public void refeshVMList() {
+    public void refresh() {
         if (!isAdded()) return;
-        requireActivity().runOnUiThread(this::checkAndLoad);
-    }
 
-    @Override
-    public void configurationChanged(boolean isLandscape) {
-        spanCount = isLandscape ? 3 : 2;
-        binding.rvRomlist.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
+        int newSpanCount = requireActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 3 : 2;
+        if (spanCount != newSpanCount) {
+            spanCount = newSpanCount;
+            binding.rvRomlist.setLayoutManager(new GridLayoutManager(getContext(), newSpanCount));
+        }
+        checkAndLoad();
     }
 }

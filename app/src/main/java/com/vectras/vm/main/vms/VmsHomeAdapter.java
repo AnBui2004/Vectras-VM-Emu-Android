@@ -19,6 +19,7 @@ import com.vectras.vm.R;
 import com.vectras.vm.VMManager;
 import com.vectras.vm.main.core.MainStartVM;
 import com.vectras.vm.main.core.RomOptionsDialog;
+import com.vectras.vm.main.core.SharedData;
 import com.vectras.vm.manager.VmFileManager;
 import com.vectras.vm.utils.DialogUtils;
 import com.vectras.vm.utils.FileUtils;
@@ -137,6 +138,10 @@ public class VmsHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new VmsDiffUtil(this.data, newData));
         this.data.clear();
         this.data.addAll(newData);
+
+        SharedData.dataVms.clear();
+        SharedData.dataVms.addAll(newData);
+
         diffResult.dispatchUpdatesTo(this);
     }
 

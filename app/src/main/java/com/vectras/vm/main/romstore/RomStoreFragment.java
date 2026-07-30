@@ -19,7 +19,9 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.vectras.vm.AppConfig;
 import com.vectras.vm.databinding.FragmentHomeRomStoreBinding;
+import com.vectras.vm.main.core.Event;
 import com.vectras.vm.main.core.SharedData;
+import com.vectras.vm.main.core.SharedViewModel;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -33,11 +35,6 @@ public class RomStoreFragment extends Fragment {
     RomStoreHomeAdpater mAdapter;
     List<DataRoms> data = new ArrayList<>();
     LinearLayoutManager layoutManager;
-
-    public static RomStoreCallToHomeListener romStoreCallToHomeListener;
-    public interface RomStoreCallToHomeListener {
-        void updateSearchStatus(boolean isReady);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,7 +89,9 @@ public class RomStoreFragment extends Fragment {
     }
 
     private void loadFromServer() {
-        romStoreCallToHomeListener.updateSearchStatus(false);
+        SharedViewModel sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+        sharedViewModel.onRomStoreLoaded.setValue(new Event<>(false));
+
         binding.linearload.setVisibility(View.VISIBLE);
 
         Retrofit2Utils.get(AppConfig.vectrasRaw + "vroms-store.json", ((isSuccess, body, status, error) -> {
@@ -127,6 +126,8 @@ public class RomStoreFragment extends Fragment {
 
         SharedData.dataRomStore.clear();
         SharedData.dataRomStore.addAll(dataRoms);
-        romStoreCallToHomeListener.updateSearchStatus(true);
+
+        SharedViewModel sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+        sharedViewModel.onRomStoreLoaded.setValue(new Event<>(true));
     }
 }

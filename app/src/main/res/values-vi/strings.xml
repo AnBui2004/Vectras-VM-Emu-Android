@@ -265,7 +265,7 @@
     <string name="i_agree">Tôi đồng ý</string>
     <string name="dont_miss_out">Đừng bỏ qua!</string>
     <string name="disclaimer_here">Khi bạn nhập bất kỳ rom nào hoặc sử dụng các tệp có chứa bất cứ thứ gì, bạn chấp nhận tất cả các điều khoản này. Nhấp vào đây để đọc toàn bộ.</string>
-    <string name="join_now_on_telegram_if_you_want">Tham gia ngay trên Telegram nếu bạn muốn.</string>
+    <string name="join_now_on_telegram_if_you_want">Chúng tôi luôn ở đây. Bạn có thể tham gia bất cứ lúc nào.</string>
     <string name="donate">Ủng hộ</string>
     <string name="donatecontent">Nếu bạn thật sự rất thích Vectras VM, bạn có thể cân nhắc ủng hộ chúng tôi trên Patreon! Cảm ơn bạn rất nhiều luôn!</string>
     <string name="you_are_ready_to_go">Bạn đã sẵn sàng để bắt đầu rồi đấy!</string>
@@ -692,6 +692,8 @@
     <string name="tcg_multi_thread">TCG (đa luồng)</string>
     <string name="bubble">Bong bóng</string>
     <string name="bubble_setting_note">Dùng bong bóng dể hiện các phím điều khiển khi chúng bị ẩn thay vì dùng phím quay lại.</string>
+    <string name="links">Các liên kết</string>
+    <string name="community">Cộng đồng</string>
 
     <!--======================TERMUX STRINGS====================-->
     <string name="application_name" translatable="false">Vterm</string>
