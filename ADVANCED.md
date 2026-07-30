@@ -1,8 +1,7 @@
 # 😼 Advanced
 ⬇️ Advanced options waiting for you to discover are below. ⬇️
 
-Do you need help? Join now: [![Discord server](https://img.shields.io/discord/911060166810681345)][link-discord]
-[![Telegram Channel][ico-telegram]][link-telegram]
+Do you need help? Join [our community](https://anbui.ovh/community/) now!
 
 ## 🔃 Upgrade tool
 Upgrade or change the Qemu version you want to use without resetting the Vectras VM using the Terminal.
