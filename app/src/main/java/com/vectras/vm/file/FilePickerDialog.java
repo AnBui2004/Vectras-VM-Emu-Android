@@ -236,9 +236,13 @@ public class FilePickerDialog extends DialogFragment {
         }
 
         Collections.sort(list, (o1, o2) -> {
+            if (o1.type == TYPE_FOLDER && o2.type != TYPE_FOLDER) return -1;
+            if (o1.type != TYPE_FOLDER && o2.type == TYPE_FOLDER) return 1;
+
             if (o1.name == null || o2.name == null) {
                 return 0;
             }
+
             return o1.name.compareToIgnoreCase(o2.name);
         });
 
@@ -289,7 +293,7 @@ public class FilePickerDialog extends DialogFragment {
             case ".log" -> LOG_FILE;
             case ".exe", ".msi", ".msix", ".appx", ".msixbundle" -> WINDOWS_FILE;
             case ".conf", ".ini" -> CONFIG_FILE;
-            case ".zip", ".7z", ".rar" -> ZIP_FILE;
+            case ".zip", ".7z", ".rar", ".tar", ".gz" -> ZIP_FILE;
             case ".java", ".kt", ".js", ".py", ".c", ".cpp", ".h", ".xml", ".html", ".css", ".lua", ".go", ".asl" -> DEV_FILE;
             case ".dll", ".fd" -> SYSTEM_FILE;
             case ".deb", ".rpm" -> PACKAGE_FILE;

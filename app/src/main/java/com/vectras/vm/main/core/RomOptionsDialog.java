@@ -87,6 +87,10 @@ public class RomOptionsDialog {
 
             v.findViewById(R.id.btn_start).setOnClickListener(v4 -> {
                 MainStartVM.startNow(activity, vmConfig);
+
+                if (activity instanceof MainActivity mainActivity)
+                    mainActivity.binding.searchview.hide();
+
                 bottomSheetDialog.cancel();
             });
 

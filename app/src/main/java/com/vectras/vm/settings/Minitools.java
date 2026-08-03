@@ -27,6 +27,7 @@ import com.vectras.vm.R;
 import com.vectras.vm.VMManager;
 import com.vectras.vm.creator.utils.VMCreatorSelector;
 import com.vectras.vm.databinding.ActivityMinitoolsBinding;
+import com.vectras.vm.file.FilePickerDialog;
 import com.vectras.vm.main.MainActivity;
 import com.vectras.vm.manager.FirmwareManager;
 import com.vectras.vm.manager.ProcessManager;
@@ -201,7 +202,18 @@ public class Minitools extends AppCompatActivity {
                         true,
                         () -> {
                             FileUtils.createDirectory(AppConfig.recyclebin);
-                            FileUtils.openFolder(this, AppConfig.recyclebin);
+                            if (MainSettingsManager.getBuiltInFilePicker(this)) {
+                                FilePickerDialog filePickerDialog = new FilePickerDialog();
+                                filePickerDialog.setHomeName(getString(R.string.app_name));
+                                filePickerDialog.setLockHome(true);
+                                filePickerDialog.browse(this, AppConfig.recyclebin);
+                            } else {
+                                try {
+                                    FileUtils.openFolder(this, AppConfig.recyclebin);
+                                } catch (Exception e) {
+                                    DialogUtils.oopsDialog(this, getString(R.string.something_went_wrong));
+                                }
+                            }
                         },
                         null,
                         null);

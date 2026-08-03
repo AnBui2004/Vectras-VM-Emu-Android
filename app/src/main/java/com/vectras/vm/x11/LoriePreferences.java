@@ -147,9 +147,10 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
     protected void onResume() {
         super.onResume();
         IntentFilter filter = new IntentFilter(ACTION_PREFERENCES_CHANGED);
-        if (SDK_INT >= Build.VERSION_CODES.O) {
+        if (SDK_INT >= Build.VERSION_CODES.O)
             registerReceiver(receiver, filter, SDK_INT >= Build.VERSION_CODES.TIRAMISU ? RECEIVER_NOT_EXPORTED : 0);
-        }
+        else
+            registerReceiver(receiver, filter);
     }
 
     @Override
@@ -288,6 +289,12 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P)
                 setVisible("hideCutout", false);
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                setVisible("pointerCapture", false);
+                setVisible("transformCapturedPointer", false);
+                setVisible("capturedPointerSpeedFactor", false);
+            }
 
             boolean stylusAvailable = false;
             if (SDK_INT >= Build.VERSION_CODES.N) {

@@ -29,6 +29,7 @@ import com.vectras.vm.VMManager;
 import com.vectras.vm.creator.utils.VMCreatorSelector;
 import com.vectras.vm.databinding.ActivitySetupWizard2Binding;
 import com.vectras.vm.databinding.SetupQemuDoneBinding;
+import com.vectras.vm.file.FilePickerDialog;
 import com.vectras.vm.main.MainActivity;
 import com.vectras.vm.utils.DeviceUtils;
 import com.vectras.vm.utils.DialogUtils;
@@ -41,6 +42,7 @@ import com.vectras.vm.utils.TarUtils;
 import com.vectras.vm.utils.UIUtils;
 import com.vectras.vterm.Terminal2;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -159,7 +161,21 @@ public class SetupWizard2Activity extends AppCompatActivity {
 
         });
 
-        binding.customSetupOption.setOnClickListener(v -> bootstrapFilePicker.launch("*/*"));
+        binding.customSetupOption.setOnClickListener(v -> {
+            if (MainSettingsManager.getBuiltInFilePicker(this)) {
+                FilePickerDialog filePickerDialog = new FilePickerDialog();
+                filePickerDialog.setDoNotSelectInSystemFolder(true);
+                filePickerDialog.pick(this, FilePickerDialog.ZIP_FILE, (path -> handleBootStrapFile(Uri.fromFile(new File(path)))));
+            } else {
+                try {
+                    bootstrapFilePicker.launch("*/*");
+                } catch (Exception e) {
+                    FilePickerDialog filePickerDialog = new FilePickerDialog();
+                    filePickerDialog.setDoNotSelectInSystemFolder(true);
+                    filePickerDialog.pick(this, FilePickerDialog.ZIP_FILE, (path -> handleBootStrapFile(Uri.fromFile(new File(path)))));
+                }
+            }
+        });
 
         binding.selectMirrorOption.setOnClickListener(v -> selectMirror());
 
@@ -503,35 +519,37 @@ public class SetupWizard2Activity extends AppCompatActivity {
     }
 
     private final ActivityResultLauncher<String> bootstrapFilePicker =
-            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-                if (uri != null) {
-                    String abi = Build.SUPPORTED_ABIS[0];
-                    if (FileUtils.getFileNameFromUri(this, uri).endsWith(abi + ".tar.gz")) {
-                        uiController(STEP_INSTALLING_PACKAGES);
-                        new Thread(() -> {
-                            try {
-                                FileUtils.copyFileFromUri(this, uri, tarPath);
-                                runOnUiThread(() -> {
-                                    isCustomSetupMode = true;
-                                    startSetup();
-                                });
-                            } catch (Exception e) {
-                                runOnUiThread(() -> uiController(STEP_ERROR, getString(R.string.the_file_could_not_be_processed_content)));
-                            }
-                        }).start();
-                    } else {
-                        DialogUtils.oneDialog(this,
-                                getString(R.string.invalid_file),
-                                getString(R.string.please_select) + " vectras-vm-" + abi + ".tar.gz.",
-                                getResources().getString(R.string.ok),
-                                true,
-                                R.drawable.warning_48px,
-                                true,
-                                null,
-                                null);
+            registerForActivityResult(new ActivityResultContracts.GetContent(), this::handleBootStrapFile);
+
+    void handleBootStrapFile(Uri uri) {
+        if (uri != null) {
+            String abi = Build.SUPPORTED_ABIS[0];
+            if (FileUtils.getFileNameFromUri(this, uri).endsWith(abi + ".tar.gz")) {
+                uiController(STEP_INSTALLING_PACKAGES);
+                new Thread(() -> {
+                    try {
+                        FileUtils.copyFileFromUri(this, uri, tarPath);
+                        runOnUiThread(() -> {
+                            isCustomSetupMode = true;
+                            startSetup();
+                        });
+                    } catch (Exception e) {
+                        runOnUiThread(() -> uiController(STEP_ERROR, getString(R.string.the_file_could_not_be_processed_content)));
                     }
-                }
-            });
+                }).start();
+            } else {
+                DialogUtils.oneDialog(this,
+                        getString(R.string.invalid_file),
+                        getString(R.string.please_select) + " vectras-vm-" + abi + ".tar.gz.",
+                        getResources().getString(R.string.ok),
+                        true,
+                        R.drawable.warning_48px,
+                        true,
+                        null,
+                        null);
+            }
+        }
+    }
 
     private void execute(String command) {
         Terminal2 terminal2 = new Terminal2(this);

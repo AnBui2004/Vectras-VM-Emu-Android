@@ -694,6 +694,7 @@
     <string name="bubble_setting_note">Dùng bong bóng dể hiện các phím điều khiển khi chúng bị ẩn thay vì dùng phím quay lại.</string>
     <string name="links">Các liên kết</string>
     <string name="community">Cộng đồng</string>
+    <string name="an_error_occurred_while_loading_vm_configs">Đã xảy ra lỗi khi tải các cài đặt của máy ảo. Hãy thử lại sau.</string>
 
     <!--======================TERMUX STRINGS====================-->
     <string name="application_name" translatable="false">Vterm</string>

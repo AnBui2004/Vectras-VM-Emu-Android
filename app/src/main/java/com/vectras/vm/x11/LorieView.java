@@ -88,6 +88,7 @@ public class LorieView extends SurfaceView implements InputStub {
     private final Rect contentInsets = new Rect();
     private final Rect viewport = new Rect();
     private final Rect inputViewport = new Rect();
+    private int obscuredBottom = 0;
     private final Matrix inputTransform = new Matrix();
     private float inputSourceLeft = 0.f, inputSourceTop = 0.f;
     private float inputSourceWidth = 0.f, inputSourceHeight = 0.f;
@@ -382,9 +383,17 @@ public class LorieView extends SurfaceView implements InputStub {
         }
 
         if (prefs.adjustResolution.get() && ((width < height && w > h) || (width > height && w < h)))
-            p.set(h, w);
+            setCvtDimensions(h, w);
         else
-            p.set(w, h);
+            setCvtDimensions(w, h);
+    }
+
+    // The X screen ends up slightly smaller than requested, libxcvt rounds the mode width down.
+    private void setCvtDimensions(int width, int height) {
+        int granularity = 8; // horizontal granularity of a cvt mode
+        int rounded = Math.max(granularity, width - width % granularity);
+        // 1366 is not a multiple of it, and libxcvt makes an exception for exactly this size.
+        p.set(rounded == 1360 && height == 768 ? 1366 : rounded, height);
     }
 
     private Matrix getInputTransform() {
@@ -448,6 +457,15 @@ public class LorieView extends SurfaceView implements InputStub {
         return p.x == 0 || p.y == 0 ? null : new Rational(p.x, p.y);
     }
 
+    /** Height of the picture the soft keyboard covers instead of the picture being shrunk for it. */
+    public void setObscuredBottom(int height) {
+        if (obscuredBottom == height)
+            return;
+
+        obscuredBottom = height;
+        updateViewport();
+    }
+
     public void setContentInsets(int left, int top, int right, int bottom) {
         if (contentInsets.left == left && contentInsets.top == top && contentInsets.right == right && contentInsets.bottom == bottom)
             return;
@@ -483,17 +501,21 @@ public class LorieView extends SurfaceView implements InputStub {
                 drawH = drawW * p.y / p.x;
         }
 
+        // The picture keeps its size when the soft keyboard covers the bottom, it is just centered
+        // in what is left visible, and only what still does not fit there is left to be scrolled.
+        int visibleH = Math.max(0, availableH - obscuredBottom);
         int left = availableLeft + (availableW - drawW) / 2;
-        int top = availableTop + (availableH - drawH) / 2;
+        int top = availableTop + Math.max(0, (visibleH - drawH) / 2);
 
         viewport.set(left, top, left + drawW, top + drawH);
-        if (rendererZoom == 100 || inputSourceWidth == 0.f || inputSourceHeight == 0.f) {
+        int hiddenBottom = Math.max(0, viewport.bottom - (availableTop + visibleH));
+        if ((rendererZoom == 100 && hiddenBottom == 0) || inputSourceWidth == 0.f || inputSourceHeight == 0.f) {
             inputViewport.set(viewport);
             inputSourceLeft = inputSourceTop = 0.f;
             inputSourceWidth = p.x;
             inputSourceHeight = p.y;
         }
-        setViewport(viewport.left, viewport.top, viewport.width(), viewport.height(), p.x, p.y);
+        setViewport(viewport.left, viewport.top, viewport.width(), viewport.height(), p.x, p.y, hiddenBottom);
 
         updateInputTransform();
         if (!dimensionsFrozen)
@@ -607,13 +629,15 @@ public class LorieView extends SurfaceView implements InputStub {
 
     public void checkForClipboardChange() {
         ClipDescription desc = clipboard.getPrimaryClipDescription();
+        // Below API 26 the clipboard carries no timestamp, so every change looks like a new one.
+        long timestamp = desc == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? lastClipboardTimestamp + 1 : desc.getTimestamp();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (clipboardSyncEnabled && desc != null &&
-                    lastClipboardTimestamp < desc.getTimestamp() &&
+                    lastClipboardTimestamp < timestamp &&
                     desc.getMimeTypeCount() == 1 &&
                     (desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) ||
                             desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML))) {
-                lastClipboardTimestamp = desc.getTimestamp();
+                lastClipboardTimestamp = timestamp;
                 sendClipboardAnnounce();
                 Log.d("CLIP", "sending clipboard announce");
             }
@@ -678,7 +702,7 @@ public class LorieView extends SurfaceView implements InputStub {
     @FastNative public native void sendClipboardAnnounce();
     @FastNative public native void sendClipboardEvent(byte[] text);
     @FastNative static native void sendWindowChange(int width, int height, int framerate, String name);
-    @FastNative static native void setViewport(int x, int y, int width, int height, int expectedWidth, int expectedHeight);
+    @FastNative static native void setViewport(int x, int y, int width, int height, int expectedWidth, int expectedHeight, int hiddenBottom);
     @FastNative private static native void setRendererZoom(int percent);
 
     public void adjustRendererZoom(int delta) {

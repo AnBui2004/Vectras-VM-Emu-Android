@@ -715,6 +715,7 @@
     <string name="bubble_setting_note">Use bubble to show hidden controls instead of using the back button.</string>
     <string name="links">Links</string>
     <string name="community">Community</string>
+    <string name="an_error_occurred_while_loading_vm_configs">An error occurred while loading the virtual machine configs. Please try again later.</string>
 
 
     <!--======================TERMUX STRINGS====================-->

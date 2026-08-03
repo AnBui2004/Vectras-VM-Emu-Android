@@ -25,7 +25,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
@@ -70,7 +70,6 @@ import com.vectras.vm.databinding.ActivityX11Binding;
 import com.vectras.vm.x11.input.InputEventSender;
 import com.vectras.vm.x11.input.InputStub;
 import com.vectras.vm.x11.input.TouchInputHandler;
-import com.vectras.vm.x11.utils.FullscreenWorkaround;
 import com.vectras.vm.x11.utils.ImeHeightProvider;
 import com.vectras.vm.x11.utils.KeyInterceptor;
 import com.vectras.vm.x11.utils.TermuxX11ExtraKeys;
@@ -99,6 +98,8 @@ public class X11Activity extends AppCompatActivity {
     private boolean filterOutWinKey = false;
     boolean useTermuxEKBarBehaviour = false;
     private boolean isInPictureInPictureMode = false;
+    /** The display the system letterboxed us on instead of rotating, {@code null} until it does. */
+    private Rect orientationDeniedAt = null;
     /**
      * Aspect ratios outside of the range the device is configured with are rejected by the system.
      */
@@ -233,13 +234,15 @@ public class X11Activity extends AppCompatActivity {
         lorieView.setCallback((screenWidth, screenHeight, inputTransform) ->
                 mInputHandler.handleInputTransformChanged(screenWidth, screenHeight, inputTransform));
 
-        if (SDK_INT >= VERSION_CODES.O) {
-            registerReceiver(receiver, new IntentFilter(ACTION_START) {{
-                addAction(ACTION_PREFERENCES_CHANGED);
-                addAction(ACTION_STOP);
-                addAction(ACTION_CUSTOM);
-            }}, SDK_INT >= VERSION_CODES.TIRAMISU ? RECEIVER_EXPORTED : 0);
-        }
+        IntentFilter filter = new IntentFilter(ACTION_START) {{
+            addAction(ACTION_PREFERENCES_CHANGED);
+            addAction(ACTION_STOP);
+            addAction(ACTION_CUSTOM);
+        }};
+        if (SDK_INT >= VERSION_CODES.O)
+            registerReceiver(receiver, filter, SDK_INT >= VERSION_CODES.TIRAMISU ? RECEIVER_EXPORTED : 0);
+        else
+            registerReceiver(receiver, filter);
 
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -673,6 +676,8 @@ public class X11Activity extends AppCompatActivity {
 
         setTerminalToolbarView();
         getLorieView().requestFocus();
+
+        addIn.handleOnResume();
     }
 
     @Override
@@ -731,6 +736,7 @@ public class X11Activity extends AppCompatActivity {
     private void applyContentInsets() {
         int imeContentInset = prefs.Reseed.get() ? imeHeight : 0;
         getLorieView().setContentInsets(0, captionHeight, 0, ekbarContentInset + imeContentInset);
+        getLorieView().setObscuredBottom(imeHeight - imeContentInset);
 
         ViewPager pager = getTerminalToolbarViewPager();
         ViewGroup.MarginLayoutParams pagerParams = (ViewGroup.MarginLayoutParams) pager.getLayoutParams();
@@ -789,20 +795,18 @@ public class X11Activity extends AppCompatActivity {
     private String getNotificationChannel(NotificationManager notificationManager) {
         String channelId = getResources().getString(R.string.app_name);
         String channelName = getResources().getString(R.string.app_name);
-        NotificationChannel channel = null;
         if (SDK_INT >= VERSION_CODES.O) {
-            channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel channel = new NotificationChannel(channelId, channelId, NotificationManager.IMPORTANCE_HIGH);
             channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
             channel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
             if (SDK_INT >= VERSION_CODES.Q)
                 channel.setAllowBubbles(false);
             notificationManager.createNotificationChannel(channel);
         }
-
         return channelId;
     }
 
-    int orientation;
+    int orientation, densityDpi;
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
@@ -811,7 +815,12 @@ public class X11Activity extends AppCompatActivity {
         if (newConfig.orientation != orientation)
             inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getRootView().getWindowToken(), 0);
 
+        if (newConfig.densityDpi != densityDpi)
+            orientationDeniedAt = null;
+
         orientation = newConfig.orientation;
+        densityDpi = newConfig.densityDpi;
+
         applyWindowSettings();
         setTerminalToolbarView();
     }
@@ -881,6 +890,18 @@ public class X11Activity extends AppCompatActivity {
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
         }
 
+        // A display ignoring orientation requests letterboxes the window into the requested
+        // proportions instead of rotating, leaving the rest of the screen unusable. The request is
+        // retried once the display changes, the next one may well honour it.
+        if (SDK_INT >= VERSION_CODES.R) {
+            WindowManager wm = getWindowManager();
+            Rect display = wm.getMaximumWindowMetrics().getBounds();
+            if (requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED && !wm.getCurrentWindowMetrics().getBounds().equals(display))
+                orientationDeniedAt = display;
+            if (display.equals(orientationDeniedAt))
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+        }
+
         if (getRequestedOrientation() != requestedOrientation)
             setRequestedOrientation(requestedOrientation);
 
@@ -932,7 +953,7 @@ public class X11Activity extends AppCompatActivity {
     @Override
     public void onUserLeaveHint() {
         super.onUserLeaveHint();
-        if (!prefs.PIP.get() || !hasPipPermission(this) || SDK_INT < VERSION_CODES.O)
+        if (!prefs.PIP.get() || !hasPipPermission(this) || !LorieView.connected() || SDK_INT < VERSION_CODES.O)
             return;
 
         PictureInPictureParams.Builder params = new PictureInPictureParams.Builder();
@@ -987,6 +1008,14 @@ public class X11Activity extends AppCompatActivity {
     void clientConnectedStateChanged() {
         runOnUiThread(() -> {
             boolean connected = LorieView.connected();
+
+            // A picture-in-picture window has nothing to show without a client, and there is no way
+            // back to the normal size from it, so the window is closed.
+            if (!connected && isInPictureInPictureMode) {
+                finish();
+                return;
+            }
+
             setTerminalToolbarView();
             findViewById(R.id.mouse_buttons).setVisibility(prefs.showMouseHelper.get() && "1".equals(prefs.touchMode.get()) && connected ? View.VISIBLE : View.GONE);
             findViewById(R.id.stub).setVisibility(connected ? View.INVISIBLE : View.VISIBLE);

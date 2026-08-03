@@ -85,6 +85,7 @@ public class AddIn {
         initializeDesktopControl();
         initializeGameControl();
         initializeBubble();
+        updateMenuBar();
         startVM();
     }
 
@@ -219,6 +220,18 @@ public class AddIn {
 //                Log.e(TAG, "Failed to show dialog", e);
 //            }
 //        });
+    }
+
+    void updateMenuBar() {
+        if (X11Activity.getPrefs() == null) return;
+        boolean isAdditionalKeyboardShowing = X11Activity.getPrefs().showAdditionalKbd.get() && X11Activity.getPrefs().additionalKbdVisible.get();
+        bindingControls.kbdBtn.setVisibility(isAdditionalKeyboardShowing ? View.GONE : View.VISIBLE);
+        bindingControls.btnSettings.setVisibility(isAdditionalKeyboardShowing ? View.GONE : View.VISIBLE);
+
+        if (isAdditionalKeyboardShowing) {
+            bindingControls.desktop.setVisibility(View.GONE);
+            bindingControls.gamepad.setVisibility(View.GONE);
+        }
     }
 
     public boolean ctrlClicked = false;
@@ -553,6 +566,10 @@ public class AddIn {
             binding.main.setRenderEffect(null);
             binding.lorieView.animate().alpha(1f).setDuration(500);
         }
+    }
+
+    public void handleOnResume() {
+        updateMenuBar();
     }
 
     public void handleOnDestroy() {

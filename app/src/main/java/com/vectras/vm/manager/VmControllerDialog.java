@@ -97,6 +97,7 @@ public class VmControllerDialog extends DialogFragment {
 
             isGotInfo.set(true);
             new Handler(Looper.getMainLooper()).post(() -> {
+                if (!isAdded()) return;
                 progressDialog.reset();
 
                 if (position > -1) {
@@ -115,8 +116,12 @@ public class VmControllerDialog extends DialogFragment {
 
                     binding.lnRemove.setOnClickListener(v -> {
                         if (isAdded()) {
-                            DataMainRoms vmConfig = VMManager.getVMConfig(position);
-                            VMManager.deleteVMDialog(vmConfig.itemName, position, requireActivity());
+                            try {
+                                DataMainRoms vmConfig = VMManager.getVMConfig(position);
+                                VMManager.deleteVMDialog(vmConfig.itemName, position, requireActivity());
+                            } catch (IllegalStateException | IndexOutOfBoundsException e) {
+                                DialogUtils.oopsDialog(requireActivity(), getString(R.string.an_error_occurred_while_loading_vm_configs));
+                            }
                         }
                         dismiss();
                     });
@@ -704,11 +709,17 @@ public class VmControllerDialog extends DialogFragment {
         if (uri != null) {
             try {
                 new Thread(() -> {
-                    File selectedFilePath = new File(Objects.requireNonNull(FileUtils.getPath(getContext(), uri)));
+                    String path = FileUtils.getPath(getContext(), uri);
+
+                    if (path == null) {
+                        showErrorSelectedFileDialog();
+                        dismiss();
+                        return;
+                    }
 
                     if (isAdded()) {
                         requireActivity().runOnUiThread(() -> {
-                            QmpSender.changeFloppyDiskA(requireActivity(), selectedFilePath.getAbsolutePath());
+                            QmpSender.changeFloppyDiskA(requireActivity(), path);
                             dismiss();
                         });
                     }

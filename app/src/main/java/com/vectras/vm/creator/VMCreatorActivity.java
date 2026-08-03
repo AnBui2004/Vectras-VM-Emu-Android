@@ -289,7 +289,11 @@ public class VMCreatorActivity extends AppCompatActivity {
             binding.collapsingToolbarLayout.setTitle(getString(R.string.edit));
             created = true;
 
-            loadConfig(VMManager.getVMConfig(getIntent().getIntExtra("POS", 0)));
+            try {
+                loadConfig(VMManager.getVMConfig(getIntent().getIntExtra("POS", 0)));
+            } catch (IllegalStateException e) {
+                DialogUtils.oopsDialog(this, getString(R.string.an_error_occurred_while_loading_vm_configs), true);
+            }
 
 //            vmID = getIntent().getStringExtra("VMID");
 //
@@ -987,6 +991,12 @@ public class VMCreatorActivity extends AppCompatActivity {
 
                 try {
                     DataMainRoms newConfigs = new Gson().fromJson(FileUtils.readFromFile(this, new File(VmFileManager.getConfigFile(vmID))), DataMainRoms.class);
+
+                    if (newConfigs == null) {
+                        DialogUtils.oneDialog(this, getResources().getString(R.string.oops), getResources().getString(R.string.error_CR_CVBI4), getResources().getString(R.string.ok), true, R.drawable.warning_48px, true, null, null);
+                        return;
+                    }
+
                     newConfigs.itemExtra = VmFileManager.textMarkToPath(this, vmID, newConfigs.itemExtra);
                     loadConfig(newConfigs);
                 } catch (JsonSyntaxException e) {

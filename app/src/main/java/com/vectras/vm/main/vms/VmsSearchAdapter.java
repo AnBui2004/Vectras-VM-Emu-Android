@@ -80,16 +80,7 @@ public class VmsSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             VMManager.setIconWithName(myHolder.ivIcon, current.itemName);
         }
 
-        myHolder.linearItem.setOnClickListener(view -> {
-            MainStartVM.startNow(activity, current);
-            if (activity instanceof MainActivity mainActivity)
-                mainActivity.binding.searchview.hide();
-        });
-
-        myHolder.linearItem.setOnLongClickListener(v -> {
-            RomOptionsDialog.show(activity, position, current);
-            return true;
-        });
+        myHolder.linearItem.setOnClickListener(view -> RomOptionsDialog.show(activity, position, current));
 
         myHolder.textAvail.setVisibility(View.GONE);
 

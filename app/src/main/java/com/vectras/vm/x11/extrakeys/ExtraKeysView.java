@@ -2,13 +2,32 @@ package com.vectras.vm.x11.extrakeys;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.DrawableWrapper;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.AttributeSet;
+import android.util.TypedValue;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ScheduledExecutorService;
+
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,16 +42,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.button.MaterialButton;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import com.vectras.vm.R;
+import com.vectras.vm.x11.utils.TermuxX11ExtraKeys;
 
 /**
  * A {@link View} showing extra keys (such as Escape, Ctrl, Alt) not normally available on an Android soft
@@ -42,7 +53,7 @@ import java.util.stream.Collectors;
  * it with a {@link androidx.viewpager.widget.ViewPager}.:
  * {@code
  * <?xml version="1.0" encoding="utf-8"?>
- * <com.termux.shared.termux.extrakeys.ExtraKeysView xmlns:android="http://schemas.android.com/apk/res/android"
+ * <com.termux.x11.extrakeys.ExtraKeysView xmlns:android="http://schemas.android.com/apk/res/android"
  *     android:id="@+id/extra_keys"
  *     style="?android:attr/buttonBarStyle"
  *     android:layout_width="match_parent"
@@ -58,7 +69,7 @@ import java.util.stream.Collectors;
  * in {@link ExtraKeysView#ExtraKeysView(Context, AttributeSet)} by calling the respective functions.
  * If you extend {@link ExtraKeysView}, you can also set them in the constructor, but do call super().
  * <p>
- * After this you will have to make a call to {@link ExtraKeysView#reload(ExtraKeysInfo, float) and pass
+ * After this you will have to make a call to {@link ExtraKeysView#reload() and pass
  * it the {@link ExtraKeysInfo} to load and display the extra keys. Read its class javadocs for more
  * info on how to create it.
  * <p>
@@ -90,7 +101,7 @@ public final class ExtraKeysView extends GridLayout {
 
         /**
          * This is called by {@link ExtraKeysView} when a button is clicked so that the client
-         * can perform any hepatic feedback. This is only called in the {@link OnClickListener}
+         * can perform any hepatic feedback. This is only called in the {@link Button.OnClickListener}
          * and not for every repeat. Its also called for {@link #mSpecialButtons}.
          *
          * @param view The view that was clicked.
@@ -160,9 +171,6 @@ public final class ExtraKeysView extends GridLayout {
      * {@link #DEFAULT_BUTTON_ACTIVE_BACKGROUND_COLOR}. */
     private int mButtonActiveBackgroundColor;
 
-    /** Defines whether text for the extra keys button should be all capitalized automatically. */
-    private boolean mButtonTextAllCaps = true;
-
 
     /**
      * Defines the duration in milliseconds before a press turns into a long press. The default
@@ -191,6 +199,16 @@ public final class ExtraKeysView extends GridLayout {
     private SpecialButtonsLongHoldRunnable mSpecialButtonsLongHoldRunnable;
     private int mLongPressCount;
 
+    /** How many characters of a label a button is expected to fit, most preset keys are this short. */
+    private static final int FITTED_LABEL_LENGTH = 4;
+
+    private final Paint mLabelPaint = new Paint();
+    private final Paint mHintPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    /** The text size the buttons come with from the theme, the upper bound for {@link #mTextSize}. */
+    private float mBaseTextSize;
+    /** The text size currently shared by every button, {@code 0} until it has been computed. */
+    private float mTextSize;
+
 
     public ExtraKeysView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -218,7 +236,9 @@ public final class ExtraKeysView extends GridLayout {
     /** Set {@link #mSpecialButtonsKeys}. Must not be {@code null}. */
     public void setSpecialButtons(@NonNull Map<SpecialButton, SpecialButtonState> specialButtons) {
         mSpecialButtons = specialButtons;
-        mSpecialButtonsKeys = this.mSpecialButtons.keySet().stream().map(SpecialButton::getKey).collect(Collectors.toSet());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            mSpecialButtonsKeys = this.mSpecialButtons.keySet().stream().map(SpecialButton::getKey).collect(Collectors.toSet());
+        }
     }
 
 
@@ -280,13 +300,11 @@ public final class ExtraKeysView extends GridLayout {
 
     /**
      * Reload this instance of {@link ExtraKeysView} with the info passed in {@code extraKeysInfo}.
-     *
-     * @param extraKeysInfo The {@link ExtraKeysInfo} that defines the necessary info for the extra keys.
-     * @param heightPx The height in pixels of the parent surrounding the {@link ExtraKeysView}. It must
-     *                 be a single child.
      */
     @SuppressLint("ClickableViewAccessibility")
-    public void reload(ExtraKeysInfo extraKeysInfo, float heightPx) {
+    public void reload() {
+        TermuxX11ExtraKeys.setExtraKeys();
+        ExtraKeysInfo extraKeysInfo = TermuxX11ExtraKeys.getExtraKeysInfo();
         if (extraKeysInfo == null)
             return;
 
@@ -294,6 +312,7 @@ public final class ExtraKeysView extends GridLayout {
             state.buttons = new ArrayList<>();
 
         removeAllViews();
+        mTextSize = 0;
 
         ExtraKeyButton[][] buttons = extraKeysInfo.getMatrix();
 
@@ -304,13 +323,15 @@ public final class ExtraKeysView extends GridLayout {
             for (int col = 0; col < buttons[row].length; col++) {
                 final ExtraKeyButton buttonInfo = buttons[row][col];
 
-                MaterialButton button;
+                KeyButton button;
                 if (isSpecialButton(buttonInfo)) {
-                    button = (MaterialButton) createSpecialButton(buttonInfo.key, true);
+                    button = createSpecialButton(buttonInfo.key, true);
                     if (button == null) return;
                 } else {
-                    button = new MaterialButton(getContext(), null, android.R.attr.buttonBarButtonStyle);
+                    button = new KeyButton();
                 }
+                if (mBaseTextSize <= 0)
+                    mBaseTextSize = button.getTextSize();
 
                 button.setBackground(new ColorDrawable(Color.BLACK) {
                     public boolean isStateful() {
@@ -320,9 +341,12 @@ public final class ExtraKeysView extends GridLayout {
                         return true;
                     }
                 });
-                button.setText(buttonInfo.display);
+                if (!setIcon(button, buttonInfo.key))
+                    button.setText(buttonInfo.display);
+                if (buttonInfo.popup != null)
+                    button.setPopupHint(buttonInfo.popup);
                 button.setTextColor(mButtonTextColor);
-                button.setAllCaps(mButtonTextAllCaps);
+                button.setAllCaps(true);
                 button.setPadding(0, 0, 0, 0);
 
                 button.setOnClickListener(view -> {
@@ -380,7 +404,7 @@ public final class ExtraKeysView extends GridLayout {
                     }
                 });
 
-                LayoutParams param = new LayoutParams();
+                LayoutParams param = new GridLayout.LayoutParams();
                 param.width = 0;
                 param.height = 0;
                 param.setMargins(0, 0, 0, 0);
@@ -391,6 +415,8 @@ public final class ExtraKeysView extends GridLayout {
                 addView(button);
             }
         }
+
+        fitLabels();
     }
 
     public void onExtraKeyButtonClick(View view, ExtraKeyButton buttonInfo, Button button) {
@@ -406,7 +432,7 @@ public final class ExtraKeysView extends GridLayout {
         }
 
         if (Settings.System.getInt(getContext().getContentResolver(),
-            Settings.System.HAPTIC_FEEDBACK_ENABLED, 0) != 0) {
+                Settings.System.HAPTIC_FEEDBACK_ENABLED, 0) != 0) {
 
             if (Build.VERSION.SDK_INT >= 28) {
                 button.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
@@ -491,14 +517,18 @@ public final class ExtraKeysView extends GridLayout {
         int height = view.getMeasuredHeight();
         MaterialButton button;
         if (isSpecialButton(extraButton)) {
-            button = (MaterialButton) createSpecialButton(extraButton.key, false);
+            button = createSpecialButton(extraButton.key, false);
             if (button == null) return;
         } else {
             button = new MaterialButton(getContext(), null, android.R.attr.buttonBarButtonStyle);
             button.setTextColor(mButtonTextColor);
         }
-        button.setText(extraButton.display);
-        button.setAllCaps(mButtonTextAllCaps);
+        if (!setIcon(button, extraButton.key)) {
+            button.setText(extraButton.display);
+            if (mTextSize > 0)
+                button.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
+        }
+        button.setAllCaps(true);
         button.setPadding(0, 0, 0, 0);
         button.setMinHeight(0);
         button.setMinWidth(0);
@@ -552,16 +582,206 @@ public final class ExtraKeysView extends GridLayout {
         return true;
     }
 
-    public Button createSpecialButton(String buttonKey, boolean needUpdate) {
+    public KeyButton createSpecialButton(String buttonKey, boolean needUpdate) {
         SpecialButtonState state = mSpecialButtons.get(SpecialButton.valueOf(buttonKey));
         if (state == null) return null;
         state.setIsCreated(true);
-        Button button = new MaterialButton(getContext(), null, android.R.attr.buttonBarButtonStyle);
+        KeyButton button = new KeyButton();
         button.setTextColor(state.isActive ? mButtonActiveTextColor : mButtonTextColor);
         if (needUpdate) {
             state.buttons.add(button);
         }
         return button;
+    }
+
+    private boolean setIcon(Button button, String key) {
+        int id = iconResource(key);
+        if (id == 0)
+            return false;
+
+        Drawable icon = getResources().getDrawable(id, getContext().getTheme());
+        icon.setTint(0xFFFFFFFF);
+        button.setText(null);
+        button.setForeground(new ScaledIcon(icon, shrinkFactor()));
+        button.setForegroundGravity(Gravity.CENTER);
+        button.setContentDescription(key);
+        return true;
+    }
+
+    /** The icon a key is drawn with instead of its label, {@code 0} for the keys that have none. */
+    private static int iconResource(String key) {
+        int id;
+        switch (key) {
+            case "LEFT":
+                id = R.drawable.arrow_back_24px;
+                break;
+            case "RIGHT":
+                id = R.drawable.arrow_forward_24px;
+                break;
+            case "UP":
+                id = R.drawable.arrow_upward_24px;
+                break;
+            case "DOWN":
+                id = R.drawable.arrow_downward_24px;
+                break;
+            case "PREFERENCES":
+                id = R.drawable.settings_24px;
+                break;
+            case "KEYBOARD":
+                id = R.drawable.keyboard_24px;
+                break;
+            case "ZOOM_IN":
+                id = R.drawable.zoom_in_24px;
+                break;
+            case "ZOOM_OUT":
+                id = R.drawable.zoom_out_24px;
+                break;
+            case "ZOOM_RESET":
+                id = R.drawable.youtube_searched_for_24px;
+                break;
+            default:
+                return 0;
+        }
+
+        return id;
+    }
+
+    @Override
+    protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
+        super.onSizeChanged(width, height, oldWidth, oldHeight);
+        fitLabels();
+    }
+
+    /**
+     * Shrinks every button by the same factor, the least one at which the widest label still fits
+     * its cell on a single line, scaling icons along with the labels. Labels longer than
+     * {@link #FITTED_LABEL_LENGTH} only count up to that length, so one long custom label can not
+     * shrink the whole bar.
+     */
+    private void fitLabels() {
+        int columns = getColumnCount();
+        if (getWidth() <= 0 || columns < 1 || getChildCount() < 1 || mBaseTextSize <= 0)
+            return;
+
+        // Every cell is the same width, and every button draws with the typeface of the same style.
+        float cellWidth = (float) (getWidth() - getPaddingLeft() - getPaddingRight()) / columns;
+        mLabelPaint.setTypeface(((Button) getChildAt(0)).getTypeface());
+        mLabelPaint.setTextSize(mBaseTextSize);
+
+        float widest = 0;
+        for (int i = 0; i < getChildCount(); i++) {
+            Button button = (Button) getChildAt(i);
+            if (!hasLabel(button))
+                continue;
+
+            // Buttons are all caps, and capitals are the wider ones, so measure the text as drawn.
+            CharSequence label = button.getText();
+            widest = Math.max(widest, mLabelPaint.measureText(
+                    label.subSequence(0, Math.min(label.length(), FITTED_LABEL_LENGTH))
+                            .toString().toUpperCase(Locale.ROOT)));
+        }
+
+        float textSize = widest > cellWidth ? mBaseTextSize * cellWidth / widest : mBaseTextSize;
+        if (textSize == mTextSize)
+            return;
+        mTextSize = textSize;
+        for (int i = 0; i < getChildCount(); i++) {
+            Button button = (Button) getChildAt(i);
+            // A button drawing an icon keeps the text size too, its popup hint scales with it.
+            button.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+            if (!hasLabel(button) && button.getForeground() instanceof ScaledIcon)
+                // A new instance, setForeground ignores the one it already holds.
+                button.setForeground(new ScaledIcon(((ScaledIcon) button.getForeground()).getDrawable(), shrinkFactor()));
+        }
+    }
+
+    /** Whether a button draws a label rather than an icon set by {@link #setIcon(Button, String)}. */
+    private static boolean hasLabel(Button button) {
+        CharSequence label = button.getText();
+        return label != null && label.length() > 0;
+    }
+
+    /** How much smaller than the theme size the buttons currently draw, {@code 1} while they fit. */
+    private float shrinkFactor() {
+        return mTextSize > 0 && mBaseTextSize > 0 ? mTextSize / mBaseTextSize : 1f;
+    }
+
+    /**
+     * A button of the bar, drawing what its popup key is in the top right corner, the way a keycap
+     * hints at the symbols its key can also produce.
+     */
+    final class KeyButton extends MaterialButton {
+        /** How much smaller than the button label the hint draws. */
+        private static final float HINT_SCALE = 0.5f;
+        /** An icon pads itself, so it needs more room than a label to read as the same size. */
+        private static final float HINT_ICON_SCALE = 1.75f;
+
+        @Nullable
+        private Drawable mHintIcon;
+        @Nullable
+        private String mHintLabel;
+
+        KeyButton() {
+            super(ExtraKeysView.this.getContext(), null, android.R.attr.buttonBarButtonStyle);
+        }
+
+        /** Set the popup key to hint at, the same way {@link #setIcon(Button, String)} shows a key. */
+        void setPopupHint(@NonNull ExtraKeyButton popup) {
+            int id = iconResource(popup.key);
+            mHintIcon = id != 0 ? getResources().getDrawable(id, getContext().getTheme()).mutate() : null;
+            mHintLabel = popup.display.toUpperCase(Locale.ROOT);
+            invalidate();
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            super.onDraw(canvas);
+            if (mHintLabel == null)
+                return;
+
+            float size = getTextSize() * HINT_SCALE, padding = size / 4;
+            float right = getWidth() - padding;
+            int alpha = Color.alpha(getCurrentTextColor()) * 2 / 3;
+            if (mHintIcon != null) {
+                size *= HINT_ICON_SCALE;
+                mHintIcon.setAlpha(alpha);
+                mHintIcon.setBounds(Math.round(right - size), Math.round(padding),
+                        Math.round(right), Math.round(padding + size));
+                mHintIcon.draw(canvas);
+            } else {
+                mHintPaint.setTypeface(getTypeface());
+                mHintPaint.setTextSize(size);
+                mHintPaint.setTextAlign(Paint.Align.RIGHT);
+                mHintPaint.setColor(getCurrentTextColor());
+                mHintPaint.setAlpha(alpha);
+                // A macro label can be arbitrarily long, so it is cut to what the corner holds.
+                int fits = mHintPaint.breakText(mHintLabel, true, getWidth() - 2 * padding, null);
+                canvas.drawText(mHintLabel, 0, fits, right, padding - mHintPaint.ascent(), mHintPaint);
+            }
+        }
+    }
+
+    /**
+     * An icon reporting a scaled intrinsic size, because a foreground is drawn at that size and so
+     * would otherwise keep the size it has at the theme's text size.
+     */
+    private static final class ScaledIcon extends DrawableWrapper {
+        private final float mScale;
+
+        ScaledIcon(Drawable icon, float scale) {
+            super(icon);
+            mScale = scale;
+        }
+
+        @Override
+        public int getIntrinsicWidth() {
+            return Math.round(getDrawable().getIntrinsicWidth() * mScale);
+        }
+
+        @Override
+        public int getIntrinsicHeight() {
+            return Math.round(getDrawable().getIntrinsicHeight() * mScale);
+        }
     }
 
     /**

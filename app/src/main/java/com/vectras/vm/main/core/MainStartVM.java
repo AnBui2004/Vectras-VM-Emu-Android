@@ -73,6 +73,7 @@ public class MainStartVM {
 
     public interface MainStartVMCallback {
         void onStarted(int statusCode, String message);
+
         void onError(int errorCode, String message);
     }
 
@@ -156,7 +157,7 @@ public class MainStartVM {
                     return;
                 }
             }
-            
+
             lastVMName = vmName;
             lastEnv = env;
             lastVMID = vmID;
@@ -208,7 +209,8 @@ public class MainStartVM {
         }
 
         // Place it here to avoid freezing when the dialog box appears upon returning to the virtual machine.
-        if (dialog == null || !dialog.isShowing()) showDialog((Activity) context, vmID, vmName, thumbnailFile, null);
+        if (dialog == null || !dialog.isShowing())
+            showDialog((Activity) context, vmID, vmName, thumbnailFile, null);
 
         File romDir = new File(Config.getCacheDir() + "/" + finalvmID);
         if (!romDir.exists()) {
@@ -268,10 +270,30 @@ public class MainStartVM {
         }
 
         new Thread(() -> {
-            boolean isExceeded = env.contains(FileUtils.getExternalFilesDirectory(context).getPath() + "/SharedFolder") && FileUtils.getFolderSize(FileUtils.getExternalFilesDirectory(context).getPath() + "/SharedFolder") * Math.pow(10, -6) > 516;
+            Boolean isExceeded = null;
+            Exception exception = null;
 
+            try {
+                isExceeded = env.contains(FileUtils.getExternalFilesDirectory(context).getPath() + "/SharedFolder") && FileUtils.getFolderSize(FileUtils.getExternalFilesDirectory(context).getPath() + "/SharedFolder") * Math.pow(10, -6) > 516;
+            } catch (SecurityException e) {
+                exception = e;
+            }
+
+            Boolean finalIsExceeded = isExceeded;
+            Exception finalException = exception;
             new Handler(Looper.getMainLooper()).post(() -> {
-                if (isExceeded) {
+                if (finalIsExceeded == null) {
+                    VMManager.isQemuStopedWithError = true;
+
+                    if (context instanceof Activity activity) {
+                        if (!activity.isFinishing() && !activity.isDestroyed())
+                            activity.runOnUiThread(() -> CrashTrackerUtils.showCoreFeatureErrorDialog(activity, finalException));
+                    }
+
+                    return;
+                }
+
+                if (finalIsExceeded) {
                     DialogUtils.twoDialog(
                             context,
                             context.getString(R.string.problem_has_been_detected),
@@ -316,7 +338,19 @@ public class MainStartVM {
 
         String cleanUpCommand = " && echo '" + TAG_FINISHED_WITHOUT_ERROR + "'\nrm -r " + Config.getCacheVMPath(vmID);
 
-        String finalCommand = VMManager.addAudioDevWav(vmID, String.format(runCommandFormat, env));
+        String finalCommand;
+
+        try {
+            finalCommand = VMManager.addAudioDevWav(vmID, String.format(runCommandFormat, env));
+        } catch (SecurityException e) {
+            if (context instanceof Activity activity) {
+                if (!activity.isFinishing() && !activity.isDestroyed())
+                    activity.runOnUiThread(() -> CrashTrackerUtils.showCoreFeatureErrorDialog(activity, e));
+            }
+
+            return;
+        }
+
         finalCommand = "echo ===== COMMAND =====\necho\necho \"" + finalCommand + "\"\necho\necho ===== LOGS =====\necho\n" + finalCommand + cleanUpCommand;
 
         if (MainSettingsManager.getVmUi(context).equals("X11")) {
@@ -412,7 +446,8 @@ public class MainStartVM {
                                 }
                             } else {
                                 forceDisableMigrate = false;
-                                if ( activity != null) activity.runOnUiThread(() -> dialog.setStatus(R.string.booting_up));
+                                if (activity != null)
+                                    activity.runOnUiThread(() -> dialog.setStatus(R.string.booting_up));
                             }
 
                             QmpSender.resume();
