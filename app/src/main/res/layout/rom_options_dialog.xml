@@ -125,6 +125,29 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ln_clone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="16dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/object_shape_middle_high">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/content_copy_24px"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:padding="8dp"
+                    android:textColor="?attr/colorControlNormal"
+                    android:text="@string/clone"/>
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/ln_cleanup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

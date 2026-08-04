@@ -9,12 +9,9 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.opengl.GLES20;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.CancellationSignal;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -29,21 +26,11 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.inputmethod.BaseInputConnection;
-import android.view.inputmethod.CompletionInfo;
-import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.CursorAnchorInfo;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.ExtractedText;
-import android.view.inputmethod.ExtractedTextRequest;
-import android.view.inputmethod.HandwritingGesture;
 import android.view.inputmethod.InputConnection;
-import android.view.inputmethod.InputContentInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.view.inputmethod.PreviewableHandwritingGesture;
 import android.view.inputmethod.SurroundingText;
-import android.view.inputmethod.TextAttribute;
-import android.view.inputmethod.TextBoundsInfoResult;
-import android.view.inputmethod.TextSnapshot;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -54,9 +41,6 @@ import com.vectras.vm.x11.input.TouchInputHandler;
 import com.vectras.vm.x11.utils.SamsungDexUtils;
 
 import java.util.Set;
-import java.util.concurrent.Executor;
-import java.util.function.Consumer;
-import java.util.function.IntConsumer;
 import java.util.regex.PatternSyntaxException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -72,10 +56,6 @@ public class LorieView extends SurfaceView implements InputStub {
 
     public interface Callback {
         void inputTransformChanged(int screenWidth, int screenHeight, Matrix inputTransform);
-    }
-
-    interface PixelFormat {
-        int BGRA_8888 = 5; // Stands for HAL_PIXEL_FORMAT_BGRA_8888
     }
 
     private ClipboardManager clipboard;
@@ -298,9 +278,7 @@ public class LorieView extends SurfaceView implements InputStub {
         }
     };
     private final SurfaceHolder.Callback mSurfaceCallback = new SurfaceHolder.Callback() {
-        @Override public void surfaceCreated(@NonNull SurfaceHolder holder) {
-            holder.setFormat(PixelFormat.BGRA_8888);
-        }
+        @Override public void surfaceCreated(@NonNull SurfaceHolder holder) {}
 
         @Override public void surfaceChanged(@NonNull SurfaceHolder holder, int f, int width, int height) {
             LorieView.this.surfaceChanged(holder.getSurface());

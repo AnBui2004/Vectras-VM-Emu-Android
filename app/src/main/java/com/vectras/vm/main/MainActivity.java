@@ -48,10 +48,8 @@ import com.vectras.vm.AboutActivity;
 import com.vectras.vm.AppConfig;
 import com.vectras.vm.creator.VMCreatorActivity;
 import com.vectras.vm.file.FilePickerDialog;
-import com.vectras.vm.main.core.Event;
 import com.vectras.vm.main.core.SharedViewModel;
 import com.vectras.vm.main.vms.DataMainRoms;
-import com.vectras.vm.main.vms.VmsHomeAdapter;
 import com.vectras.vm.main.vms.VmsSearchAdapter;
 import com.vectras.vm.settings.Minitools;
 import com.vectras.vm.R;
@@ -68,7 +66,6 @@ import com.vectras.vm.main.romstore.DataRoms;
 import com.vectras.vm.creator.SetArchActivity;
 import com.vectras.vm.VMManager;
 import com.vectras.vm.adapter.LogsAdapter;
-import com.vectras.vm.main.core.CallbackInterface;
 import com.vectras.vm.main.core.DisplaySystem;
 import com.vectras.vm.main.core.PendingCommand;
 import com.vectras.vm.main.core.SharedData;
@@ -259,8 +256,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         sharedViewModel.requestRefreshVmList.observe(this, event -> {
-            Boolean isRefresh = event.getIfNotHandled();
-            if (isRefresh != null) {
+            Boolean isHandle = event.getIfNotHandled();
+            if (isHandle != null) {
                 vmsFragment().refresh();
             }
         });

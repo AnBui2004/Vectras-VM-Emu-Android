@@ -42,6 +42,8 @@ import com.vectras.vm.creator.editor.FirmwareConfigsDialog;
 import com.vectras.vm.creator.editor.StorageConfigsDialog;
 import com.vectras.vm.creator.utils.VMCreatorSelector;
 import com.vectras.vm.file.FilePickerDialog;
+import com.vectras.vm.main.core.MainConfigs;
+import com.vectras.vm.manager.ParamManager;
 import com.vectras.vm.store.RomInfo;
 import com.vectras.vm.SplashActivity;
 import com.vectras.vm.VMManager;
@@ -622,6 +624,11 @@ public class VMCreatorActivity extends AppCompatActivity {
                 _contentDialog += getResources().getString(R.string.you_have_not_added_any_storage_devices);
             }
 
+            if (current.graphicCard == 0 && !ParamManager.hasVga(current.itemExtra)) {
+                if (!_contentDialog.isEmpty()) _contentDialog += "\n\n";
+                _contentDialog += getResources().getString(R.string.no_graphics_card_is_attached_content);
+            }
+
             if (_contentDialog.isEmpty()) {
                 createNewVM();
             } else {
@@ -656,6 +663,8 @@ public class VMCreatorActivity extends AppCompatActivity {
             MainActivity.isOpenHome = true;
         }
 
+        if (modify) MainConfigs.refreshVmIds.add(current.vmID);
+
         modify = false;
 
         showProgressDialog(getString(R.string.just_a_sec));
@@ -686,9 +695,6 @@ public class VMCreatorActivity extends AppCompatActivity {
 
         current.itemName = Objects.requireNonNull(binding.title.getText()).toString();
         current.itemIcon = thumbnailPath;
-
-
-        current.qmpPort = 8080;
     }
 
     private void handleThumbnail(Uri uri) {

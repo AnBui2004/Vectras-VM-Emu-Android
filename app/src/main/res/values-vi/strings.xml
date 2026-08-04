@@ -695,6 +695,11 @@
     <string name="links">Các liên kết</string>
     <string name="community">Cộng đồng</string>
     <string name="an_error_occurred_while_loading_vm_configs">Đã xảy ra lỗi khi tải các cài đặt của máy ảo. Hãy thử lại sau.</string>
+    <string name="no_graphics_card_is_attached_content">Không có thẻ đồ hoạ nào được gắn. Bạn sẽ không nhìn thấy hình ảnh nào được xuất từ hệ điều hành bên trong máy ảo.</string>
+    <string name="clone">Nhân bản</string>
+    <string name="cloning">Đang nhân bản…</string>
+    <string name="would_you_like_to_create_a_copy_of_this_virtual_machine">Bạn có muốn tạo một bản sao của máy ảo này?</string>
+    <string name="clone_failed_content">Đã xảy ra sự cố khi nhân bản. Hãy thử lại sau.</string>
 
     <!--======================TERMUX STRINGS====================-->
     <string name="application_name" translatable="false">Vterm</string>

@@ -49,7 +49,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.PropertyPermission;
 import java.util.Random;
 
 public class VMManager {
@@ -342,7 +341,7 @@ public class VMManager {
                             progressDialog.reset();
 
                             SharedViewModel sharedViewModel = new ViewModelProvider((ViewModelStoreOwner) _activity).get(SharedViewModel.class);
-                            sharedViewModel.requestRefreshVmList.setValue(new Event<>(true));
+                            sharedViewModel.requestRefreshVmList.setValue(new Event<>(false));
 
                             if (!result) {
                                 DialogUtils.oopsDialog(_activity, _activity.getString(R.string.an_error_occurred_while_deleting_the_vm));
@@ -363,7 +362,7 @@ public class VMManager {
                             progressDialog.reset();
 
                             SharedViewModel sharedViewModel = new ViewModelProvider((ViewModelStoreOwner) _activity).get(SharedViewModel.class);
-                            sharedViewModel.requestRefreshVmList.setValue(new Event<>(true));
+                            sharedViewModel.requestRefreshVmList.setValue(new Event<>(false));
 
                             if (!result)
                                 DialogUtils.oopsDialog(_activity, _activity.getString(R.string.an_error_occurred_while_deleting_the_vm));
@@ -805,7 +804,7 @@ public class VMManager {
         );
 
         SharedViewModel sharedViewModel = new ViewModelProvider((ViewModelStoreOwner) _context).get(SharedViewModel.class);
-        sharedViewModel.requestRefreshVmList.setValue(new Event<>(true));
+        sharedViewModel.requestRefreshVmList.setValue(new Event<>(false));
 
         moveAllBrokenVMRecycleBin();
     }

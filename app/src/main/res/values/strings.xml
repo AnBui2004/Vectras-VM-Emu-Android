@@ -716,6 +716,11 @@
     <string name="links">Links</string>
     <string name="community">Community</string>
     <string name="an_error_occurred_while_loading_vm_configs">An error occurred while loading the virtual machine configs. Please try again later.</string>
+    <string name="no_graphics_card_is_attached_content">No graphics card is attached. You will not see any images being output from the operating system inside the virtual machine.</string>
+    <string name="clone">Clone</string>
+    <string name="cloning">Cloning…</string>
+    <string name="would_you_like_to_create_a_copy_of_this_virtual_machine">Would you like to create a copy of this virtual machine?</string>
+    <string name="clone_failed_content">An error occurred while cloning. Please try again later.</string>
 
 
     <!--======================TERMUX STRINGS====================-->

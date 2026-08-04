@@ -2,6 +2,7 @@ package com.vectras.vm.main.vms;
 
 import com.google.gson.annotations.SerializedName;
 
+// Edit in ExportRomActivity and VmListManager.isSameVmConfig too.
 public class DataMainRoms {
     public String vmID = "";
 

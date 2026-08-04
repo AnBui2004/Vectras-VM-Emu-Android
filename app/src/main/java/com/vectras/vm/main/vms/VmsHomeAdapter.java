@@ -14,9 +14,10 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.signature.ObjectKey;
 import com.vectras.vm.R;
 import com.vectras.vm.VMManager;
+import com.vectras.vm.main.core.MainConfigs;
 import com.vectras.vm.main.core.MainStartVM;
 import com.vectras.vm.main.core.RomOptionsDialog;
 import com.vectras.vm.main.core.SharedData;
@@ -81,21 +82,23 @@ public class VmsHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         myHolder.textName.setText(current.itemName);
         myHolder.textArch.setText(current.itemArch);
+
+        MainConfigs.refreshVmIds.remove(current.vmID);
         if (!current.itemIcon.isEmpty() && FileUtils.isFileExists(current.itemIcon)){
-            Glide.with(activity.getApplicationContext())
-                    .load(new File(current.itemIcon))
+            File file = new File(current.itemIcon);
+            Glide.with(myHolder.ivIcon)
+                    .load(file)
+                    .signature(new ObjectKey(file.lastModified()))
                     .placeholder(R.drawable.ic_computer_180dp_with_padding)
                     .error(R.drawable.ic_computer_180dp_with_padding)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(myHolder.ivIcon);
         } else if (VmFileManager.isScreenshotPngExists(current.vmID)) {
-            Glide.with(activity.getApplicationContext())
-                    .load(new File(VmFileManager.getScreenshotPng(current.vmID )))
+            File file = new File(VmFileManager.getScreenshotPng(current.vmID));
+            Glide.with(myHolder.ivIcon)
+                    .load(file)
+                    .signature(new ObjectKey(file.lastModified()))
                     .placeholder(R.drawable.ic_computer_180dp_with_padding)
                     .error(R.drawable.ic_computer_180dp_with_padding)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(myHolder.ivIcon);
         } else {
             VMManager.setIconWithName(myHolder.ivIcon, current.itemName);
@@ -144,5 +147,4 @@ public class VmsHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         diffResult.dispatchUpdatesTo(this);
     }
-
 }

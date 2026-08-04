@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.signature.ObjectKey;
 import com.vectras.vm.R;
 import com.vectras.vm.VMManager;
 import com.vectras.vm.main.MainActivity;
@@ -65,14 +66,18 @@ public class VmsSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         myHolder.textName.setText(current.itemName);
         myHolder.textSize.setText(current.itemArch);
         if (!current.itemIcon.isEmpty() && FileUtils.isFileExists(current.itemIcon)){
-            Glide.with(activity.getApplicationContext())
-                    .load(new File(current.itemIcon))
+            File file = new File(current.itemIcon);
+            Glide.with(myHolder.ivIcon)
+                    .load(file)
+                    .signature(new ObjectKey(file.lastModified()))
                     .placeholder(R.drawable.ic_computer_180dp_with_padding)
                     .error(R.drawable.ic_computer_180dp_with_padding)
                     .into(myHolder.ivIcon);
         } else if (VmFileManager.isScreenshotPngExists(current.vmID)) {
-            Glide.with(activity.getApplicationContext())
-                    .load(new File(VmFileManager.getScreenshotPng(current.vmID )))
+            File file = new File(VmFileManager.getScreenshotPng(current.vmID));
+            Glide.with(myHolder.ivIcon)
+                    .load(file)
+                    .signature(new ObjectKey(file.lastModified()))
                     .placeholder(R.drawable.ic_computer_180dp_with_padding)
                     .error(R.drawable.ic_computer_180dp_with_padding)
                     .into(myHolder.ivIcon);

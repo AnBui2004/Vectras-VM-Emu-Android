@@ -11,9 +11,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.signature.ObjectKey;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.vectras.qemu.Config;
@@ -26,10 +29,10 @@ import com.vectras.vm.file.FilePickerDialog;
 import com.vectras.vm.main.MainActivity;
 import com.vectras.vm.main.vms.DataMainRoms;
 import com.vectras.vm.manager.FirmwareManager;
+import com.vectras.vm.manager.VmActions;
 import com.vectras.vm.manager.VmAudioManager;
 import com.vectras.vm.manager.VmControllerDialog;
 import com.vectras.vm.manager.VmFileManager;
-import com.vectras.vm.settings.Minitools;
 import com.vectras.vm.utils.DialogUtils;
 import com.vectras.vm.utils.FileUtils;
 import com.vectras.vm.utils.ProgressDialog;
@@ -66,20 +69,20 @@ public class RomOptionsDialog {
 
 
             if (!vmConfig.itemIcon.isEmpty() && FileUtils.isFileExists(vmConfig.itemIcon)){
-                Glide.with(activity.getApplicationContext())
-                        .load(new File(vmConfig.itemIcon))
+                File file = new File(vmConfig.itemIcon);
+                Glide.with(thumbnail)
+                        .load(file)
+                        .signature(new ObjectKey(file.lastModified()))
                         .placeholder(R.drawable.ic_computer_180dp_with_padding)
                         .error(R.drawable.ic_computer_180dp_with_padding)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .into(thumbnail);
             } else if (VmFileManager.isScreenshotPngExists(vmConfig.vmID)) {
-                Glide.with(activity.getApplicationContext())
-                        .load(new File(VmFileManager.getScreenshotPng(vmConfig.vmID )))
+                File file = new File(VmFileManager.getScreenshotPng(vmConfig.vmID));
+                Glide.with(thumbnail)
+                        .load(file)
+                        .signature(new ObjectKey(file.lastModified()))
                         .placeholder(R.drawable.ic_computer_180dp_with_padding)
                         .error(R.drawable.ic_computer_180dp_with_padding)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .into(thumbnail);
             } else {
                 VMManager.setIconWithName(thumbnail, vmConfig.itemName);
@@ -96,6 +99,10 @@ public class RomOptionsDialog {
 
             v.findViewById(R.id.ln_edit).setOnClickListener(v3 -> {
                 activity.startActivity(new Intent(activity, VMCreatorActivity.class).putExtra("POS", position).putExtra("MODIFY", true).putExtra("VMID", vmConfig.vmID));
+
+                if (activity instanceof MainActivity mainActivity)
+                    mainActivity.binding.searchview.hide();
+
                 bottomSheetDialog.cancel();
             });
 
@@ -104,6 +111,45 @@ public class RomOptionsDialog {
                 intent.setClass(activity, ExportRomActivity.class);
                 intent.putExtra("POS", position);
                 activity.startActivity(intent);
+                bottomSheetDialog.cancel();
+            });
+
+            v.findViewById(R.id.ln_clone).setOnClickListener(v8 -> {
+                DialogUtils.twoDialog(
+                        activity,
+                        activity.getString(R.string.clone),
+                        activity.getString(R.string.would_you_like_to_create_a_copy_of_this_virtual_machine),
+                        activity.getString(R.string.clone),
+                        activity.getString(R.string.cancel),
+                        true,
+                        R.drawable.content_copy_24px,
+                        true,
+                        () -> {
+                            ProgressDialog progressDialog = new ProgressDialog(activity);
+                            progressDialog.setText(activity.getString(R.string.cloning));
+                            progressDialog.show();
+
+                            new Thread(() -> {
+                                boolean isCloned = VmActions.clone(vmConfig);
+                                activity.runOnUiThread(() -> {
+                                    progressDialog.reset();
+
+                                    if (isCloned) {
+                                        SharedViewModel sharedViewModel = new ViewModelProvider((ViewModelStoreOwner) activity).get(SharedViewModel.class);
+                                        sharedViewModel.requestRefreshVmList.setValue(new Event<>(false));
+                                    } else {
+                                        DialogUtils.oopsDialog(activity, activity.getString(R.string.clone_failed_content));
+                                    }
+                                });
+                            }).start();
+                        },
+                        null,
+                        null
+                );
+
+                if (activity instanceof MainActivity mainActivity)
+                    mainActivity.binding.searchview.hide();
+
                 bottomSheetDialog.cancel();
             });
 
