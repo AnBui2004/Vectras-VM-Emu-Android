@@ -107,7 +107,10 @@ public class VmsHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         myHolder.cdRoms.setOnClickListener(view -> MainStartVM.startNow(activity, current));
 
         myHolder.cdRoms.setOnLongClickListener(v -> {
-            RomOptionsDialog.show(activity, position, current);
+            int pos = holder.getBindingAdapterPosition();
+            if (pos == RecyclerView.NO_POSITION) return true;
+
+            RomOptionsDialog.show(activity, pos, current);
             return true;
         });
     }

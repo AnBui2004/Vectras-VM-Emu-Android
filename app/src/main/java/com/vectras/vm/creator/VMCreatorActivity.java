@@ -293,6 +293,7 @@ public class VMCreatorActivity extends AppCompatActivity {
 
             try {
                 loadConfig(VMManager.getVMConfig(getIntent().getIntExtra("POS", 0)));
+                stopCheckId = true;
             } catch (IllegalStateException e) {
                 DialogUtils.oopsDialog(this, getString(R.string.an_error_occurred_while_loading_vm_configs), true);
             }
@@ -306,6 +307,7 @@ public class VMCreatorActivity extends AppCompatActivity {
             previousName = current.itemName;
         } else {
             checkVMID();
+            stopCheckId = true;
 
             utils = new CreatorUtils(this, vmID);
 
@@ -568,7 +570,8 @@ public class VMCreatorActivity extends AppCompatActivity {
 
         current.memory = 512;
 
-        current.graphicCard = 1; // Default
+        // Force the display output from the graphic card to take priority over the monitor when using ARM64.
+        current.graphicCard = currentArch.equals(MainSettingsManager.ARM64_ARCH) ? 2 : 1; // Standard VGA : Default
 
         current.networkCard = 3; // Intel E1000 (82540EM)
 
@@ -579,8 +582,12 @@ public class VMCreatorActivity extends AppCompatActivity {
         current.accel = DeviceUtils.is64bit() ? 2 : 1;
     }
 
+    boolean stopCheckId;
+
     private void checkVMID() {
-        if (vmID.isEmpty() || (!modify && VmFileManager.isInUse(vmID))) {
+        if (stopCheckId) return;
+
+        while (vmID.isEmpty() || (!modify && VmFileManager.isInUse(vmID))) {
             vmID = VMManager.idGenerator();
             Log.d(TAG, "Changed to ID:" + vmID);
         }
@@ -1005,6 +1012,7 @@ public class VMCreatorActivity extends AppCompatActivity {
 
                     newConfigs.itemExtra = VmFileManager.textMarkToPath(this, vmID, newConfigs.itemExtra);
                     loadConfig(newConfigs);
+                    stopCheckId = true;
                 } catch (JsonSyntaxException e) {
                     DialogUtils.oneDialog(this, getResources().getString(R.string.oops), getResources().getString(R.string.error_CR_CVBI4), getResources().getString(R.string.ok), true, R.drawable.warning_48px, true, null, null);
                     return;

@@ -99,11 +99,7 @@ public class Minitools extends AppCompatActivity {
                 this::cleanUp, null, null));
 
         binding.restore.setOnClickListener(v -> DialogUtils.twoDialog(Minitools.this, getResources().getString(R.string.restore), getResources().getString(R.string.restore_content), getResources().getString(R.string.continuetext), getResources().getString(R.string.cancel), true, R.drawable.settings_backup_restore_24px, true,
-                () -> {
-                    int result = VMManager.restoreAll();
-                    DialogUtils.oneDialog(Minitools.this, getString(R.string.done), getString(R.string.restored) + " " + result + ".", R.drawable.settings_backup_restore_24px);
-                    binding.restore.setVisibility(GONE);
-                }, null, null));
+                this::restore, null, null));
 
         binding.deleteallvm.setOnClickListener(v -> DialogUtils.twoDialog(Minitools.this, getResources().getString(R.string.delete_all_vm), getResources().getString(R.string.delete_all_vm_content), getResources().getString(R.string.delete_all), getResources().getString(R.string.cancel), true, R.drawable.delete_24px, true,
                 this::eraserAllVM, null, null));
@@ -219,6 +215,20 @@ public class Minitools extends AppCompatActivity {
                         null);
                 binding.restore.setVisibility(GONE);
                 binding.cleanup.setVisibility(GONE);
+            });
+        }).start();
+    }
+
+    private void restore() {
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setText(getString(R.string.just_a_sec));
+        progressDialog.show();
+        new Thread(() -> {
+            int result = VMManager.restoreAll();
+            runOnUiThread(() -> {
+                progressDialog.dismiss();
+                DialogUtils.oneDialog(Minitools.this, getString(R.string.done), getString(R.string.restored) + " " + result + ".", R.drawable.settings_backup_restore_24px);
+                binding.restore.setVisibility(GONE);
             });
         }).start();
     }

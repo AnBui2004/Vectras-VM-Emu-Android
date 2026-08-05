@@ -78,8 +78,6 @@ public class AddIn {
         bindingDesktopControls = binding.controlsfragment.desktopcontrols;
         bindingGameControls = binding.controlsfragment.gamecontrols;
 
-        UIUtils.fullScreen(activity);
-
         initializeControlMode();
         initializeMenuBar();
         initializeDesktopControl();

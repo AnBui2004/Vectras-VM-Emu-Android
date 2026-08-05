@@ -95,7 +95,7 @@ public class VmFileManager {
     }
 
     public static boolean isInUse(String vmId) {
-        if (!FileUtils.isFileExists(quickGetPath(vmId))) return true;
+        if (!FileUtils.isFileExists(quickGetPath(vmId))) return false;
         return !FileUtils.isEmpty(quickGetPath(vmId));
     }
 
