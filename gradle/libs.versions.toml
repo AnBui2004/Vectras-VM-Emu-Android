@@ -27,7 +27,7 @@ retrofit2 = "3.0.0"
 swiperefreshlayout = "1.2.0"
 viewpager = "1.1.0"
 window = "1.5.1"
-playServicesOssLicensesPlugin = "0.12.0"
+playServicesOssLicensesPlugin = "0.13.0"
 playServicesOssLicenses = "17.0.0"
 
 [libraries]
