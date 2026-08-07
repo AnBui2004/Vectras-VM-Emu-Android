@@ -65,15 +65,12 @@
             </LinearLayout>
 
 
-            <ImageButton
-                android:id="@+id/optionsButton"
+            <ImageView
+                android:id="@+id/iv_pin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
                 android:padding="8dp"
-                android:src="@drawable/more_vert_24px"
+                android:src="@drawable/keep_24px"
                 android:visibility="gone"
                 tools:visibility="gone" />
         </LinearLayout>

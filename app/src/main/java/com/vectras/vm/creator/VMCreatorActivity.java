@@ -1,9 +1,12 @@
 package com.vectras.vm.creator;
 
+import static android.os.Build.VERSION.SDK_INT;
+
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -286,13 +289,14 @@ public class VMCreatorActivity extends AppCompatActivity {
             dialog.show(getSupportFragmentManager(), "advanced_configs_dialog");
         });
 
-        modify = getIntent().getBooleanExtra("MODIFY", false);
-        if (modify) {
+        DataMainRoms waitingData = SDK_INT >= Build.VERSION_CODES.TIRAMISU ? getIntent().getSerializableExtra("data", DataMainRoms.class) : (DataMainRoms) getIntent().getSerializableExtra("data");
+        if (waitingData != null) {
+            modify = true;
             binding.collapsingToolbarLayout.setTitle(getString(R.string.edit));
             created = true;
 
             try {
-                loadConfig(VMManager.getVMConfig(getIntent().getIntExtra("POS", 0)));
+                loadConfig(waitingData);
                 stopCheckId = true;
             } catch (IllegalStateException e) {
                 DialogUtils.oopsDialog(this, getString(R.string.an_error_occurred_while_loading_vm_configs), true);
@@ -654,7 +658,7 @@ public class VMCreatorActivity extends AppCompatActivity {
             FileUtils.writeToFile(AppConfig.maindirpath, "roms-data.json", "[]");
         }
 
-        if (!VMManager.addVM(current, modify ? getIntent().getIntExtra("POS", 0) : -1)) {
+        if (!VMManager.addVM(current, modify ? VMManager.findVmPotision(current.vmID) : -1)) {
             DialogUtils.oneDialog(
                     this,
                     getString(R.string.oops),

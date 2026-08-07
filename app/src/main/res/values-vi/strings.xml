@@ -700,6 +700,9 @@
     <string name="cloning">Đang nhân bản…</string>
     <string name="would_you_like_to_create_a_copy_of_this_virtual_machine">Bạn có muốn tạo một bản sao của máy ảo này?</string>
     <string name="clone_failed_content">Đã xảy ra sự cố khi nhân bản. Hãy thử lại sau.</string>
+    <string name="pin">Ghim</string>
+    <string name="unpin">Bỏ ghim</string>
+    <string name="pin_failed_content">Đã xảy ra sự cố khi ghim. Hãy thử lại sau.</string>
 
     <!--======================TERMUX STRINGS====================-->
     <string name="application_name" translatable="false">Vterm</string>

@@ -2,8 +2,13 @@ package com.vectras.vm.main.vms;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 // Edit in ExportRomActivity and VmListManager.isSameVmConfig too.
-public class DataMainRoms {
+public class DataMainRoms implements Serializable {
+    // VM list only
+    public boolean pin;
+
     public String vmID = "";
 
     @SerializedName(

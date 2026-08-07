@@ -10,12 +10,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.signature.ObjectKey;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -40,13 +40,13 @@ import com.vectras.vm.utils.ProgressDialog;
 import java.io.File;
 
 public class RomOptionsDialog {
-    public static void show(Activity activity, int position, DataMainRoms vmConfig) {
+    public static void show(Activity activity, DataMainRoms vmConfig) {
         if (VMManager.isVMRunning(activity, vmConfig.vmID)) {
             Config.vmID = vmConfig.vmID;
 
             VmControllerDialog vmControllerDialog = new VmControllerDialog();
             vmControllerDialog.streamAudio = VmAudioManager.streamAudio;
-            vmControllerDialog.position = position;
+            vmControllerDialog.vmConfig = vmConfig;
             vmControllerDialog.show(((FragmentActivity) activity).getSupportFragmentManager(), "VmControllerDialog");
         } else {
             BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(activity);
@@ -97,8 +97,29 @@ public class RomOptionsDialog {
                 bottomSheetDialog.cancel();
             });
 
+            if (vmConfig.pin) {
+                ((ImageView) v.findViewById(R.id.iv_pin)).setImageDrawable(AppCompatResources.getDrawable(activity, R.drawable.keep_off_24px));
+                ((TextView) v.findViewById(R.id.tv_pin)).setText(activity.getString(R.string.unpin));
+            }
+
+            v.findViewById(R.id.ln_pin).setOnClickListener(v9 -> {
+                if (VMManager.pinVm(vmConfig)) {
+                    MainConfigs.refreshVmIds.add(vmConfig.vmID);
+
+                    SharedViewModel sharedViewModel = new ViewModelProvider((ViewModelStoreOwner) activity).get(SharedViewModel.class);
+                    sharedViewModel.requestRefreshVmList.setValue(new Event<>(false));
+
+                    if (activity instanceof MainActivity mainActivity)
+                        mainActivity.binding.searchview.hide();
+                } else {
+                    DialogUtils.oopsDialog(activity, activity.getString(R.string.pin_failed_content));
+                }
+
+                bottomSheetDialog.cancel();
+            });
+
             v.findViewById(R.id.ln_edit).setOnClickListener(v3 -> {
-                activity.startActivity(new Intent(activity, VMCreatorActivity.class).putExtra("POS", position).putExtra("MODIFY", true).putExtra("VMID", vmConfig.vmID));
+                activity.startActivity(new Intent(activity, VMCreatorActivity.class).putExtra("data", vmConfig).putExtra("VMID", vmConfig.vmID));
 
                 if (activity instanceof MainActivity mainActivity)
                     mainActivity.binding.searchview.hide();
@@ -109,7 +130,7 @@ public class RomOptionsDialog {
             v.findViewById(R.id.ln_export).setOnClickListener(v2 -> {
                 Intent intent = new Intent();
                 intent.setClass(activity, ExportRomActivity.class);
-                intent.putExtra("POS", position);
+                intent.putExtra("data", vmConfig);
                 activity.startActivity(intent);
                 bottomSheetDialog.cancel();
             });
@@ -184,7 +205,7 @@ public class RomOptionsDialog {
                                 progressDialog.show();
 
                                 new Thread(() -> {
-                                    FirmwareManager.erase();
+                                    FirmwareManager.erase(VmFileManager.getPath(vmConfig.vmID));
                                     activity.runOnUiThread(() -> {
                                         progressDialog.dismiss();
                                         Toast.makeText(activity, activity.getString(R.string.done), Toast.LENGTH_LONG).show();
@@ -213,7 +234,7 @@ public class RomOptionsDialog {
             });
 
             v.findViewById(R.id.ln_remove).setOnClickListener(v1 -> {
-                VMManager.deleteVMDialog(vmConfig.itemName, position, activity);
+                VMManager.deleteVMDialog(vmConfig.itemName, vmConfig.vmID, activity);
 
                 if (activity instanceof MainActivity mainActivity)
                     mainActivity.binding.searchview.hide();

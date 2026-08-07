@@ -51,7 +51,7 @@ public class VmControllerDialog extends DialogFragment {
 
     private DialogChangeRemovableDevicesBinding binding;
     private String infoBlock = "";
-    public int position = -1;
+    public DataMainRoms vmConfig;
     public StreamAudio streamAudio;
     public VncCanvas vncCanvas;
     public View screenshotFrame;
@@ -100,7 +100,7 @@ public class VmControllerDialog extends DialogFragment {
                 if (!isAdded()) return;
                 progressDialog.reset();
 
-                if (position > -1) {
+                if (vmConfig != null) {
                     binding.lnConnect.setOnClickListener(v -> {
                         if (isAdded()) DisplaySystem.launch(requireActivity());
                         dismiss();
@@ -117,8 +117,7 @@ public class VmControllerDialog extends DialogFragment {
                     binding.lnRemove.setOnClickListener(v -> {
                         if (isAdded()) {
                             try {
-                                DataMainRoms vmConfig = VMManager.getVMConfig(position);
-                                VMManager.deleteVMDialog(vmConfig.itemName, position, requireActivity());
+                                VMManager.deleteVMDialog(vmConfig.itemName, vmConfig.vmID, requireActivity());
                             } catch (IllegalStateException | IndexOutOfBoundsException e) {
                                 DialogUtils.oopsDialog(requireActivity(), getString(R.string.an_error_occurred_while_loading_vm_configs));
                             }

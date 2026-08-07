@@ -721,6 +721,9 @@
     <string name="cloning">Cloning…</string>
     <string name="would_you_like_to_create_a_copy_of_this_virtual_machine">Would you like to create a copy of this virtual machine?</string>
     <string name="clone_failed_content">An error occurred while cloning. Please try again later.</string>
+    <string name="pin">Pin</string>
+    <string name="unpin">Unpin</string>
+    <string name="pin_failed_content">An error occurred while pinning. Please try again later.</string>
 
 
     <!--======================TERMUX STRINGS====================-->

@@ -1,9 +1,12 @@
 package com.vectras.vm;
 
+import static android.os.Build.VERSION.SDK_INT;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -96,7 +99,14 @@ public class ExportRomActivity extends AppCompatActivity {
         binding.edAuthor.setText(data.getString("author", ""));
         binding.edContent.setText(data.getString("desc", ""));
 
-        current = VMManager.getVMConfig(getIntent().getIntExtra("POS", 0));
+        DataMainRoms waitingData = SDK_INT >= Build.VERSION_CODES.TIRAMISU ? getIntent().getSerializableExtra("data", DataMainRoms.class) : (DataMainRoms) getIntent().getSerializableExtra("data");
+
+        if (waitingData == null) {
+            DialogUtils.oopsDialog(this, getString(R.string.an_error_occurred_while_loading_vm_configs), true);
+            return;
+        }
+
+        current = waitingData;
 
         folderPicker = registerForActivityResult(
                 new ActivityResultContracts.CreateDocument("application/octet-stream"),

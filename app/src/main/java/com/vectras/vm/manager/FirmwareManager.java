@@ -54,9 +54,9 @@ public class FirmwareManager {
     }
 
     public static boolean isAVarFileExist(String folderPath) {
-        return FileUtils.isFileExists(AppConfig.basefiledir + "QEMU_VARS.img") ||
-                FileUtils.isFileExists(AppConfig.basefiledir + "edk2-i386-vars.fd") ||
-                FileUtils.isFileExists(AppConfig.basefiledir + "edk2-x86_64-vars.fd");
+        return FileUtils.isFileExists(folderPath + "QEMU_VARS.img") ||
+                FileUtils.isFileExists(folderPath + "edk2-i386-vars.fd") ||
+                FileUtils.isFileExists(folderPath + "edk2-x86_64-vars.fd");
     }
 
     public static void erase(String folderPath) {

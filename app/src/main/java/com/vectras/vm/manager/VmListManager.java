@@ -79,6 +79,8 @@ public class VmListManager {
     }
 
     public static boolean isSameVmConfig(DataMainRoms config1, DataMainRoms config2) {
+        if (config1.pin != config2.pin) return false;
+
         if (!config1.vmID.equals(config2.vmID)) return false;
         if (!config1.itemArch.equals(config2.itemArch)) return false;
         if (!config1.itemIcon.equals(config2.itemIcon)) return false;

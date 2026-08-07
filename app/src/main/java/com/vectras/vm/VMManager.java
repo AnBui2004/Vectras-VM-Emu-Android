@@ -97,6 +97,34 @@ public class VMManager {
         return false;
     }
 
+    public static int findVmPotision(String vmId) {
+        String vmJsonListContent = FileUtils.readAFile(AppConfig.romsdatajson);
+
+        if (!JSONUtils.isValidFromString(vmJsonListContent) || vmId.isEmpty()) return -1;
+
+        ArrayList<HashMap<String, Object>> vmList;
+
+        try {
+            vmList = new Gson().fromJson(vmJsonListContent, new TypeToken<ArrayList<HashMap<String, Object>>>() {
+            }.getType());
+        } catch (JsonSyntaxException e) {
+            return -1;
+        }
+
+        if (vmList == null) return -1;
+
+        for (int _repeat = 0; _repeat < vmList.size(); _repeat++) {
+            if (vmList.get(_repeat).containsKey("vmID")
+                    && Objects.requireNonNull(vmList.get(_repeat).get("vmID")).toString().equals(vmId)) {
+                Log.i(TAG, "findVmPotision: " + vmId + " - YES.");
+                return _repeat;
+            }
+        }
+
+        Log.i(TAG, "findVmPotision: " + vmId + " - NO.");
+        return -1;
+    }
+
     public static boolean addToVMList(String vmConfigJson, String vmID) {
         String vmListJson = FileUtils.readAFile(AppConfig.romsdatajson);
         if (!JSONUtils.isValidFromString(vmListJson) || !JSONUtils.isValidFromString(vmConfigJson))
@@ -264,6 +292,13 @@ public class VMManager {
         // TODO: vmID.txt can be removed, it is being retained for backward compatibility.
     }
 
+    public static boolean pinVm(DataMainRoms vmConfig) {
+        vmConfig.pin = !vmConfig.pin;
+        int position = findVmPotision(vmConfig.vmID);
+        if (position < 0) return false;
+        return addVM(vmConfig, position);
+    }
+
     public static boolean addVM(HashMap<String, Object> vmConfigMap, int position) {
         return position == -1 ? addToVMList(vmConfigMap, Objects.requireNonNull(vmConfigMap.get("vmID")).toString()) : replaceToVMList(position, "", vmConfigMap);
     }
@@ -325,6 +360,10 @@ public class VMManager {
         }
 
         return replaceToVMList(position, "", vmConfigMap);
+    }
+
+    public static void deleteVMDialog(String _vmName, String vmId, Activity _activity) {
+        deleteVMDialog(_vmName, findVmPotision(vmId), _activity);
     }
 
     public static void deleteVMDialog(String _vmName, int _position, Activity _activity) {

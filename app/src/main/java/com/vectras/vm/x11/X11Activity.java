@@ -679,6 +679,8 @@ public class X11Activity extends AppCompatActivity {
         mInputHandler.reloadPreferences(prefs);
         lorieView.reloadPreferences(prefs);
 
+        if (mExtraKeys != null)
+            mExtraKeys.reload();
         setTerminalToolbarView();
 
         lorieView.triggerCallback();
@@ -755,7 +757,8 @@ public class X11Activity extends AppCompatActivity {
         pager.setVisibility(showNow ? View.VISIBLE : View.INVISIBLE);
 
         if (showNow) {
-            pager.setAdapter(mPageAdapter);
+            if (pager.getAdapter() != mPageAdapter)
+                pager.setAdapter(mPageAdapter);
             pager.clearOnPageChangeListeners();
             pager.addOnPageChangeListener(mOnPageListener);
             pager.bringToFront();
