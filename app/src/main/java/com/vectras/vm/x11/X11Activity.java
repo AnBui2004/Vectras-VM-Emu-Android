@@ -37,6 +37,7 @@ import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.service.notification.StatusBarNotification;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -66,6 +67,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.math.MathUtils;
@@ -99,7 +101,6 @@ public class X11Activity extends AppCompatActivity {
     private Notification mNotification;
     private final int mNotificationId = 7892;
     NotificationManager mNotificationManager;
-    static InputMethodManager inputMethodManager;
     private static DisplayManager displayManager;
     private static boolean showIMEWhileExternalConnected = true;
     private static boolean externalKeyboardConnected = false;
@@ -109,6 +110,8 @@ public class X11Activity extends AppCompatActivity {
     private boolean isInPictureInPictureMode = false;
     /** The display the system letterboxed us on instead of rotating, {@code null} until it does. */
     private Rect orientationDeniedAt = null;
+    private String screenIdleTimeoutArmedMode = null; // numeric screenIdleTimeout mode the pending idle check reflects, or null if none pending
+    private final Runnable screenIdleTimeoutCheck = this::checkScreenIdleTimeout;
     /**
      * Aspect ratios outside of the range the device is configured with are rejected by the system.
      */
@@ -121,37 +124,32 @@ public class X11Activity extends AppCompatActivity {
     private final SharedPreferences.OnSharedPreferenceChangeListener preferencesChangedListener = (__, key) -> onPreferencesChanged(key);
     private OrientationEventListener orientationListener;
 
-    private final BroadcastReceiver receiver = new BroadcastReceiver() {
-        @SuppressLint("UnspecifiedRegisterReceiverFlag")
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            prefs.recheckStoringSecondaryDisplayPreferences();
-            if (ACTION_START.equals(intent.getAction())) {
-                try {
-                    Log.v("LorieBroadcastReceiver", "Got new ACTION_START intent");
-                    onReceiveConnection(intent);
-                } catch (Exception e) {
-                    Log.e("X11Activity", "Something went wrong while we extracted connection details from binder.", e);
-                }
-            } else if (ACTION_STOP.equals(intent.getAction())) {
-                finish();
-            } else if (ACTION_PREFERENCES_CHANGED.equals(intent.getAction())) {
-                Log.d("X11Activity", "preference: " + intent.getStringExtra("key"));
-                if (!"additionalKbdVisible".equals(intent.getStringExtra("key")))
-                    onPreferencesChanged("");
-            } else if (ACTION_CUSTOM.equals(intent.getAction())) {
-                android.util.Log.d("ACTION_CUSTOM", "action " + intent.getStringExtra("what"));
-                if (SDK_INT >= VERSION_CODES.N) {
-                    mInputHandler.extractUserActionFromPreferences(prefs, intent.getStringExtra("what")).accept(0, true);
-                }
+    public void onBroadcastReceive(Context context, Intent intent) {
+        prefs.recheckStoringSecondaryDisplayPreferences();
+        if (ACTION_START.equals(intent.getAction())) {
+            try {
+                Log.v("LorieBroadcastReceiver", "Got new ACTION_START intent");
+                onReceiveConnection(intent);
+            } catch (Exception e) {
+                Log.e("X11Activity", "Something went wrong while we extracted connection details from binder.", e);
             }
+        } else if (ACTION_STOP.equals(intent.getAction())) {
+            finishAffinity();
+        } else if (ACTION_PREFERENCES_CHANGED.equals(intent.getAction())) {
+            Log.d("X11Activity", "preference: " + intent.getStringExtra("key"));
+            if (!"additionalKbdVisible".equals(intent.getStringExtra("key")))
+                onPreferencesChanged("");
+        } else if (ACTION_CUSTOM.equals(intent.getAction())) {
+            android.util.Log.d("ACTION_CUSTOM", "action " + intent.getStringExtra("what"));
+            if (SDK_INT >= VERSION_CODES.N)
+                mInputHandler.extractUserActionFromPreferences(prefs, intent.getStringExtra("what")).accept(0, true);
         }
-    };
+    }
 
     ViewTreeObserver.OnPreDrawListener mOnPredrawListener = new ViewTreeObserver.OnPreDrawListener() {
         @Override
         public boolean onPreDraw() {
-            if (!LorieView.connected())
+            if (!getLorieView().connected())
                 return false;
 
             finishStartupDraw();
@@ -244,17 +242,6 @@ public class X11Activity extends AppCompatActivity {
         lorieView.setCallback((screenWidth, screenHeight, inputTransform) ->
                 mInputHandler.handleInputTransformChanged(screenWidth, screenHeight, inputTransform));
 
-        IntentFilter filter = new IntentFilter(ACTION_START) {{
-            addAction(ACTION_PREFERENCES_CHANGED);
-            addAction(ACTION_STOP);
-            addAction(ACTION_CUSTOM);
-        }};
-        if (SDK_INT >= VERSION_CODES.O)
-            registerReceiver(receiver, filter, SDK_INT >= VERSION_CODES.TIRAMISU ? RECEIVER_EXPORTED : 0);
-        else
-            registerReceiver(receiver, filter);
-
-        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
         orientationListener = new OrientationEventListener(this) {
             @Override public void onOrientationChanged(int orientation) {
@@ -316,7 +303,8 @@ public class X11Activity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(receiver);
+        handler.removeCallbacks(screenIdleTimeoutCheck);
+        if (instance == this) instance = null;
         if (addIn != null) addIn.handleOnDestroy();
         super.onDestroy();
     }
@@ -325,7 +313,7 @@ public class X11Activity extends AppCompatActivity {
     @SuppressLint("ClickableViewAccessibility")
     private void initStylusAuxButtons() {
         final ViewPager pager = getTerminalToolbarViewPager();
-        boolean stylusMenuEnabled = prefs.showStylusClickOverride.get() && LorieView.connected();
+        boolean stylusMenuEnabled = prefs.showStylusClickOverride.get() && getLorieView().connected();
         final float menuUnselectedTrasparency = 0.66f;
         final float menuSelectedTrasparency = 1.0f;
         Button left = findViewById(R.id.button_left_click);
@@ -421,7 +409,7 @@ public class X11Activity extends AppCompatActivity {
 
     private void showStylusAuxButtons(boolean show) {
         LinearLayout buttons = findViewById(R.id.mouse_helper_visibility);
-        if (LorieView.connected() && show) {
+        if (getLorieView().connected() && show) {
             buttons.setVisibility(View.VISIBLE);
             buttons.setAlpha(isInPictureInPictureMode ? 0.f : 1.f);
         } else {
@@ -475,7 +463,7 @@ public class X11Activity extends AppCompatActivity {
 
     private void showMouseAuxButtons(boolean show) {
         View v = findViewById(R.id.mouse_buttons);
-        v.setVisibility((LorieView.connected() && show && "1".equals(prefs.touchMode.get())) ? View.VISIBLE : View.GONE);
+        v.setVisibility((getLorieView().connected() && show && "1".equals(prefs.touchMode.get())) ? View.VISIBLE : View.GONE);
         v.setAlpha(isInPictureInPictureMode ? 0.f : 0.7f);
         makeSureHelpersAreVisibleAndInScreenBounds();
     }
@@ -600,7 +588,7 @@ public class X11Activity extends AppCompatActivity {
 
                 Log.v("Lorie", "Disconnected");
                 runOnUiThread(() -> {
-                    LorieView.connect(-1);
+                    runOnUiThread(() -> { getLorieView().connect(-1); clientConnectedStateChanged();} );
                     clientConnectedStateChanged();
                 });
             }, 0);
@@ -612,7 +600,7 @@ public class X11Activity extends AppCompatActivity {
                 Log.v("LorieBroadcastReceiver", "Extracting logcat fd.");
                 ParcelFileDescriptor logcatOutput = service.getLogcatOutput();
                 if (logcatOutput != null)
-                    LorieView.startLogcat(logcatOutput.detachFd());
+                    getLorieView().startLogcat(logcatOutput.detachFd());
 
                 tryConnect();
 
@@ -625,12 +613,12 @@ public class X11Activity extends AppCompatActivity {
     }
 
     boolean tryConnect() {
-        if (LorieView.connected())
+        if (getLorieView().connected())
             return false;
 
         if (service == null) {
             Log.v("X11Activity", "service = null");
-            boolean sent = LorieView.requestConnection();
+            boolean sent = getLorieView().requestConnection();
             handler.postDelayed(this::tryConnect, 250);
             return true;
         }
@@ -639,7 +627,7 @@ public class X11Activity extends AppCompatActivity {
             ParcelFileDescriptor fd = service.getXConnection();
             if (fd != null) {
                 Log.v("X11Activity", "Extracting X connection socket.");
-                LorieView.connect(fd.detachFd());
+                getLorieView().connect(fd.detachFd());
                 finishStartupDraw();
                 getLorieView().triggerCallback();
                 clientConnectedStateChanged();
@@ -694,7 +682,7 @@ public class X11Activity extends AppCompatActivity {
         useTermuxEKBarBehaviour = prefs.useTermuxEKBarBehaviour.get();
         showIMEWhileExternalConnected = prefs.showIMEWhileExternalConnected.get();
 
-        findViewById(R.id.mouse_buttons).setVisibility(prefs.showMouseHelper.get() && "1".equals(prefs.touchMode.get()) && LorieView.connected() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.mouse_buttons).setVisibility(prefs.showMouseHelper.get() && "1".equals(prefs.touchMode.get()) && getLorieView().connected() ? View.VISIBLE : View.GONE);
         showMouseAuxButtons(prefs.showMouseHelper.get());
         showStylusAuxButtons(prefs.showStylusClickOverride.get());
 
@@ -726,7 +714,7 @@ public class X11Activity extends AppCompatActivity {
 
     @Override
     public void onPause() {
-        inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getRootView().getWindowToken(), 0);
+        getLorieView().setKeyboardVisible(false);
 
         for (StatusBarNotification notification : mNotificationManager.getActiveNotifications())
             if (notification.getId() == mNotificationId)
@@ -752,7 +740,7 @@ public class X11Activity extends AppCompatActivity {
         final ViewPager pager = getTerminalToolbarViewPager();
         ViewGroup parent = (ViewGroup) pager.getParent();
 
-        boolean showNow = LorieView.connected() && prefs.showAdditionalKbd.get() && prefs.additionalKbdVisible.get();
+        boolean showNow = !isInPictureInPictureMode && getLorieView().connected() && prefs.showAdditionalKbd.get() && prefs.additionalKbdVisible.get();
 
         pager.setVisibility(showNow ? View.VISIBLE : View.INVISIBLE);
 
@@ -868,7 +856,7 @@ public class X11Activity extends AppCompatActivity {
     public void toggleExtraKeys(boolean visible, boolean saveState) {
         boolean enabled = prefs.showAdditionalKbd.get();
 
-        if (enabled && LorieView.connected() && saveState)
+        if (enabled && getLorieView().connected() && saveState)
             prefs.additionalKbdVisible.put(visible);
 
         setTerminalToolbarView();
@@ -920,7 +908,7 @@ public class X11Activity extends AppCompatActivity {
         super.onConfigurationChanged(newConfig);
 
         if (newConfig.orientation != orientation)
-            inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getRootView().getWindowToken(), 0);
+            getLorieView().setKeyboardVisible(false);
 
         if (newConfig.densityDpi != densityDpi)
             orientationDeniedAt = null;
@@ -938,8 +926,11 @@ public class X11Activity extends AppCompatActivity {
         super.onWindowFocusChanged(hasFocus);
         KeyInterceptor.recheck();
         // The system bars come back when the window loses focus.
-        if (hasFocus)
+        if (hasFocus) {
             applyImmersiveMode();
+            LorieView.markUserActivity();
+            applyScreenIdleTimeout();
+        }
     }
 
     private void applyImmersiveMode() {
@@ -974,6 +965,40 @@ public class X11Activity extends AppCompatActivity {
             getWindow().addFlags(flag);
         else
             getWindow().clearFlags(flag);
+    }
+
+    private void checkScreenIdleTimeout() {
+        String mode = prefs.screenIdleTimeout.get();
+        if ("never".equals(mode) || "system".equals(mode)) {
+            screenIdleTimeoutArmedMode = null;
+            return;
+        }
+
+        long systemTimeoutMs = Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, 0);
+        long timeoutMs = Math.max(Long.parseLong(mode) * 60_000L - systemTimeoutMs, 0);
+        long elapsed = (System.nanoTime() / 1_000_000L) - LorieView.getLastInputTimestamp();
+        if (elapsed >= timeoutMs) {
+            screenIdleTimeoutArmedMode = null;
+            setWindowFlag(FLAG_KEEP_SCREEN_ON, false);
+        } else {
+            screenIdleTimeoutArmedMode = mode;
+            setWindowFlag(FLAG_KEEP_SCREEN_ON, true);
+            handler.postDelayed(screenIdleTimeoutCheck, timeoutMs - elapsed);
+        }
+    }
+
+    /** Syncs screenIdleTimeout state/timer to the current preference without extending an already-scheduled check. */
+    private void applyScreenIdleTimeout() {
+        String mode = prefs.screenIdleTimeout.get();
+        boolean connected = getLorieView().connected();
+        if (!connected || "never".equals(mode) || "system".equals(mode)) {
+            handler.removeCallbacks(screenIdleTimeoutCheck);
+            screenIdleTimeoutArmedMode = null;
+            setWindowFlag(FLAG_KEEP_SCREEN_ON, connected && "never".equals(mode));
+        } else if (!mode.equals(screenIdleTimeoutArmedMode)) {
+            handler.removeCallbacks(screenIdleTimeoutCheck);
+            checkScreenIdleTimeout();
+        }
     }
 
     void applyWindowSettings() {
@@ -1037,7 +1062,7 @@ public class X11Activity extends AppCompatActivity {
         }
 
         setWindowFlag(FLAG_FULLSCREEN, fullscreen);
-        setWindowFlag(FLAG_KEEP_SCREEN_ON, prefs.keepScreenOn.get());
+        applyScreenIdleTimeout();
         applyImmersiveMode();
 
         View contentChild = ((FrameLayout) findViewById(android.R.id.content)).getChildAt(0);
@@ -1071,10 +1096,11 @@ public class X11Activity extends AppCompatActivity {
             return appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE, android.os.Process.myUid(), context.getPackageName()) == AppOpsManager.MODE_ALLOWED;
     }
 
+    @RequiresApi(api = VERSION_CODES.O)
     @Override
     public void onUserLeaveHint() {
         super.onUserLeaveHint();
-        if (!prefs.PIP.get() || !hasPipPermission(this) || !LorieView.connected() || SDK_INT < VERSION_CODES.O)
+        if (!prefs.PIP.get() || !hasPipPermission(this) || !getLorieView().connected())
             return;
 
         PictureInPictureParams.Builder params = new PictureInPictureParams.Builder();
@@ -1114,21 +1140,17 @@ public class X11Activity extends AppCompatActivity {
      */
     public static void toggleKeyboardVisibility(Context context) {
         Log.d("X11Activity", "Toggling keyboard visibility");
-        if (inputMethodManager != null) {
-            android.util.Log.d("toggleKeyboardVisibility", "externalKeyboardConnected " + externalKeyboardConnected + " showIMEWhileExternalConnected " + showIMEWhileExternalConnected);
-            if (!externalKeyboardConnected || showIMEWhileExternalConnected)
-                inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-            else
-                inputMethodManager.hideSoftInputFromWindow(getInstance().getWindow().getDecorView().getRootView().getWindowToken(), 0);
-
-            getInstance().getLorieView().requestFocus();
-        }
+        LorieView view = getInstance().getLorieView();
+        if (!externalKeyboardConnected || showIMEWhileExternalConnected)
+            view.toggleKeyboardVisible();
+        else
+            view.setKeyboardVisible(false);
     }
 
     @SuppressWarnings("SameParameterValue")
     void clientConnectedStateChanged() {
         runOnUiThread(() -> {
-            boolean connected = LorieView.connected();
+            boolean connected = getLorieView().connected();
 
             // A picture-in-picture window has nothing to show without a client, and there is no way
             // back to the normal size from it, so the window is closed.
@@ -1161,7 +1183,7 @@ public class X11Activity extends AppCompatActivity {
         if (getInstance() == null)
             return false;
 
-        return LorieView.connected();
+        return getInstance().getLorieView().connected();
     }
 
     public static void getRealMetrics(DisplayMetrics m) {
@@ -1192,7 +1214,7 @@ public class X11Activity extends AppCompatActivity {
         if (textInput != null)
             textInput.setShowSoftInputOnFocus(!connected || showIMEWhileExternalConnected);
         if (connected && !showIMEWhileExternalConnected)
-            inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getRootView().getWindowToken(), 0);
+            getLorieView().setKeyboardVisible(false);
         getLorieView().requestFocus();
     }
 }

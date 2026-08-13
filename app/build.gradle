@@ -13,8 +13,8 @@ android {
         applicationId "com.vectras.vm"
         minSdk minApi
         targetSdk targetApi
-        versionCode 161
-        versionName "4.5.4"
+        versionCode 162
+        versionName "4.5.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -159,6 +159,7 @@ afterEvaluate {
         out << 'package com.vectras.vm.x11;\n'
         out << 'import java.util.HashMap;\n'
         out << 'import android.content.Context;\n'
+        out << 'import android.content.SharedPreferences;\n'
         out << 'import com.vectras.vm.x11.utils.TermuxX11ExtraKeys;\n'
         out << 'import com.vectras.vm.R;\n'
         out << '\n'
@@ -179,6 +180,11 @@ afterEvaluate {
         out << '\n'
         out << '  public Prefs(Context ctx) {\n'
         out << '    super(ctx);\n'
+        out << '    for (SharedPreferences store : new SharedPreferences[]{ builtInDisplayPreferences, secondaryDisplayPreferences }) {\n'
+        out << '      Object legacyKeepScreenOn = store.getAll().get("keepScreenOn");\n'
+        out << '      if (legacyKeepScreenOn instanceof Boolean && !store.contains("screenIdleTimeout"))\n'
+        out << '        store.edit().putString("screenIdleTimeout", (Boolean) legacyKeepScreenOn ? "never" : "system").commit();\n'
+        out << '    }\n'
         out << '  }\n'
         out << '}\n'
     }

@@ -261,7 +261,10 @@ public class TouchInputHandler {
                 });
         android.util.Log.d("DEVICES", "requesting stylus " + stylusAvailable.get());
         android.util.Log.d("DEVICES", "external keyboard connected " + externalKeyboardAvailable.get());
-        LorieView.requestStylusEnabled(stylusAvailable.get());
+
+        if (X11Activity.getInstance().getLorieView() == null) return;
+
+        X11Activity.getInstance().getLorieView().requestStylusEnabled(stylusAvailable.get());
         X11Activity.getInstance().setExternalKeyboardConnected(externalKeyboardAvailable.get());
     }
 
@@ -283,8 +286,10 @@ public class TouchInputHandler {
         if (ignoreGamepadEvents && (event.isFromSource(InputDevice.SOURCE_GAMEPAD) || event.isFromSource(InputDevice.SOURCE_JOYSTICK)))
             return true;
 
-        if (event.getDeviceId() >= 0)
+        if (event.getDeviceId() >= 0) {
             mInjector.releaseStuckModifiers(event.getMetaState());
+            mInjector.syncLockKeysState(event.getMetaState());
+        }
 
         // Regular touchpads and Dex touchpad (in captured mode) send events as finger too,
         // but they should be handled as touchscreens with trackpad mode.

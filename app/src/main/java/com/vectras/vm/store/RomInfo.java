@@ -432,7 +432,7 @@ public class RomInfo extends AppCompatActivity {
             LinksDialog linksDialog = new LinksDialog(this);
             linksDialog.setLink1(urls[0]);
             linksDialog.setLink2(urls[1]);
-            linksDialog.setLink3(urls[2]);
+            if (urls.length > 3) linksDialog.setLink3(urls[2]);
             linksDialog.show(getSupportFragmentManager(), "links_dialog");
         } else {
             isAllowGetAnbuiContentUrls = false;

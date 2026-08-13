@@ -66,6 +66,7 @@ import com.vectras.vm.utils.IntentUtils;
 import com.vectras.vm.utils.JSONUtils;
 import com.vectras.vm.utils.PackageUtils;
 import com.vectras.vm.utils.ProgressDialog;
+import com.vectras.vm.utils.TextUtils;
 import com.vectras.vm.utils.UIUtils;
 
 import org.json.JSONException;
@@ -1043,6 +1044,10 @@ public class VMCreatorActivity extends AppCompatActivity {
 
                 if (!jObj.has("versioncode")) {
                     DialogUtils.oneDialog(this, getResources().getString(R.string.problem_has_been_detected), getResources().getString(R.string.this_rom_may_not_be_compatible), R.drawable.warning_24px);
+                } else if (!jObj.isNull("versioncode") && TextUtils.isNumberOnly(jObj.getString("versioncode"))) {
+                    // Compatible with older roms to avoid issues where a graphics card is missing.
+                    if (Integer.parseInt(jObj.getString("versioncode")) < 155)
+                        current.graphicCard = 2;
                 }
 
                 if (jObj.has("author") && !jObj.isNull("author") && jObj.has("desc") && !jObj.isNull("desc")) {

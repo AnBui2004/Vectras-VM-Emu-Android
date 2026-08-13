@@ -49,6 +49,11 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".setupwizard.TurnipZinkSetupWizardActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".settings.EqualizerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
             android:exported="false"
@@ -286,6 +291,15 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".x11.LorieBroadcastReceiver" android:exported="true" tools:ignore="ExportedReceiver" android:enabled="true">
+            <intent-filter>
+                <action android:name="com.vectras.vm.x11.CmdEntryPoint.ACTION_START" />
+                <action android:name="com.vectras.vm.x11.ACTION_STOP" />
+                <action android:name="com.vectras.vm.x11.ACTION_PREFERENCES_CHANGED" />
+                <action android:name="com.vectras.vm.x11.ACTION_CUSTOM" />
+            </intent-filter>
+        </receiver>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -310,11 +324,6 @@
         <meta-data
             android:name="android.max_aspect"
             android:value="10.0" />
-
-        <activity
-            android:name=".setupwizard.TurnipZinkSetupWizardActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

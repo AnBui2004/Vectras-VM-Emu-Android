@@ -11,12 +11,14 @@ import static com.vectras.vm.x11.input.InputStub.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import android.graphics.PointF;
+import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import com.vectras.vm.x11.X11Activity;
 
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 /**
@@ -27,6 +29,12 @@ public final class InputEventSender {
     private static final int XI_TouchBegin = 18;
     private static final int XI_TouchUpdate = 19;
     private static final int XI_TouchEnd = 20;
+
+    private static final Set<Integer> TOUCH_NAV_KEYCODES = Set.of(
+            KEYCODE_BACK,
+            KEYCODE_HOME,
+            KEYCODE_APP_SWITCH
+    );
 
     private final InputStub mInjector;
     private final float[] mappedPoint = new float[2];
@@ -44,6 +52,9 @@ public final class InputEventSender {
     /** Set of pressed keys for which we've sent TextEvent. */
     private final TreeSet<Integer> mPressedTextKeys;
     private final TreeSet<Integer> mPressedKeys;
+
+    /** Last Caps/Num/Scroll Lock state sent to the host, or -1 if none has been sent yet. */
+    private int mLockKeysState = -1;
 
     public InputEventSender(InputStub injector) {
         if (injector == null)
@@ -78,6 +89,23 @@ public final class InputEventSender {
                         mInjector.sendKeyEvent(0, mod[i], false);
                 }
             }
+        }
+    }
+
+    /**
+     * Mirrors Android's current Caps/Num/Scroll Lock state onto the host, e.g. after regaining
+     * focus with the state possibly having changed while backgrounded. Every KeyEvent and
+     * MotionEvent carries the current state in its metaState regardless of which key or pointer
+     * action it represents, so callers can just forward it on every real (non-synthetic) event;
+     * this only actually notifies the host when the state actually changed.
+     */
+    public void syncLockKeysState(int eventMetaState) {
+        int state = (((eventMetaState & META_CAPS_LOCK_ON) != 0) ? 1 : 0)
+                | (((eventMetaState & META_NUM_LOCK_ON) != 0) ? 2 : 0)
+                | (((eventMetaState & META_SCROLL_LOCK_ON) != 0) ? 4 : 0);
+        if (state != mLockKeysState) {
+            mLockKeysState = state;
+            mInjector.sendLockKeysState(state);
         }
     }
 
@@ -178,10 +206,16 @@ public final class InputEventSender {
         int keyCode = e.getKeyCode();
         boolean pressed = e.getAction() == KeyEvent.ACTION_DOWN;
 
+        if (e.getDeviceId() >= 0)
+            syncLockKeysState(e.getMetaState());
+
         if ((e.getFlags() & KeyEvent.FLAG_CANCELED) == KeyEvent.FLAG_CANCELED) {
             android.util.Log.d("KeyEvent", "We've got key event with FLAG_CANCELED, it will not be consumed. Details: " + e);
             return true;
         }
+
+        if (shouldBlockKeyEvent(e))
+            return true;
 
         // Events received from software keyboards generate TextEvent in two
         // cases:
@@ -263,5 +297,19 @@ public final class InputEventSender {
 
         // We try to send all other key codes to the host directly.
         return mInjector.sendKeyEvent(scancode, keyCode, pressed);
+    }
+
+    // Some touchpanel/touchpad hardware occasionally reports spurious key
+    // events (e.g. unexpected function keys) alongside its normal touch
+    // input, likely due to a firmware or driver quirk in the underlying
+    // input device. Filter these out to avoid having them misinterpreted
+    // as real keyboard input.
+    private boolean shouldBlockKeyEvent(KeyEvent event) {
+        InputDevice device = event.getDevice();
+        int sources = device != null ? device.getSources() : 0;
+        return (sources & InputDevice.SOURCE_KEYBOARD) != 0
+                && (sources & (InputDevice.SOURCE_TOUCHSCREEN | InputDevice.SOURCE_TOUCHPAD)) != 0
+                && (sources & InputDevice.SOURCE_STYLUS) == 0
+                && !TOUCH_NAV_KEYCODES.contains(event.getKeyCode());
     }
 }
