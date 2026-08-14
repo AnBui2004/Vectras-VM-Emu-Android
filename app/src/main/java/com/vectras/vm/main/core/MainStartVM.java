@@ -24,6 +24,7 @@ import com.vectras.vm.main.vms.DataMainRoms;
 import com.vectras.vm.manager.QmpSender;
 import com.vectras.vm.manager.VmFileManager;
 import com.vectras.vm.manager.VmAudioManager;
+import com.vectras.vm.manager.VmServiceManager;
 import com.vectras.vm.settings.ExternalVNCSettingsActivity;
 import com.vectras.vm.utils.DeviceUtils;
 import com.vectras.vm.utils.DialogUtils;
@@ -133,7 +134,27 @@ public class MainStartVM {
             StartVmDialog dialog,
             MainStartVMCallback callback
     ) {
+        new Thread(() -> {
+            while (!breakNow && VmServiceManager.isKillingService) {
+                try {
+                    // Wait for all Qemu processes to be terminated, using the delay preset in VMManager.killallqemuprocesses.
+                    Thread.sleep(3000);
+                } catch (InterruptedException ignored) {}
+            }
 
+            new Handler(Looper.getMainLooper()).post(() -> initToStartVm(context, vmName, env, vmID, thumbnailFile, dialog, callback));
+        }).start();
+    }
+
+    public static void initToStartVm(
+            Context context,
+            String vmName,
+            String env,
+            String vmID,
+            String thumbnailFile,
+            StartVmDialog dialog,
+            MainStartVMCallback callback
+    ) {
         if (breakNow) {
             breakNow = false;
             if (callback != null) callback.onError(PENDDING_EMPTY, "");
