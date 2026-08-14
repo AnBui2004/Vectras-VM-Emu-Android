@@ -69,7 +69,7 @@ public class StartVM {
             }
 
             if (
-                    vmConfigs.hpet &&
+                    !vmConfigs.hpet &&
                             (
                                     MainSettingsManager.getArch(activity).equals(MainSettingsManager.X86_64_ARCH) ||
                                             MainSettingsManager.getArch(activity).equals(MainSettingsManager.I386_ARCH)
