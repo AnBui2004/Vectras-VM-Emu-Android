@@ -114,6 +114,12 @@ public class BoardConfigsDialog extends BottomSheetDialogFragment {
             binding.sbvMachine.setSubtitle(name);
         })));
 
+        if (!MainSettingsManager.getArch(requireContext()).equals(MainSettingsManager.X86_64_ARCH) &&
+                !MainSettingsManager.getArch(requireContext()).equals(MainSettingsManager.I386_ARCH)) {
+            binding.sbvMachine.setBackgroundResource(R.drawable.object_shape_single_high);
+            binding.cbvHpet.setVisibility(View.GONE);
+        }
+
         binding.sbvCpu.setOnClickListener(v -> VMCreatorSelector.cpu(requireActivity(), MainSettingsManager.getArch(requireContext()), configs.cpu, ((position, name, value) -> {
             configs.cpu = position;
             binding.sbvCpu.setSubtitle(name);
@@ -187,6 +193,7 @@ public class BoardConfigsDialog extends BottomSheetDialogFragment {
         if (!isAdded()) return;
 
         binding.sbvMachine.setSubtitle(Objects.requireNonNull(VMCreatorSelector.getMachine(requireContext(), MainSettingsManager.getArch(requireContext()), configs.machine).get("name")).toString());
+        binding.cbvHpet.setChecked(configs.hpet);
 
         binding.sbvCpu.setSubtitle(Objects.requireNonNull(VMCreatorSelector.getCpu(requireContext(), MainSettingsManager.getArch(requireContext()), configs.cpu).get("name")).toString());
         binding.sbvCore.setSubtitle(Objects.requireNonNull(VMCreatorSelector.getCpuCore(MainSettingsManager.getArch(requireContext()), configs.cores).get("value")).toString());
@@ -199,6 +206,7 @@ public class BoardConfigsDialog extends BottomSheetDialogFragment {
     }
 
     private void save() {
+        configs.hpet = binding.cbvHpet.isChecked();
         configs.nvirt = binding.cbvNestedVirtualization.isChecked();
         configs.memory = binding.tietMemory.getText() == null || binding.tietMemory.getText().toString().isEmpty() ? 0 : Integer.parseInt(binding.tietMemory.getText().toString());
         configs.battery = binding.cbvBattery.isChecked();

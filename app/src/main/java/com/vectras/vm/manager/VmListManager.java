@@ -87,11 +87,12 @@ public class VmListManager {
         if (!config1.itemName.equals(config2.itemName)) return false;
 
         if (config1.machine != config2.machine) return false;
-        if (config1.nvirt != config2.nvirt) return false;
+        if (config1.hpet != config2.hpet) return false;
 
         if (config1.cpu != config2.cpu) return false;
         if (config1.cores != config2.cores) return false;
         if (config1.threads != config2.threads) return false;
+        if (config1.nvirt != config2.nvirt) return false;
 
         if (config1.memory != config2.memory) return false;
 

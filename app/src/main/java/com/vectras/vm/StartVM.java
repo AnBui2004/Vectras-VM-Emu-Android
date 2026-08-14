@@ -61,8 +61,22 @@ public class StartVM {
         String machineParams = "";
         if (!ParamManager.hasMachine(extraParams)) {
             String machine = Objects.requireNonNull(VMCreatorSelector.getMachine(activity, MainSettingsManager.getArch(activity), vmData.machine).get("value")).toString();
+
+            machineParams = "-M ";
+
             if (!machine.isEmpty()) {
-                machineParams = "-M " + machine;
+                machineParams += machine;
+            }
+
+            if (
+                    vmConfigs.hpet &&
+                            (
+                                    MainSettingsManager.getArch(activity).equals(MainSettingsManager.X86_64_ARCH) ||
+                                            MainSettingsManager.getArch(activity).equals(MainSettingsManager.I386_ARCH)
+                            )
+            ) {
+                if (!machineParams.equals("-M ")) machineParams += ",";
+                machineParams += "hpet=off";
             }
 
             if (
@@ -70,7 +84,8 @@ public class StartVM {
                             !MainSettingsManager.getArch(activity).equals(MainSettingsManager.PPC_ARCH) &&
                             MainSettingsManager.getArch(activity).equals(MainSettingsManager.ARM64_ARCH)
             ) {
-                machineParams += ",virtualization=true";
+                if (!machineParams.equals("-M ")) machineParams += ",";
+                machineParams += "virtualization=true";
             }
 
             machineParams += " ";

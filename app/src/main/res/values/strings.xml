@@ -998,6 +998,8 @@ E.g. <b>META</b> for <i>META key</i>, \n
     <string name="pixeldrain" translatable="false">Pixeldrain</string>
     <string name="google_drive" translatable="false">Google Drive</string>
 
+    <string name="hpet" translatable="false">HPET</string>
+
     <string name="usb" translatable="false">USB</string>
     <string name="ps_2" translatable="false">PS/2</string>
 

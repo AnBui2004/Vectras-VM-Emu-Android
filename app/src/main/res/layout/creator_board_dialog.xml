@@ -40,10 +40,17 @@
                 android:id="@+id/sbv_machine"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
                 app:title="@string/machine_type"
                 app:subtitle="@string/defaulttext"
-                android:background="@drawable/object_shape_single_high"/>
+                android:background="@drawable/object_shape_top_high"/>
+
+            <com.vectras.vm.view.CheckBoxView
+                android:id="@+id/cbv_hpet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                app:setText="@string/hpet"
+                android:background="@drawable/object_shape_bottom_high"/>
 
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"

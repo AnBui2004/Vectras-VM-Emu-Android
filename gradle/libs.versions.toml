@@ -1,7 +1,7 @@
 [versions]
 activityKtx = "1.13.0"
 annotation = "1.10.0"
-appcompat = "1.7.1"
+appcompat = "1.8.0"
 commonsCompress = "1.28.0"
 commonsIo = "2.22.0"
 constraintlayout = "2.2.2"

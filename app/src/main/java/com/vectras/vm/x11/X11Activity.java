@@ -303,7 +303,11 @@ public class X11Activity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if (prefs != null && prefs.get() != null)
+            prefs.get().unregisterOnSharedPreferenceChangeListener(preferencesChangedListener);
         handler.removeCallbacks(screenIdleTimeoutCheck);
+        if (mInputHandler != null)
+            mInputHandler.onDestroy();
         if (instance == this) instance = null;
         if (addIn != null) addIn.handleOnDestroy();
         super.onDestroy();

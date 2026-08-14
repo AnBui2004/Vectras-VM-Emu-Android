@@ -33,11 +33,12 @@ public class DataMainRoms implements Serializable {
 
     // Board
     public int machine;
-    public boolean nvirt; // Nested virtualization
+    public boolean hpet = true;
 
     public int cpu;
     public int cores;
     public int threads;
+    public boolean nvirt; // Nested virtualization
 
     public int memory;
 

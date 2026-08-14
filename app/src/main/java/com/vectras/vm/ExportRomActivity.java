@@ -167,10 +167,15 @@ public class ExportRomActivity extends AppCompatActivity {
 
         vmConfigMap.put("machine", current.machine);
 
+        if (current.itemArch.equals(MainSettingsManager.X86_64_ARCH) ||
+                current.itemArch.equals(MainSettingsManager.I386_ARCH))
+            vmConfigMap.put("hpet", current.hpet);
+
         vmConfigMap.put("cpu", current.cpu);
         vmConfigMap.put("cores", current.cores);
         vmConfigMap.put("threads", current.threads);
-        vmConfigMap.put("nvirt", current.nvirt);
+        if (!current.itemArch.equals(MainSettingsManager.PPC_ARCH))
+            vmConfigMap.put("nvirt", current.nvirt);
 
         vmConfigMap.put("memory", current.memory);
 
