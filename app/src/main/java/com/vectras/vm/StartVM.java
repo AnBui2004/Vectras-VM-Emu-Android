@@ -235,41 +235,28 @@ public class StartVM {
 
             params.add(getQmpParams());
 
-            String ifType;
-            ifType = MainSettingsManager.getIfType(activity);
 
-            String cdrom = "";
-            String hdd0;
-            String hdd1;
 
             if (!img.isEmpty()) {
-                if (ifType.isEmpty()) {
-                    hdd0 = "-hda";
-                    hdd0 += " '" + img + "'";
-                } else {
-                    hdd0 = "-drive";
-                    hdd0 += " media=disk";
-                    hdd0 += ",if=" + ifType;
-                    hdd0 += ",file='" + img + "'";
+                String diskparams = "-drive";
+                diskparams += " media=disk";
+                diskparams += ",discard=unmap";
+                diskparams += ",file='" + img + "'";
 
-                    if ((MainSettingsManager.getArch(activity).equals("ARM64") && ifType.equals("ide")) || MainSettingsManager.getArch(activity).equals("PPC")) {
-                        hdd0 = "-drive";
-                        hdd0 += " media=disk";
-                        hdd0 += ",file='" + img + "'";
-                    }
-                }
-                params.add(hdd0);
+                params.add(diskparams);
             }
 
             if (!vmConfigs.hd1.isEmpty()) {
-                hdd0 = "-drive";
-                hdd0 += " media=disk";
-                hdd0 += ",file='" + vmConfigs.hd1 + "'";
+                String diskparams = "-drive";
+                diskparams += " media=disk";
+                diskparams += ",discard=unmap";
+                diskparams += ",file='" + vmConfigs.hd1 + "'";
 
-                params.add(hdd0);
+                params.add(diskparams);
             }
 
             if (!vmConfigs.imgCdrom.isEmpty()) {
+                String cdrom = "";
                 if (MainSettingsManager.getArch(activity).equals("ARM64")) {
                     cdrom += " -device";
                     cdrom += " nec-usb-xhci,id=usbopticaldiscreader0";
@@ -309,15 +296,15 @@ public class StartVM {
                 params.add(cdromParams);
             }
 
-            File hdd1File = new File(filesDir + "/data/Vectras/hdd1.qcow2");
-
-            if (hdd1File.exists()) {
-                hdd1 = "-drive";
-                hdd1 += " media=disk";
-                hdd1 += ",file='" + hdd1File.getPath() + "'";
-
-                params.add(hdd1);
-            }
+//            File hdd1File = new File(filesDir + "/data/Vectras/hdd1.qcow2");
+//
+//            if (hdd1File.exists()) {
+//                hdd1 = "-drive";
+//                hdd1 += " media=disk";
+//                hdd1 += ",file='" + hdd1File.getPath() + "'";
+//
+//                params.add(hdd1);
+//            }
 
             if (!vmConfigs.fda.isEmpty() && !MainSettingsManager.getArch(activity).equals("ARM64")) {
                 params.add("-drive if=floppy,file='" + vmConfigs.fda + "'");

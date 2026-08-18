@@ -134,7 +134,7 @@ public class X11Activity extends AppCompatActivity {
                 Log.e("X11Activity", "Something went wrong while we extracted connection details from binder.", e);
             }
         } else if (ACTION_STOP.equals(intent.getAction())) {
-            finishAffinity();
+            finish();
         } else if (ACTION_PREFERENCES_CHANGED.equals(intent.getAction())) {
             Log.d("X11Activity", "preference: " + intent.getStringExtra("key"));
             if (!"additionalKbdVisible".equals(intent.getStringExtra("key")))
