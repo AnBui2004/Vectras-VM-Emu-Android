@@ -5,6 +5,21 @@ plugins {
     id 'com.google.android.gms.oss-licenses-plugin'
 }
 
+// Optional signing override: put a keystore.properties file at the repo root
+// (gitignored) with storeFile / storePassword / keyAlias / keyPassword to sign
+// with a private keystore, e.g. after rotating the public one. Without that
+// file the historical values below are used, so existing local and CI builds
+// are unaffected.
+def keystoreProps = new Properties()
+def keystorePropsFile = rootProject.file('keystore.properties')
+if (keystorePropsFile.exists()) {
+    keystorePropsFile.withInputStream { keystoreProps.load(it) }
+}
+def vectrasStoreFile = keystoreProps['storeFile'] ?: '../vectras.jks'
+def vectrasStorePassword = keystoreProps['storePassword'] ?: '856856'
+def vectrasKeyAlias = keystoreProps['keyAlias'] ?: 'vectras'
+def vectrasKeyPassword = keystoreProps['keyPassword'] ?: '856856'
+
 android {
     namespace 'com.vectras.vm'
     compileSdk = 37
@@ -24,16 +39,16 @@ android {
 
     signingConfigs {
         debug {
-            storeFile file('../vectras.jks')
-            keyAlias 'vectras'
-            storePassword '856856'
-            keyPassword '856856'
+            storeFile file(vectrasStoreFile)
+            keyAlias vectrasKeyAlias
+            storePassword vectrasStorePassword
+            keyPassword vectrasKeyPassword
         }
         release {
-            storeFile file('../vectras.jks')
-            keyAlias 'vectras'
-            storePassword '856856'
-            keyPassword '856856'
+            storeFile file(vectrasStoreFile)
+            keyAlias vectrasKeyAlias
+            storePassword vectrasStorePassword
+            keyPassword vectrasKeyPassword
         }
     }
 
