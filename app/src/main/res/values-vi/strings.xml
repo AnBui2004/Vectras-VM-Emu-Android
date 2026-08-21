@@ -681,7 +681,7 @@
     <string name="opengl_setting_note">Màn hình sẽ hỗ trợ OpenGL khi chạy máy ảo. 3Dfx sẽ không hoạt động khi dùng tính năng này.</string>
     <string name="qemu_opengl_is_not_available_content">OpenGL chỉ có sẵn khi dùng màn hình X11 và đã bật dùng Open GL. Đến cài đặt để tìm hiểu thêm.</string>
     <string name="input_devices">Các thiết bị nhập</string>
-    <string name="input_devices_note">Chuột, bàn phím,…</string>
+    <string name="input_devices_note">Con điểu khiển USB, chuột, bàn phím,…</string>
     <string name="mouse">Chuột</string>
     <string name="usb_tablet">Cảm ứng USB</string>
     <string name="types">Các loại</string>
@@ -703,6 +703,10 @@
     <string name="pin">Ghim</string>
     <string name="unpin">Bỏ ghim</string>
     <string name="pin_failed_content">Đã xảy ra sự cố khi ghim. Hãy thử lại sau.</string>
+    <string name="usb_controller">Con điều khiển USB</string>
+    <string name="controllers">Các con điều khiển</string>
+    <string name="usb_controller_required_content">Một số thiết bị đang cần đến con điều khiển USB nên bạn không thể không dùng nó.</string>
+    <string name="logs">Nhật ký</string>
 
     <!--======================TERMUX STRINGS====================-->
     <string name="application_name" translatable="false">Vterm</string>

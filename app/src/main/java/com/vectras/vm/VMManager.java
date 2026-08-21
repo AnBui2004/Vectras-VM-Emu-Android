@@ -46,6 +46,7 @@ import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -661,11 +662,13 @@ public class VMManager {
         return "";
     }
 
+    private static final List<String> DISK_FILE_FORMATS = Arrays.asList("qcow2", "img", "vhd", "vhdx", "vdi", "qcow", "vmdk", "vpc");
+
     public static boolean isADiskFile(@NonNull String _filepath) {
         if (_filepath.contains(".")) {
             String _getFileName = Objects.requireNonNull(Uri.parse(_filepath).getLastPathSegment()).toLowerCase();
             String _getFileFormat = _getFileName.substring(_getFileName.lastIndexOf(".") + 1);
-            return "qcow2,img,vhd,vhdx,vdi,qcow,vmdk,vpc".contains(_getFileFormat);
+            return DISK_FILE_FORMATS.contains(_getFileFormat);
         }
         return false;
     }
@@ -693,7 +696,7 @@ public class VMManager {
         if (_filepath.contains(".")) {
             String _getFileName = Objects.requireNonNull(Uri.parse(_filepath).getLastPathSegment()).toLowerCase();
             String _getFileFormat = _getFileName.substring(_getFileName.lastIndexOf(".") + 1);
-            return "iso".contains(_getFileFormat);
+            return "iso".equals(_getFileFormat);
         }
         return false;
     }
@@ -1241,7 +1244,8 @@ public class VMManager {
     }
 
     public static String addAudioDevWav(String vmID, String env) {
-        final String audioDevParam = ",audiodev=audiodev" + System.currentTimeMillis() + " -audiodev wav,id=audiodev" + System.currentTimeMillis() + ",out.frequency=48000,path=" + VmFileManager.getAudioRaw(VectrasApp.getContext(), vmID);
+        final long audioDevId = System.currentTimeMillis();
+        final String audioDevParam = ",audiodev=audiodev" + audioDevId + " -audiodev wav,id=audiodev" + audioDevId + ",out.frequency=48000,path=" + VmFileManager.getAudioRaw(VectrasApp.getContext(), vmID);
         String result = env;
         if (env.startsWith("-device hda-duplex ") || env.contains(" -device hda-duplex ") || env.endsWith(" -device hda-duplex")) {
             result = result.replaceFirst(" -device hda-duplex", " -device hda-duplex" + audioDevParam);

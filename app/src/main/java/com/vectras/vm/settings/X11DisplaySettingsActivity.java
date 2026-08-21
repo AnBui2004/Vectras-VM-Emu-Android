@@ -66,7 +66,10 @@ public class X11DisplaySettingsActivity extends AppCompatActivity {
         });
 
         binding.swUseExternal.setOnCheckedChangeListener((buttonView, isChecked) -> MainSettingsManager.setExternalX11(this, isChecked));
-        binding.lnUseExternal.setOnClickListener(v -> binding.swUseExternal.toggle());
+        binding.lnUseExternal.setOnClickListener(v -> {
+            binding.swUseExternal.toggle();
+            uiControllerExternal(binding.swUseExternal.isChecked());
+        });
 
         binding.swRunQemuWithXterm.setOnCheckedChangeListener((buttonView, isChecked) -> MainSettingsManager.setRunQemuWithXterm(this, isChecked));
         binding.lnRunQemuWithXterm.setOnClickListener(v -> binding.swRunQemuWithXterm.toggle());
@@ -84,6 +87,7 @@ public class X11DisplaySettingsActivity extends AppCompatActivity {
 
         isInitialized = true;
 
+        uiControllerExternal(binding.swUseExternal.isChecked());
         uiController(binding.swEnabled.isChecked());
     }
 
@@ -94,7 +98,12 @@ public class X11DisplaySettingsActivity extends AppCompatActivity {
         binding.lnRunQemuWithXterm.setEnabled(isEnabled);
         binding.lnUseSdl.setEnabled(isEnabled);
         binding.lnUseOpengl.setEnabled(isEnabled);
-        binding.lnBubble.setEnabled(isEnabled);
+        binding.lnBubble.setEnabled(isEnabled && !binding.swUseExternal.isChecked());
         binding.lnTurnipZink.setEnabled(isEnabled);
+    }
+
+    private void uiControllerExternal(boolean isEnabled) {
+        binding.lnBubble.setAlpha(!isEnabled ? 1f : 0.5f);
+        binding.lnBubble.setEnabled(!isEnabled);
     }
 }

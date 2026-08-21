@@ -583,6 +583,18 @@ public class VMCreatorActivity extends AppCompatActivity {
         // ENSONIQ AudioPCI ES1370 : Intel HD Audio Controller (ich6)
         current.soundCard = currentArch.equals(MainSettingsManager.PPC_ARCH) ? 5 : 2;
 
+        if (currentArch.equals(MainSettingsManager.X86_64_ARCH) || currentArch.equals(MainSettingsManager.I386_ARCH)) {
+            // Default
+            current.usbController = 1;
+        } else if (currentArch.equals(MainSettingsManager.ARM64_ARCH)) {
+            // QEMU XHCI
+            current.usbController = 3;
+            // USB tablet
+            current.mouse = 2;
+            // USB keyboard
+            current.keyboard = 1;
+        }
+
         // TCG (multi-threaded) : TCG (single-threaded)
         current.accel = DeviceUtils.is64bit() ? 2 : 1;
     }

@@ -126,7 +126,7 @@ public class VectrasStatus
     public synchronized static void clearLog() {
         logbuffer.clear();
 		logInformation();
-		logInfo("LOGS CLEARED!");
+		logInfo("Logs cleared!");
 		
 		for (LogListener li : logListener) {
 			li.onClear();
@@ -143,8 +143,8 @@ public class VectrasStatus
 	private static void logInformation() {
 		logInfo(R.string.app_name);
         logInfo(R.string.app_version);
-        logInfo("MOBILE MODEL: " + Build.MODEL);
-		logInfo("ANDROID VERSION: " + Build.VERSION.SDK_INT);
+        logInfo("Device model: " + Build.MODEL);
+		logInfo("Android API level: " + Build.VERSION.SDK_INT);
 	}
 
 	

@@ -1,5 +1,7 @@
 package com.vectras.vm.manager;
 
+import com.vectras.vm.main.vms.DataMainRoms;
+
 import java.util.regex.Pattern;
 
 public class ParamManager {
@@ -26,5 +28,9 @@ public class ParamManager {
     public static boolean hasVga(String param) {
         return Pattern.compile("(?<![\\w-])--?vga\\s(std|cirrus|vmware|qxl|virtio)(?![\\w=-])").matcher(param).find() ||
                 Pattern.compile("(?<![\\w-])--?device\\s(ati-vga|bochs-display|cirrus-vga|isa-cirrus-vga|isa-vga|qxl|qxl-vga|secondary-vga|svga|VGA|(virtio-gpu[a-z-]*)|(virtio-vga[a-z-]*)|vmware-svga)[a-zA-Z0-9,_]*(?![\\w=-])").matcher(param).find();
+    }
+
+    public static boolean isUsbControllerRequired(DataMainRoms vmConfigs) {
+        return (vmConfigs.mouse > 0 || vmConfigs.keyboard > 0) && !hasUsb(vmConfigs.itemExtra);
     }
 }

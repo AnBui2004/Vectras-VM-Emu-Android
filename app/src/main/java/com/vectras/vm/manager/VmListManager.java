@@ -3,6 +3,7 @@ package com.vectras.vm.manager;
 import android.content.Context;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.vectras.qemu.Config;
 import com.vectras.vm.AppConfig;
@@ -75,7 +76,11 @@ public class VmListManager {
 
         String json = FileUtils.readFromFile(context, new File(AppConfig.romsdatajson));
 
-        return gson.fromJson(json, listType);
+        try {
+            return gson.fromJson(json, listType);
+        } catch (JsonSyntaxException e) {
+            return new ArrayList<>();
+        }
     }
 
     public static boolean isSameVmConfig(DataMainRoms config1, DataMainRoms config2) {
@@ -110,6 +115,7 @@ public class VmListManager {
 
         if (config1.sharedFolder != config2.sharedFolder) return false;
 
+        if (config1.usbController != config2.usbController) return false;
         if (config1.mouse != config2.mouse) return false;
         if (config1.keyboard != config2.keyboard) return false;
 
