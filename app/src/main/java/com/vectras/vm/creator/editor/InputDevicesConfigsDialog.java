@@ -9,11 +9,13 @@ import androidx.annotation.NonNull;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.vectras.qemu.MainSettingsManager;
 import com.vectras.vm.R;
 import com.vectras.vm.creator.utils.EditorUtils;
 import com.vectras.vm.creator.utils.VMCreatorSelector;
 import com.vectras.vm.databinding.CreatorInputDevicesDialogBinding;
 import com.vectras.vm.main.vms.DataMainRoms;
+import com.vectras.vm.manager.ParamManager;
 import com.vectras.vm.utils.DialogUtils;
 
 import java.util.Objects;
@@ -92,14 +94,28 @@ public class InputDevicesConfigsDialog extends BottomSheetDialogFragment {
     private void initialize() {
         if (!isAdded()) return;
 
-        binding.sbvMouse.setOnClickListener(v -> VMCreatorSelector.mouse(requireActivity(), configs.mouse, ((position, name, value) -> {
-            configs.mouse = position;
-            binding.sbvMouse.setSubtitle(name);
+        binding.sbvUsbController.setOnClickListener(v -> VMCreatorSelector.usbController(requireActivity(), configs.usbController, ((position, name, value) -> {
+            if (position == 0 && ParamManager.isUsbControllerRequired(configs)) {
+                DialogUtils.oopsDialog(requireActivity(), getString(R.string.usb_controller_required_content));
+                return;
+            }
+
+            configs.usbController = position;
+            binding.sbvUsbController.setSubtitle(name);
         })));
 
-        binding.sbvKeyboard.setOnClickListener(v -> VMCreatorSelector.keyboard(requireActivity(), configs.keyboard, ((position, name, value) -> {
+        binding.sbvMouse.setOnClickListener(v -> VMCreatorSelector.mouse(requireActivity(), MainSettingsManager.getArch(requireContext()), configs.mouse, ((position, name, value) -> {
+            configs.mouse = position;
+            binding.sbvMouse.setSubtitle(name);
+
+            checkUsbController();
+        })));
+
+        binding.sbvKeyboard.setOnClickListener(v -> VMCreatorSelector.keyboard(requireActivity(), MainSettingsManager.getArch(requireContext()), configs.keyboard, ((position, name, value) -> {
             configs.keyboard = position;
             binding.sbvKeyboard.setSubtitle(name);
+
+            checkUsbController();
         })));
 
         load();
@@ -108,11 +124,19 @@ public class InputDevicesConfigsDialog extends BottomSheetDialogFragment {
     private void load() {
         if (!isAdded()) return;
 
-        binding.sbvMouse.setSubtitle(Objects.requireNonNull(VMCreatorSelector.getMouse(requireActivity(), configs.mouse).get("name")).toString());
-        binding.sbvKeyboard.setSubtitle(Objects.requireNonNull(VMCreatorSelector.getKeyboard(requireActivity(), configs.keyboard).get("name")).toString());
+        binding.sbvUsbController.setSubtitle(Objects.requireNonNull(VMCreatorSelector.getUsbController(requireActivity(), configs.usbController).get("name")).toString());
+        binding.sbvMouse.setSubtitle(Objects.requireNonNull(VMCreatorSelector.getMouse(requireActivity(), MainSettingsManager.getArch(requireContext()), configs.mouse).get("name")).toString());
+        binding.sbvKeyboard.setSubtitle(Objects.requireNonNull(VMCreatorSelector.getKeyboard(requireActivity(), MainSettingsManager.getArch(requireContext()), configs.keyboard).get("name")).toString());
     }
 
     private void save() {
 
+    }
+
+    void checkUsbController() {
+        if (configs.usbController == 0 && ParamManager.isUsbControllerRequired(configs)) {
+            configs.usbController = 1;
+            binding.sbvUsbController.setSubtitle(Objects.requireNonNull(VMCreatorSelector.getUsbController(requireActivity(), configs.usbController).get("name")).toString());
+        }
     }
 }

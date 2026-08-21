@@ -146,15 +146,22 @@ public class StartVM {
         }
 
         String inputDevicesParams = "";
-        String mouse = Objects.requireNonNull(VMCreatorSelector.getMouse(activity, vmData.mouse).get("value")).toString();
+        String mouse = Objects.requireNonNull(VMCreatorSelector.getMouse(activity, MainSettingsManager.getArch(activity), vmData.mouse).get("value")).toString();
         if (!mouse.isEmpty()) {
             inputDevicesParams += " -device " + mouse;
         }
-        String keyboard = Objects.requireNonNull(VMCreatorSelector.getKeyboard(activity, vmData.keyboard).get("value")).toString();
+        String keyboard = Objects.requireNonNull(VMCreatorSelector.getKeyboard(activity, MainSettingsManager.getArch(activity), vmData.keyboard).get("value")).toString();
         if (!keyboard.isEmpty()) {
             inputDevicesParams += " -device " + keyboard;
         }
-        if (!inputDevicesParams.isEmpty() && !ParamManager.hasUsb(extraParams)) inputDevicesParams = " -usb" + inputDevicesParams;
+        String usbController = Objects.requireNonNull(VMCreatorSelector.getUsbController(activity, vmData.usbController).get("value")).toString();
+        if (!usbController.equals(ListManager.NONE_VALUE)) {
+            inputDevicesParams = (usbController.isEmpty() ? " -usb" : (" -device " + usbController)) + inputDevicesParams;
+        } else if (!inputDevicesParams.isEmpty() && !ParamManager.hasUsb(extraParams)) {
+            // This is a fallback case for when the USB controller might be removed from the extra params after the virtual machine generator has validated it.
+            inputDevicesParams = " -usb" + inputDevicesParams;
+        }
+
 
         String graphicsParams = "";
         String graphics = Objects.requireNonNull(VMCreatorSelector.getGraphicsCard(activity, vmData.graphicCard).get("value")).toString();

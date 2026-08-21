@@ -1,38 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:orientation="vertical">
+
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:id="@+id/drag_handle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <LinearLayout
-        android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:paddingTop="0dp"
-        android:paddingLeft="18dp"
-        android:paddingRight="18dp"
-        android:paddingBottom="18dp">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp">
 
-        <com.google.android.material.bottomsheet.BottomSheetDragHandleView
-            android:id="@+id/drag_handle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+        <TextView
+            style="@style/MaterialAlertDialog.Material3Expressive.Title.Text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/logs" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/title"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginBottom="8dp"-->
-<!--            android:text="@string/logs"-->
-<!--            style="@style/MaterialAlertDialog.Material3.Title.Text"/>-->
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerLog"
-            android:gravity="start"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"/>
-
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_clean"
+            style="@style/Widget.Material3Expressive.Button.IconButton.Tonal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/cleaning_services_24px" />
     </LinearLayout>
 
-</RelativeLayout>
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerLog"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="16dp"
+        android:clipToPadding="false"
+        android:gravity="start"
+        android:paddingBottom="16dp" />
+
+</LinearLayout>

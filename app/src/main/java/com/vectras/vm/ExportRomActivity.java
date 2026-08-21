@@ -181,6 +181,7 @@ public class ExportRomActivity extends AppCompatActivity {
 
         vmConfigMap.put("battery", current.battery);
 
+        vmConfigMap.put("usbController", current.usbController);
         vmConfigMap.put("mouse", current.mouse);
         vmConfigMap.put("keyboard", current.keyboard);
 

@@ -70,20 +70,28 @@ public class VMCreatorSelector {
         return ListManager.networkCards(context).get(position);
     }
 
-    public static void mouse(Activity activity, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback) {
-        showDialog(activity, ListManager.mouseTypes(activity), position, callback, activity.getString(R.string.types));
+    public static void usbController(Activity activity, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback) {
+        showDialog(activity, ListManager.usbControllers(activity), position, callback, activity.getString(R.string.controllers));
     }
 
-    public static HashMap<String, Object> getMouse(Context context, int position) {
-        return ListManager.mouseTypes(context).get(position);
+    public static HashMap<String, Object> getUsbController(Context context, int position) {
+        return ListManager.usbControllers(context).get(position);
     }
 
-    public static void keyboard(Activity activity, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback) {
-        showDialog(activity, ListManager.keyboardTypes(activity), position, callback, activity.getString(R.string.types));
+    public static void mouse(Activity activity, String arch, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback) {
+        showDialog(activity, ListManager.mouseTypes(activity, arch), position, callback, activity.getString(R.string.types));
     }
 
-    public static HashMap<String, Object> getKeyboard(Context context, int position) {
-        return ListManager.keyboardTypes(context).get(position);
+    public static HashMap<String, Object> getMouse(Context context, String arch, int position) {
+        return ListManager.mouseTypes(context, arch).get(position);
+    }
+
+    public static void keyboard(Activity activity, String arch, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback) {
+        showDialog(activity, ListManager.keyboardTypes(activity, arch), position, callback, activity.getString(R.string.types));
+    }
+
+    public static HashMap<String, Object> getKeyboard(Context context, String arch, int position) {
+        return ListManager.keyboardTypes(context, arch).get(position);
     }
 
     public static void soundCard(Activity activity, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback) {

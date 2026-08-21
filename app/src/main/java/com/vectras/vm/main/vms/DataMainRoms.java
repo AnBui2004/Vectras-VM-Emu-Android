@@ -75,6 +75,7 @@ public class DataMainRoms implements Serializable {
     public boolean sharedFolder;
 
     // Input devices
+    public int usbController;
 
     public int mouse;
 

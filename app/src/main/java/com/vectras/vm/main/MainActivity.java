@@ -973,6 +973,11 @@ public class MainActivity extends AppCompatActivity {
         bottomSheetDialog.setContentView(bottomsheetdialogLoggerBinding.getRoot());
         bottomSheetDialog.show();
 
+        bottomsheetdialogLoggerBinding.btnClean.setOnClickListener(_v -> {
+                VectrasStatus.clearLog();
+                bottomsheetdialogLoggerBinding.recyclerLog.getAdapter().notifyDataSetChanged();
+        });
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApp());
         LogsAdapter mLogAdapter = new LogsAdapter(layoutManager, getApp(), false);
         bottomsheetdialogLoggerBinding.recyclerLog.setAdapter(mLogAdapter);

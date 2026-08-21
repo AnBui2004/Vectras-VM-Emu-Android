@@ -702,7 +702,7 @@
     <string name="opengl_setting_note">The display will support OpenGL when running a virtual machine. 3Dfx will not work when using this feature.</string>
     <string name="qemu_opengl_is_not_available_content">OpenGL is only available when using an X11 display and with OpenGL enabled. Go to settings to learn more.</string>
     <string name="input_devices">Input devices</string>
-    <string name="input_devices_note">Mouse, keyboard,…</string>
+    <string name="input_devices_note">USB controller, mouse, keyboard,…</string>
     <string name="mouse">Mouse</string>
     <string name="usb_tablet">USB tablet</string>
     <string name="types">Types</string>
@@ -724,6 +724,10 @@
     <string name="pin">Pin</string>
     <string name="unpin">Unpin</string>
     <string name="pin_failed_content">An error occurred while pinning. Please try again later.</string>
+    <string name="usb_controller">USB controller</string>
+    <string name="controllers">Controllers</string>
+    <string name="usb_controller_required_content">Some devices require a USB controller, so you have no choice but to use one.</string>
+    <string name="logs">Logs</string>
 
 
     <!--======================TERMUX STRINGS====================-->
@@ -1004,6 +1008,11 @@ E.g. <b>META</b> for <i>META key</i>, \n
     <string name="ps_2" translatable="false">PS/2</string>
 
     <string name="opengl" translatable="false">OpenGL</string>
+
+    <!-- USB controllers -->
+    <string name="ehci" translatable="false">EHCI</string>
+    <string name="qemu_xhci" translatable="false">QEMU XHCI</string>
+    <string name="nec_xhci" translatable="false">NEC XHCI</string>
 
     <!-- CPUs -->
     <string name="max_cpu" translatable="false">Max</string>

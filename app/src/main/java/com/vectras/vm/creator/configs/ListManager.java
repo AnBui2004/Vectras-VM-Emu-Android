@@ -282,17 +282,27 @@ public class ListManager {
         return list;
     }
 
-    public static ArrayList<HashMap<String, Object>> mouseTypes(Context context) {
+    public static ArrayList<HashMap<String, Object>> usbControllers(Context context) {
         ArrayList<HashMap<String, Object>> list = new ArrayList<>();
-        UniversalPickerDialog.putToList(list, context.getString(R.string.ps_2), "");
+        UniversalPickerDialog.putToList(list, context.getString(R.string.none), NONE_VALUE);
+        UniversalPickerDialog.putToList(list, context.getString(R.string.defaulttext), "");
+        UniversalPickerDialog.putToList(list, context.getString(R.string.ehci), "usb-ehci");
+        UniversalPickerDialog.putToList(list, context.getString(R.string.qemu_xhci), "qemu-xhci");
+        UniversalPickerDialog.putToList(list, context.getString(R.string.nec_xhci), "nec-usb-xhci");
+        return list;
+    }
+
+    public static ArrayList<HashMap<String, Object>> mouseTypes(Context context, String arch) {
+        ArrayList<HashMap<String, Object>> list = new ArrayList<>();
+        UniversalPickerDialog.putToList(list, arch.equals(MainSettingsManager.ARM64_ARCH) ? context.getString(R.string.none) : context.getString(R.string.ps_2), "");
         UniversalPickerDialog.putToList(list, context.getString(R.string.usb), "usb-mouse");
         UniversalPickerDialog.putToList(list, context.getString(R.string.usb_tablet), "usb-tablet");
         return list;
     }
 
-    public static ArrayList<HashMap<String, Object>> keyboardTypes(Context context) {
+    public static ArrayList<HashMap<String, Object>> keyboardTypes(Context context, String arch) {
         ArrayList<HashMap<String, Object>> list = new ArrayList<>();
-        UniversalPickerDialog.putToList(list, context.getString(R.string.ps_2), "");
+        UniversalPickerDialog.putToList(list, arch.equals(MainSettingsManager.ARM64_ARCH) ? context.getString(R.string.none) : context.getString(R.string.ps_2), "");
         UniversalPickerDialog.putToList(list, context.getString(R.string.usb), "usb-kbd");
         return list;
     }
