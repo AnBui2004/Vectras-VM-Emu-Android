@@ -275,7 +275,7 @@ public class MainStartVM {
         }
 
         if (MainSettingsManager.getVncExternal(context) &&
-                NetworkUtils.isPortOpen("localhost", Config.defaultVNCPort + Config.defaultVNCPort, 500)) {
+                NetworkUtils.isPortOpen("localhost", 5900 + Config.defaultVNCPort, 500)) {
             DialogUtils.twoDialog(context, context.getString(R.string.problem_has_been_detected),
                     context.getString(R.string.the_vnc_server_port_you_set_is_currently_in_use_by_other),
                     context.getString(R.string.go_to_settings),
