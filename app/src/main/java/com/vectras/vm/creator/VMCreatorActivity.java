@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.signature.ObjectKey;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -198,6 +199,7 @@ public class VMCreatorActivity extends AppCompatActivity {
                         true,
                         () -> thumbnailPicker.launch("image/*"),
                         () -> {
+                            tempThumbnailFile = null;
                             thumbnailPath = "";
                             binding.ivAddThubnail.setImageResource(R.drawable.add_24px);
                             VMManager.setIconWithName(binding.ivIcon, Objects.requireNonNull(binding.title.getText()).toString());
@@ -531,8 +533,11 @@ public class VMCreatorActivity extends AppCompatActivity {
 
             if (current.itemIcon != null && !current.itemIcon.isEmpty()) {
                 thumbnailPath = (current.itemIcon.contains("/") ? current.itemIcon : VmFileManager.getPath(vmID, current.itemIcon));
-                updateThumbnailViewer("");
+            } else {
+                thumbnailPath = "";
             }
+
+            updateThumbnailViewer(tempThumbnailFile != null ? tempThumbnailFile : thumbnailPath);
 
             if (current.itemPath != null && !current.itemPath.isEmpty())
                 current.itemPath = (current.itemPath.contains("/") ? current.itemPath : VmFileManager.getPath(vmID, current.itemPath));
@@ -721,6 +726,8 @@ public class VMCreatorActivity extends AppCompatActivity {
         current.itemIcon = thumbnailPath;
     }
 
+    String tempThumbnailFile;
+
     private void handleThumbnail(Uri uri) {
         showProgressDialog(getString(R.string.just_a_sec));
 
@@ -731,12 +738,12 @@ public class VMCreatorActivity extends AppCompatActivity {
                 if (FileUtils.isFileExists(VmFileManager.getThumbnail(vmID)))
                     VmFileManager.markPendingDelete(VmFileManager.getThumbnail(vmID));
 
-                String tempPath = utils.getTempPath(VmFileManager.THUMBNAIL_FILE_NAME);
+                tempThumbnailFile = utils.getTempPath(VmFileManager.THUMBNAIL_FILE_NAME);
 
-                ImageUtils.convertToPng(this, uri, tempPath);
+                ImageUtils.convertToPng(this, uri, tempThumbnailFile);
 
                 thumbnailPath = VmFileManager.getThumbnail(vmID);
-                runOnUiThread(() -> updateThumbnailViewer(tempPath));
+                runOnUiThread(() -> updateThumbnailViewer(tempThumbnailFile));
             } catch (Exception e) {
                 runOnUiThread(() -> DialogUtils.oneDialog(this,
                         getString(R.string.oops),
@@ -764,10 +771,9 @@ public class VMCreatorActivity extends AppCompatActivity {
             if (imgFile.exists()) {
                 Glide.with(this)
                         .load(imgFile)
+                        .signature(new ObjectKey(imgFile.lastModified()))
                         .placeholder(R.drawable.ic_computer_180dp_with_padding)
                         .error(R.drawable.ic_computer_180dp_with_padding)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .into(binding.ivIcon);
             } else {
                 binding.ivAddThubnail.setImageResource(R.drawable.add_24px);

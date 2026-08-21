@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.signature.ObjectKey;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.vectras.qemu.Config;
 import com.vectras.vm.R;
@@ -59,16 +60,18 @@ public class StartVmDialog {
             ImageView ivThumbnail = progressView.findViewById(R.id.iv_thumbnail);
 
             if (!thumbnailFile.isEmpty() && FileUtils.isFileExists(thumbnailFile)) {
+                File file = new File(thumbnailFile);
                 Glide.with(activity.getApplicationContext())
-                        .load(new File(thumbnailFile))
+                        .load(file)
+                        .signature(new ObjectKey(file.lastModified()))
                         .placeholder(R.drawable.ic_computer_180dp_with_padding)
                         .error(R.drawable.ic_computer_180dp_with_padding)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .into(ivThumbnail);
             } else if (VmFileManager.isScreenshotPngExists(vmId)) {
+                File file = new File(VmFileManager.getScreenshotPng(vmId));
                 Glide.with(activity.getApplicationContext())
-                        .load(new File(VmFileManager.getScreenshotPng(vmId)))
+                        .load(file)
+                        .signature(new ObjectKey(file.lastModified()))
                         .placeholder(R.drawable.ic_computer_180dp_with_padding)
                         .error(R.drawable.ic_computer_180dp_with_padding)
                         .skipMemoryCache(true)
