@@ -15,7 +15,7 @@ def keystorePropsFile = rootProject.file('keystore.properties')
 if (keystorePropsFile.exists()) {
     keystorePropsFile.withInputStream { keystoreProps.load(it) }
 }
-def vectrasStoreFile = keystoreProps['storeFile'] ?: '../vectras.jks'
+def vectrasStoreFile = keystoreProps['storeFile'] ?: '../testkey.jks'
 def vectrasStorePassword = keystoreProps['storePassword'] ?: '856856'
 def vectrasKeyAlias = keystoreProps['keyAlias'] ?: 'vectras'
 def vectrasKeyPassword = keystoreProps['keyPassword'] ?: '856856'
@@ -28,8 +28,8 @@ android {
         applicationId "com.vectras.vm"
         minSdk minApi
         targetSdk targetApi
-        versionCode 168
-        versionName "4.6.1"
+        versionCode 169
+        versionName "4.6.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -43,12 +43,16 @@ android {
             keyAlias vectrasKeyAlias
             storePassword vectrasStorePassword
             keyPassword vectrasKeyPassword
+            v1SigningEnabled true
+            v2SigningEnabled true
         }
         release {
             storeFile file(vectrasStoreFile)
             keyAlias vectrasKeyAlias
             storePassword vectrasStorePassword
             keyPassword vectrasKeyPassword
+            v1SigningEnabled true
+            v2SigningEnabled true
         }
     }
 

@@ -8,6 +8,9 @@
 
 We are no longer collaborating with the official Vectras VM as of July 30, 2026. Therefore, this fork will henceforth be separate and have a new direction. The Vectras VM version in this fork will still be maintained and updated as before. Thank you for using both the official Vectras VM and this fork version over the past time. We also thank those who created, maintain, and contribute to Vectras VM. You can visit the [official version here](https://github.com/xoureldeen/Vectras-VM-Android).
 
+> [!CAUTION]
+> For security reasons, you should USE OR UPDATE TO VERSION 4.6.2 OR LATER. You need to uninstall the previous version before updating, your virtual machines will not be deleted. If for some reason you wish to use a version older than 4.6.2, YOU SHOULD USE THE VERSION RELEASED HERE AND AVOID USING TERMUX:X11. IF YOU STILL INSIST ON USING TERMUX:X11, ENSURE THAT NOTHING INTERFERES WITH VECTRAS VM UNDER ANY CIRCUMSTANCES. If you are a developer, `vectrasvm.jks` has been renamed to `testkey.jks`, YOU SHOULD USE THIS OLD KEY ONLY FOR SAFE TESTING PURPOSES AND NOT FOR PRODUCTION RELEASES.
+
 # 🪴 Vectras VM
 ![GitHub Repo stars](https://img.shields.io/github/stars/AnBui2004/Vectras-VM-Emu-Android)
 ![GitHub watchers](https://img.shields.io/github/watchers/AnBui2004/Vectras-VM-Emu-Android)
