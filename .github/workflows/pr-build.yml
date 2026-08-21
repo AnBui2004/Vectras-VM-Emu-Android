@@ -1,0 +1,81 @@
+# Merge gate: every PR and push to master must build.
+# This workflow needs no secrets (a placeholder google-services.json is
+# generated when GOOGLE_SERVICES_JSON is unavailable, e.g. for fork PRs),
+# so it also runs for external contributors.
+# CI gates merges; it never closes issues by itself.
+
+name: PR Build
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+concurrency:
+  group: pr-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Create google-services.json
+        run: |
+          if [ -n "${{ secrets.GOOGLE_SERVICES_JSON }}" ]; then
+            echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > app/google-services.json
+          else
+            cat > app/google-services.json <<'JSON'
+          {
+            "project_info": {
+              "project_number": "123456789000",
+              "project_id": "vectras-ci-placeholder",
+              "storage_bucket": "vectras-ci-placeholder.appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:123456789000:android:0000000000000000",
+                  "android_client_info": {
+                    "package_name": "com.vectras.vm"
+                  }
+                },
+                "oauth_client": [],
+                "api_key": [
+                  {
+                    "current_key": "AIzaSyA0000000000000000000000000000000000"
+                  }
+                ],
+                "services": {
+                  "appinvite_service": {
+                    "other_platform_oauth_client": []
+                  }
+                }
+              }
+            ],
+            "configuration_version": "1"
+          }
+          JSON
+            echo "GOOGLE_SERVICES_JSON secret not available; using placeholder google-services.json"
+          fi
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
+
+      - name: Upload Debug APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
