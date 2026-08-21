@@ -37,10 +37,23 @@ pkill -9 -f qemu-system- || true
 clear
 
 echo -e "\e[1;37m[i] Uninstalling current Qemu..."
+rm -f /usr/local/bin/elf2dmp
 rm -f /usr/local/bin/qemu-*
-rm -f /usr/share/applications/qemu.desktop
-rm -f /usr/share/icons/hicolor/*/qemu.png
-rm -rf /usr/share/qemu
+rm -f /usr/local/include/qemu-*
+rm -f /usr/local/libexec/qemu-*
+rm -f /usr/local/libexec/vhost-user-gpu
+rm -f /usr/local/libexec/virtfs-proxy-helper
+rm -f /usr/local/libexec/virtiofsd
+rm -rf /usr/local/share/doc/qemu
+rm -f /usr/local/share/applications/qemu.desktop
+rm -f /usr/local/share/icons/hicolor/*/qemu.png
+rm -f /usr/local/share/locale/*/qemu.mo
+rm -f /usr/local/share/man/man1/qemu*
+rm -f /usr/local/share/man/man1/virtfs-proxy-helper.1
+rm -f /usr/local/share/man/man1/virtiofsd.1
+rm -f /usr/local/share/man/man7/qemu*
+rm -f /usr/local/share/man/man8/qemu*
+rm -rf /usr/local/share/qemu
 clear
 
 echo -e "\e[1;37m[i] Downloading..."

@@ -33,7 +33,7 @@ public class BatteryEmulatorManager {
         File vmTemp = new File(VmFileManager.getTempPath(context, vmId));
 
         try {
-            String batteryAsl = SetupFeatureCore.readTextFromAssets(context, "roms/battery.asl");
+            String batteryAsl = SetupFeatureCore.readTextFromAssets(context, "asl/battery.asl");
             int remainingCapacity;
             int lastFullChargeCapacity = (int) (DESIGN_CAPACITY - ((double) (DESIGN_CAPACITY / 100) * (batteryCycleCount * PROPERTY_CAPACITY_DEPLETED_EACH_CYCLE)));
 

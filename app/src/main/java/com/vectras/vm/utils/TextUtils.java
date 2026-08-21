@@ -1,5 +1,10 @@
 package com.vectras.vm.utils;
 
+import android.content.Context;
+import android.net.Uri;
+
+import com.vectras.vm.R;
+
 import java.util.Random;
 
 public class TextUtils {
@@ -69,5 +74,27 @@ public class TextUtils {
             addAdb = "z";
         }
         return addAdb;
+    }
+
+    public static String getLinkName(Context context, String url) {
+        String host = Uri.parse(url).getHost();
+        return switch (host) {
+            case "anbui.ovh", "go.anbui.ovh" -> context.getString(R.string.nguyen_bao_an_bui);
+            case "archive.org" -> context.getString(R.string.internet_archive);
+            case "pixeldrain.com" -> context.getString(R.string.pixeldrain);
+            case "drive.google.com" -> context.getString(R.string.google_drive);
+            case null, default -> context.getString(R.string.unknow);
+        };
+    }
+
+    public static int getLinkFavicon(String url) {
+        String host = Uri.parse(url).getHost();
+        return switch (host) {
+            case "anbui.ovh", "go.anbui.ovh" -> R.drawable.nguyen_bao_an_bui;
+            case "archive.org" -> R.drawable.account_balance_24px;
+            case "pixeldrain.com" -> R.drawable.circle_circle_24px;
+            case "drive.google.com" -> R.drawable.drive_export_24px;
+            case null, default -> R.drawable.language_24px;
+        };
     }
 }

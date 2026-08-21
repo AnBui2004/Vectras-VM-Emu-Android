@@ -2,7 +2,6 @@ package com.vectras.vm.setupwizard;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
@@ -18,7 +17,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
 
 import com.anbui.elephant.retrofit2utils.Retrofit2Utils;
 import com.google.gson.Gson;
@@ -31,6 +29,7 @@ import com.vectras.vm.VMManager;
 import com.vectras.vm.creator.utils.VMCreatorSelector;
 import com.vectras.vm.databinding.ActivitySetupWizard2Binding;
 import com.vectras.vm.databinding.SetupQemuDoneBinding;
+import com.vectras.vm.file.FilePickerDialog;
 import com.vectras.vm.main.MainActivity;
 import com.vectras.vm.utils.DeviceUtils;
 import com.vectras.vm.utils.DialogUtils;
@@ -43,6 +42,7 @@ import com.vectras.vm.utils.TarUtils;
 import com.vectras.vm.utils.UIUtils;
 import com.vectras.vterm.Terminal2;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -62,8 +62,7 @@ public class SetupWizard2Activity extends AppCompatActivity {
     final int STEP_INSTALLING_PACKAGES = 5;
     final int STEP_ERROR = 6;
     final int STEP_JOIN_COMMUNITY = 7;
-    final int STEP_PATERON = 8;
-    final int STEP_FINISH = 9;
+    final int STEP_FINISH = 8;
     final int STEP_SYSTEM_UPDATE = -1;
     int currentStep = 0;
     String logs = "";
@@ -162,7 +161,21 @@ public class SetupWizard2Activity extends AppCompatActivity {
 
         });
 
-        binding.customSetupOption.setOnClickListener(v -> bootstrapFilePicker.launch("*/*"));
+        binding.customSetupOption.setOnClickListener(v -> {
+            if (MainSettingsManager.getBuiltInFilePicker(this)) {
+                FilePickerDialog filePickerDialog = new FilePickerDialog();
+                filePickerDialog.setDoNotSelectInSystemFolder(true);
+                filePickerDialog.pick(this, FilePickerDialog.ZIP_FILE, (path -> handleBootStrapFile(Uri.fromFile(new File(path)))));
+            } else {
+                try {
+                    bootstrapFilePicker.launch("*/*");
+                } catch (Exception e) {
+                    FilePickerDialog filePickerDialog = new FilePickerDialog();
+                    filePickerDialog.setDoNotSelectInSystemFolder(true);
+                    filePickerDialog.pick(this, FilePickerDialog.ZIP_FILE, (path -> handleBootStrapFile(Uri.fromFile(new File(path)))));
+                }
+            }
+        });
 
         binding.selectMirrorOption.setOnClickListener(v -> selectMirror());
 
@@ -173,7 +186,7 @@ public class SetupWizard2Activity extends AppCompatActivity {
                 uiController(STEP_SYSTEM_UPDATE);
                 binding.btnSkipSystemUpdate.setVisibility(View.GONE);
             } else if (isLibProotError) {
-                IntentUtils.openTelegramLink(this);
+                IntentUtils.openUrl(this, AppConfig.community);
             } else if (SetupFeatureCore.isInstalledSystemFiles(this)) {
                 getDataForStandardSetup();
             } else {
@@ -187,15 +200,7 @@ public class SetupWizard2Activity extends AppCompatActivity {
         bindingFinalSteps.btnContinue.setOnClickListener(v -> {
             if (currentStep == STEP_JOIN_COMMUNITY) {
                 uiControllerFinalSteps(currentStep + 1);
-                IntentUtils.openTelegramLink(this);
-                //Don't show join Telegram dialog again
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-                SharedPreferences.Editor edit = prefs.edit();
-                edit.putBoolean("tgDialog", true);
-                edit.apply();
-            } else if (currentStep == STEP_PATERON) {
-                uiControllerFinalSteps(currentStep + 1);
-                IntentUtils.openUrl(this, AppConfig.patreonLink);
+                IntentUtils.openUrl(this, AppConfig.community);
             } else {
                 startActivity(new Intent(this, MainActivity.class));
                 finish();
@@ -343,17 +348,12 @@ public class SetupWizard2Activity extends AppCompatActivity {
         TransitionManager.beginDelayedTransition(bindingFinalSteps.mainContent);
 
         bindingFinalSteps.linearcommunity.setVisibility(View.GONE);
-        bindingFinalSteps.lineardonate.setVisibility(View.GONE);
         bindingFinalSteps.linearwelcomehome.setVisibility(View.GONE);
 
         TransitionManager.beginDelayedTransition(bindingFinalSteps.mainContent);
 
         if (step == STEP_JOIN_COMMUNITY) {
             bindingFinalSteps.linearcommunity.setVisibility(View.VISIBLE);
-            bindingFinalSteps.tvLater.setVisibility(View.VISIBLE);
-            bindingFinalSteps.btnContinue.setText(getString(R.string.join));
-        } else if (step == STEP_PATERON) {
-            bindingFinalSteps.lineardonate.setVisibility(View.VISIBLE);
             bindingFinalSteps.tvLater.setVisibility(View.VISIBLE);
             bindingFinalSteps.btnContinue.setText(getString(R.string.join));
         } else if (step == STEP_FINISH) {
@@ -462,21 +462,37 @@ public class SetupWizard2Activity extends AppCompatActivity {
 
                 if (ACTION == ACTION_SYSTEM_UPDATE) {
                     cmd += "echo \"Uninstalling...\";" +
+                            "set +e;" +
+                            " rm -f /usr/local/bin/elf2dmp;" +
                             " rm -f /usr/local/bin/qemu-*;" +
-                            " rm -f /usr/share/applications/qemu.desktop;" +
-                            " rm -f /usr/share/icons/hicolor/*/qemu.png;" +
-                            " rm -rf /usr/share/qemu;" +
+                            " rm -f /usr/local/include/qemu-*;" +
+                            " rm -f /usr/local/libexec/qemu-*;" +
+                            " rm -f /usr/local/libexec/vhost-user-gpu;" +
+                            " rm -f /usr/local/libexec/virtfs-proxy-helper;" +
+                            " rm -f /usr/local/libexec/virtiofsd;" +
+                            " rm -rf /usr/local/share/doc/qemu;" +
+                            " rm -f /usr/local/share/applications/qemu.desktop;" +
+                            " rm -f /usr/local/share/icons/hicolor/*/qemu.png;" +
+                            " rm -f /usr/local/share/locale/*/qemu.mo;" +
+                            " rm -f /usr/local/share/man/man1/qemu*;" +
+                            " rm -f /usr/local/share/man/man1/virtfs-proxy-helper.1;" +
+                            " rm -f /usr/local/share/man/man1/virtiofsd.1;" +
+                            " rm -f /usr/local/share/man/man7/qemu*;" +
+                            " rm -f /usr/local/share/man/man8/qemu*;" +
+                            " rm -rf /usr/local/share/qemu;" +
+                            " set -e;" +
+                            " echo \"Downloading Qemu...\";" +
                             downloadBootstrapsCommand + ";" +
                             " echo \"Installing Qemu...\";" +
                             " tar -xzvf setup.tar.gz -C /;" +
                             " rm setup.tar.gz;" +
-                            " chmod 775 /usr/local/bin/*;";
+                            " chmod 755 /usr/local/bin/*;";
                 } else {
                     if (isCustomSetupMode) {
                         cmd += " echo \"Installing Qemu...\";" +
                                 " tar -xzvf " + tarPath + " -C /;" +
                                 " rm " + tarPath + ";" +
-                                " chmod 775 /usr/local/bin/*;" +
+                                " chmod 755 /usr/local/bin/*;" +
                                 " echo \"Just a sec...\";" +
                                 " mkdir -p ~/.vnc && echo -e \"555555\\n555555\" | vncpasswd -f > ~/.vnc/passwd && chmod 0600 ~/.vnc/passwd;";
                     } else {
@@ -488,7 +504,7 @@ public class SetupWizard2Activity extends AppCompatActivity {
                                 " echo \"Installing Qemu...\";" +
                                 " tar -xzvf setup.tar.gz -C /;" +
                                 " rm setup.tar.gz;" +
-                                " chmod 775 /usr/local/bin/*;" +
+                                " chmod 755 /usr/local/bin/*;" +
                                 " echo \"Just a sec...\";" +
                                 " mkdir -p ~/.vnc && echo -e \"555555\\n555555\" | vncpasswd -f > ~/.vnc/passwd && chmod 0600 ~/.vnc/passwd;";
 
@@ -503,35 +519,37 @@ public class SetupWizard2Activity extends AppCompatActivity {
     }
 
     private final ActivityResultLauncher<String> bootstrapFilePicker =
-            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-                if (uri != null) {
-                    String abi = Build.SUPPORTED_ABIS[0];
-                    if (FileUtils.getFileNameFromUri(this, uri).endsWith(abi + ".tar.gz")) {
-                        uiController(STEP_INSTALLING_PACKAGES);
-                        new Thread(() -> {
-                            try {
-                                FileUtils.copyFileFromUri(this, uri, tarPath);
-                                runOnUiThread(() -> {
-                                    isCustomSetupMode = true;
-                                    startSetup();
-                                });
-                            } catch (Exception e) {
-                                runOnUiThread(() -> uiController(STEP_ERROR, getString(R.string.the_file_could_not_be_processed_content)));
-                            }
-                        }).start();
-                    } else {
-                        DialogUtils.oneDialog(this,
-                                getString(R.string.invalid_file),
-                                getString(R.string.please_select) + " vectras-vm-" + abi + ".tar.gz.",
-                                getResources().getString(R.string.ok),
-                                true,
-                                R.drawable.warning_48px,
-                                true,
-                                null,
-                                null);
+            registerForActivityResult(new ActivityResultContracts.GetContent(), this::handleBootStrapFile);
+
+    void handleBootStrapFile(Uri uri) {
+        if (uri != null) {
+            String abi = Build.SUPPORTED_ABIS[0];
+            if (FileUtils.getFileNameFromUri(this, uri).endsWith(abi + ".tar.gz")) {
+                uiController(STEP_INSTALLING_PACKAGES);
+                new Thread(() -> {
+                    try {
+                        FileUtils.copyFileFromUri(this, uri, tarPath);
+                        runOnUiThread(() -> {
+                            isCustomSetupMode = true;
+                            startSetup();
+                        });
+                    } catch (Exception e) {
+                        runOnUiThread(() -> uiController(STEP_ERROR, getString(R.string.the_file_could_not_be_processed_content)));
                     }
-                }
-            });
+                }).start();
+            } else {
+                DialogUtils.oneDialog(this,
+                        getString(R.string.invalid_file),
+                        getString(R.string.please_select) + " vectras-vm-" + abi + ".tar.gz.",
+                        getResources().getString(R.string.ok),
+                        true,
+                        R.drawable.warning_48px,
+                        true,
+                        null,
+                        null);
+            }
+        }
+    }
 
     private void execute(String command) {
         Terminal2 terminal2 = new Terminal2(this);

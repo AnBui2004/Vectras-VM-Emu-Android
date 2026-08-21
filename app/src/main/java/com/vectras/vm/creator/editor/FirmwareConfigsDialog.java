@@ -104,7 +104,7 @@ public class FirmwareConfigsDialog extends BottomSheetDialogFragment {
 
         binding.cbvUselocaltime.setOnCheckedChangeListener((v, isChecked) -> configs.isUseLocalTime = isChecked);
 
-        if (!MainSettingsManager.getArch(requireContext()).equals("X86_64")) {
+        if (!MainSettingsManager.getArch(requireContext()).equals(MainSettingsManager.X86_64_ARCH) && !MainSettingsManager.getArch(requireContext()).equals(MainSettingsManager.I386_ARCH)) {
             binding.cbvUseuefi.setVisibility(View.GONE);
             binding.cbvUseDefaultBios.setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.object_shape_single_high));
         } else {

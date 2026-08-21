@@ -16,8 +16,10 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import com.vectras.vm.crashtracker.CrashTrackerUtils;
 import com.vectras.vm.main.core.MainStartVM;
 import com.vectras.vm.manager.VmServiceManager;
+import com.vectras.vm.settings.SettingsData;
 import com.vectras.vm.utils.ClipboardUltils;
 import com.vectras.vm.utils.DialogUtils;
 import com.vectras.vterm.Terminal2;
@@ -50,7 +52,7 @@ public class MainService extends Service {
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText("The virtual machines are running...")
-                .setSmallIcon(R.drawable.ic_vectras_vm_48)
+                .setSmallIcon(R.drawable.vectras_vm_24px)
                 .addAction(R.drawable.close_24px, getString(R.string.stop), pStopSelf)
                 .build();
 
@@ -129,7 +131,11 @@ public class MainService extends Service {
 
                 if (!(log.trim().isEmpty() || log.trim().equals(MainStartVM.TAG_FINISHED_WITHOUT_ERROR))) {
                     new Handler(Looper.getMainLooper()).post(() -> {
+                        MainStartVM.dismissDialog();
+
                         if (!VMManager.isExecutedCommandError(command, log, context)) {
+                            if (!SettingsData.alwaysShowLog(context) && status == terminal2.SUCCESS) return;
+
                             String finalLog = log.contains(MainStartVM.TAG_FINISHED_WITHOUT_ERROR) ? log.substring(0, log.lastIndexOf(MainStartVM.TAG_FINISHED_WITHOUT_ERROR) - 1) : log;
 
                             DialogUtils.twoDialog(context, vmName, finalLog, context.getString(R.string.copy), context.getString(R.string.close), true, R.drawable.stack_24px, true,
@@ -152,8 +158,18 @@ public class MainService extends Service {
                     return;
                 }
 
-                new Handler(Looper.getMainLooper()).post(() -> DialogUtils.twoDialog(context, "Execution Result", exception.getMessage(), context.getString(R.string.copy), context.getString(R.string.close), true, R.drawable.round_terminal_24, true,
-                        () -> ClipboardUltils.copyToClipboard(context, exception.getMessage()), null, null));
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    VMManager.isQemuStopedWithError = true;
+                    MainStartVM.dismissDialog();
+
+                    if (Objects.requireNonNull(exception.getMessage()).contains("android.content.Context.getFilesDir()")) {
+                        CrashTrackerUtils.showCoreFeatureErrorDialog(activity,exception);
+                        return;
+                    }
+
+                    DialogUtils.twoDialog(context, activity.getString(R.string.something_went_wrong), exception.getMessage(), context.getString(R.string.copy), context.getString(R.string.close), true, R.drawable.round_terminal_24, true,
+                            () -> ClipboardUltils.copyToClipboard(context, exception.getMessage()), null, null);
+                });
             }
         });
     }

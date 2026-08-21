@@ -22,7 +22,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/telegram200"
+                android:src="@drawable/groups_96px"
                 app:tint="?attr/colorControlNormal" />
 
             <TextView
@@ -42,34 +42,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/lineardonate"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/patreon200" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:text="@string/donate"
-                android:textSize="36sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="@string/donatecontent" />
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/linearwelcomehome"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -79,7 +51,8 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/vectrasvm200" />
+                android:src="@drawable/vectras_vm_96px"
+                app:tint="?attr/colorPrimary" />
 
             <TextView
                 android:layout_width="wrap_content"

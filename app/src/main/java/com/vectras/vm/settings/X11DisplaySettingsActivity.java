@@ -1,7 +1,5 @@
 package com.vectras.vm.settings;
 
-import static android.os.Build.VERSION.SDK_INT;
-
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -12,9 +10,10 @@ import com.vectras.qemu.MainSettingsManager;
 import com.vectras.vm.R;
 import com.vectras.vm.databinding.ActivityX11DisplaySettingsBinding;
 import com.vectras.vm.main.core.DisplaySystem;
-import com.vectras.vm.utils.DeviceUtils;
+import com.vectras.vm.setupwizard.TurnipZinkSetupWizardActivity;
 import com.vectras.vm.utils.DialogUtils;
 import com.vectras.vm.utils.PackageUtils;
+import com.vectras.vm.x11.LoriePreferences;
 
 import java.util.Objects;
 
@@ -39,8 +38,10 @@ public class X11DisplaySettingsActivity extends AppCompatActivity {
     private void initialize() {
         binding.swEnabled.setChecked(MainSettingsManager.getVmUi(this).equals("X11"));
         binding.swRunQemuWithXterm.setChecked(MainSettingsManager.getRunQemuWithXterm(this));
-        binding.swUseSdl.setChecked(MainSettingsManager.getUseSdl(this));
         binding.swUseExternal.setChecked(MainSettingsManager.getExternalX11(this));
+        binding.swUseSdl.setChecked(MainSettingsManager.getUseSdl(this));
+        binding.swUseOpengl.setChecked(SettingsData.opengl(this));
+        binding.swBubble.setChecked(SettingsData.x11Bubble(this));
 
         binding.swEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
             MainSettingsManager.setVmUi(this, isChecked ? "X11" : "VNC");
@@ -49,21 +50,25 @@ public class X11DisplaySettingsActivity extends AppCompatActivity {
         binding.lnEnabled.setOnClickListener(v -> binding.swEnabled.toggle());
 
         binding.lnPreferences.setOnClickListener(v -> {
-            Intent intent = new Intent();
             if (DisplaySystem.isUseBuiltInX11()) {
-                intent.setClass(this, MainSettingsManager.class);
-                intent.putExtra("goto", "termuxx11");
+                startActivity(new Intent(this, LoriePreferences.class) {{ setAction(Intent.ACTION_MAIN); }});
             } else {
                 if (PackageUtils.isInstalled("com.termux.x11", this)) {
-                    intent.setClassName("com.termux.x11", "com.termux.x11.MainActivity");
+                    Intent intent = new Intent();
+                    intent.setClassName("com.termux.x11", "com.termux.x11.LoriePreferences");
+                    intent.setAction(Intent.ACTION_MAIN);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                    startActivity(intent);
                 } else {
                     DialogUtils.needInstallTermuxX11(this);
-                    return;
                 }
             }
-            startActivity(intent);
+        });
+
+        binding.swUseExternal.setOnCheckedChangeListener((buttonView, isChecked) -> MainSettingsManager.setExternalX11(this, isChecked));
+        binding.lnUseExternal.setOnClickListener(v -> {
+            binding.swUseExternal.toggle();
+            uiControllerExternal(binding.swUseExternal.isChecked());
         });
 
         binding.swRunQemuWithXterm.setOnCheckedChangeListener((buttonView, isChecked) -> MainSettingsManager.setRunQemuWithXterm(this, isChecked));
@@ -72,19 +77,33 @@ public class X11DisplaySettingsActivity extends AppCompatActivity {
         binding.swUseSdl.setOnCheckedChangeListener((buttonView, isChecked) -> MainSettingsManager.setUseSdl(this, isChecked));
         binding.lnUseSdl.setOnClickListener(v -> binding.swUseSdl.toggle());
 
-        binding.swUseExternal.setOnCheckedChangeListener((buttonView, isChecked) -> MainSettingsManager.setExternalX11(this, isChecked));
-        binding.lnUseExternal.setOnClickListener(v -> binding.swUseExternal.toggle());
+        binding.swUseOpengl.setOnCheckedChangeListener((buttonView, isChecked) -> SettingsData.opengl(this, isChecked));
+        binding.lnUseOpengl.setOnClickListener(v -> binding.swUseOpengl.toggle());
+
+        binding.swBubble.setOnCheckedChangeListener((buttonView, isChecked) -> SettingsData.x11Bubble(this, isChecked));
+        binding.lnBubble.setOnClickListener(v -> binding.swBubble.toggle());
+
+        binding.lnTurnipZink.setOnClickListener(v -> startActivity(new Intent(this, TurnipZinkSetupWizardActivity.class)));
 
         isInitialized = true;
 
+        uiControllerExternal(binding.swUseExternal.isChecked());
         uiController(binding.swEnabled.isChecked());
     }
 
     private void uiController(boolean isEnabled) {
         binding.lnAllOptions.setAlpha(isEnabled ? 1f : 0.5f);
         binding.lnPreferences.setEnabled(isEnabled);
+        binding.lnUseExternal.setEnabled(isEnabled);
         binding.lnRunQemuWithXterm.setEnabled(isEnabled);
         binding.lnUseSdl.setEnabled(isEnabled);
-        binding.lnUseExternal.setEnabled(isEnabled);
+        binding.lnUseOpengl.setEnabled(isEnabled);
+        binding.lnBubble.setEnabled(isEnabled && !binding.swUseExternal.isChecked());
+        binding.lnTurnipZink.setEnabled(isEnabled);
+    }
+
+    private void uiControllerExternal(boolean isEnabled) {
+        binding.lnBubble.setAlpha(!isEnabled ? 1f : 0.5f);
+        binding.lnBubble.setEnabled(!isEnabled);
     }
 }

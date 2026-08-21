@@ -12,10 +12,6 @@ import com.vectras.vm.AppConfig;
 import com.vectras.vm.R;
 
 public class IntentUtils {
-    public static boolean openTelegramLink(Context context) {
-        return openUrl(context, AppConfig.telegramLink, true);
-    }
-
     public static boolean openUrl(Context context, String url, boolean isShowErrorDialog) {
         boolean result = openUrl(context, url);
         if (isShowErrorDialog && !result) {
@@ -49,10 +45,6 @@ public class IntentUtils {
         } else {
             return false;
         }
-    }
-
-    public static void launchPlayStoreVersion(Context context) {
-        openApp(context, "com.vectrasllc.vm");
     }
 
     public static void openApp(Context context, String packageName) {

@@ -36,8 +36,12 @@ public class SystemSettingsActivity extends AppCompatActivity {
         binding.swQuickStart.setOnCheckedChangeListener((buttonView, isChecked) -> MainSettingsManager.setQuickStart(this, isChecked));
         binding.lnQuickStart.setOnClickListener(v -> binding.swQuickStart.toggle());
 
+        binding.swAlwaysShowLogs.setOnCheckedChangeListener((buttonView, isChecked) -> SettingsData.alwaysShowLog(this, isChecked));
+        binding.lnAlwaysShowLogs.setOnClickListener(v -> binding.swAlwaysShowLogs.toggle());
+
         binding.swCopyFile.setChecked(MainSettingsManager.copyFile(this));
         binding.swQuickStart.setChecked(MainSettingsManager.getQuickStart(this));
+        binding.swAlwaysShowLogs.setChecked(SettingsData.alwaysShowLog(this));
 
         binding.lnLanguage.setOnClickListener(v -> {
             ItemSettingsSelector.language(this, ItemSettingsSelector.getLanguagePosition(this, MainSettingsManager.getLang(this)), (position, name, value) -> {

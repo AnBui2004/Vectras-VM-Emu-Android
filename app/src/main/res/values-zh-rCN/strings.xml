@@ -1,11 +1,19 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Vectras VM</string>
+
+    <!--======================VECTRAS STRINGS====================-->
+    <string name="qemu_version" translatable="false">Stable</string>
+    <!-- logger -->
     <string name="startvm">虚拟机已启动！</string>
     <string name="stopvm">虚拟机已关闭！</string>
     <string name="noproccesses">无进程！</string>
     <string name="unknownstate">未知状态！</string>
+
+    <string name="qemu_console_head" translatable="false">compat_monitor1 console\nQemu monitor - type \'help\' for more information\n(qemu)</string>
+
     <string name="desktopInstructions">要使用外接鼠标:\n\t请在虚拟机中关闭鼠标加速.\n\t\t对于X-Window，执行: xset m 1\n\t\t对于其它操作系统在 Vectras主选项中关闭\"增强指针准确性\"或者在鼠标选项中选择\"usb-tablet\" (usb-tablet为QEMU中的一个选项)\n\t接入外接鼠标后点击OK\n\t最后通过让鼠标滑至屏幕的各个边缘以校准</string>
+
     <string name="navigation_drawer_open">打开抽屉</string>
     <string name="navigation_drawer_close">收起抽屉</string>
     <string name="address_caption">地址</string>
@@ -18,17 +26,19 @@
     <string name="keyboard">键盘</string>
     <string name="name">名称</string>
     <string name="size">大小：</string>
-    <string name="welcome">欢迎！</string>
     <string name="vectras_website">Vectras 官网</string>
     <string name="about">关于</string>
     <string name="settings">设置</string>
     <string name="username">用户名</string>
     <string name="save">保存</string>
     <string name="memory_usage">内存使用量</string>
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="external_vnc">允许外部VNC连接</string>
     <string name="display">显示</string>
     <string name="remove">移除</string>
     <string name="view_logs">查看日志</string>
+    <!-- Strings used for fragments for navigation -->
+
     <string name="input_mode_hardware_mouse">硬件鼠标模式</string>
     <string name="rom_name">ROM 名称</string>
     <string name="rom_drive_qcow2_img_etc">ROM驱动（qcow2,img等）</string>
@@ -39,7 +49,11 @@
     <string name="mouse_mode">鼠标模式</string>
     <string name="export">导出</string>
     <string name="sign_out">退出</string>
+    <string name="hdd1" translatable="false">HDD1</string>
+    <string name="hdd2" translatable="false">HDD2</string>
+
     <string name="create_a_machine">新建虚拟机</string>
+
     <string name="arrow_down">下箭头</string>
     <string name="arrow_left">左箭头</string>
     <string name="arrow_right">右箭头</string>
@@ -51,6 +65,7 @@
     <string name="color_mode">色彩模式</string>
     <string name="connect_button">连接</string>
     <string name="connection_caption">连接</string>
+    <string name="ctrl_alt_del" translatable="false">Ctrl-Alt-Del</string>
     <string name="delete_connection">删除连接</string>
     <string name="disconnect">断开连接</string>
     <string name="export_settings">导出</string>
@@ -76,6 +91,7 @@
     <string name="nickname_caption">昵称</string>
     <string name="off">关</string>
     <string name="on">开</string>
+    <string name="one_to_one" translatable="false">1:1</string>
     <string name="open_doc">使用手册</string>
     <string name="pan_follow_mouse">平移跟随鼠标</string>
     <string name="password_caption">密码</string>
@@ -89,14 +105,19 @@
     <string name="save_as_copy">作为副本保存</string>
     <string name="scaling">缩放</string>
     <string name="scaling_zoomable">可缩放</string>
+
     <string name="patreon">Patreon</string>
+
+    <!-- Send selected metakey -->
     <string name="send_key_again">再次发送按键</string>
     <string name="special_keys">发送按键</string>
     <string name="username_caption">用户名</string>
     <string name="username_hint">用于 Windows 身份验证</string>
     <string name="terminal">终端</string>
+
     <string name="install">安装</string>
     <string name="modify">修改</string>
+
     <string name="try_again">再次尝试</string>
     <string name="size_in_gb">大小（GB）</string>
     <string name="create_qcow2">创建 QCOW2</string>
@@ -104,10 +125,12 @@
     <string name="make_image">制作镜像</string>
     <string name="imported_roms_will_be_shown_here">导入的 ROM 将在此处显示</string>
     <string name="version">版本：</string>
+    <string name="qemu" translatable="false">QEMU</string>
     <string name="arch">架构:</string>
     <string name="running">运行中</string>
     <string name="stopped">已停止</string>
     <string name="service">服务：</string>
+    <string name="free_palistine">解放巴勒斯坦</string>
     <string name="store">商店</string>
     <string name="no_internet_connection">无互联网连接</string>
     <string name="check_your_internet_connection">检查您的互联网连接</string>
@@ -116,6 +139,7 @@
     <string name="downloaded_to_path">已下载到路径：</string>
     <string name="downloaded_successfully">下载成功！</string>
     <string name="user_interface">用户界面</string>
+    <string name="vnc" translatable="false">VNC</string>
     <string name="custom_memory">自定义内存大小</string>
     <string name="sound_card">声卡</string>
     <string name="boot_from">启动自</string>
@@ -124,6 +148,10 @@
     <string name="x11_resolution">X11分辨率</string>
     <string name="night_mode">夜间模式</string>
     <string name="description">描述</string>
+    <string name="powerpc_qemu" translatable="false">PowerPC</string>
+    <string name="arm64_qemu" translatable="false">ARM64</string>
+    <string name="x86_64">x86_64</string>
+    <string name="i386_qemu" translatable="false">i386</string>
     <string name="description_html_supported">描述（支持html）</string>
     <string name="compressing_cvbi">正在压缩 CVBI</string>
     <string name="done">完成！</string>
@@ -180,10 +208,14 @@
     <string name="error_CR_CVBI2">发生错误但提取成功，cvbi 文件不包含有关此 ROM 的信息，因此将使用一些默认设置。错误代码：CR_CVBI2</string>
     <string name="from">从</string>
     <string name="error_CR_CVBI3">发生错误无法继续，但提取成功，此cvbi文件不包含此 ROM 的信息，也不包含任何 ROM 文件。错误代码：CR_CVBI3</string>
+    <string name="error_CR_CVBI4">发生错误。ROM信息已损坏，已应用部分默认设置。错误代码：CR_CVBI4。</string>
     <string name="clean_up">打扫一下</string>
     <string name="clean_up_content">不再使用的 ROM、文件和文件夹将被删除</string>
     <string name="go_to_rom_store">前往ROM商店</string>
     <string name="file_format_is_not_supported">由于不支持该文件格式，因此可能无法正常工作。想继续吗？</string>
+    <string name="file_format_is_not_supported_hard_drive">文件格式不受支持，可能无法正常工作。常见支持格式包括 qcow2、img、vhd、vhdx、vdi、qcow、vmdk 和 vpc。是否继续？</string>
+    <string name="file_format_is_not_supported_optical_drive">文件格式不受支持，可能无法正常工作。常见支持格式包括 iso、img、cdr 和 toast。是否继续？</string>
+    <string name="file_format_is_not_supported_floppy_drive">文件格式不受支持，可能无法正常工作。常见支持格式包括 img、flp 和 ima。是否继续？</string>
     <string name="error_PROOT_IS_MISSING_0">因必要文件缺失导致系统不工作。该问题可能由安装过程中出差错引发。想要再次进行首次启动时的安装吗？错误码：PROOT_IS_MISSING_0.</string>
     <string name="error_DRIVE_INDEX_0_EXISTS">发生错误，虚拟机未能启动. 两个及以上的设备不能同时接入同一个插槽.请检查相关设置. 错误码: DRIVE_INDEX_0_EXISTS.</string>
     <string name="error_X11_NOT_AVAILABLE">发生错误，虚拟机未能启动. X11用不了. 我们推荐你切换至VNC，确定切换吗？错误码：X11_NOT_AVAILABLE.</string>
@@ -212,140 +244,7 @@
     <string name="error_NO_SUCH_FILE_OR_DIRECTORY">运行虚拟机时出现问题: 虚拟机所需要的文件或文件夹不存在</string>
     <string name="auto_create_new_hard_drive_when_creating_new_vm">创建新虚拟机时自动新建硬盘</string>
     <string name="with_size_is_128GB">它的大小为128GB</string>
-    <string name="new_session">新建会话</string>
-    <string name="toggle_soft_keyboard">键盘</string>
-    <string name="reset_terminal">重置</string>
-    <string name="style_terminal">样式</string>
-    <string name="share_transcript_title">终端显示文本</string>
-    <string name="toggle_keep_screen_on">保持屏幕打开</string>
-    <string name="autofill_password">自动填充密码</string>
-    <string name="bootstrap_installer_body">安装中…</string>
-    <string name="bootstrap_error_title">无法安装</string>
-    <string name="bootstrap_error_body">Vterm 无法安装初始化包</string>
-    <string name="bootstrap_error_abort">停止</string>
-    <string name="bootstrap_error_try_again">再次尝试</string>
-    <string name="bootstrap_error_not_primary_user_message">Vterm 只能安装在主用户帐户上</string>
-    <string name="max_terminals_reached_title">已达到的最大终端数</string>
-    <string name="max_terminals_reached_message">在开新的之前关闭现有项</string>
-    <string name="reset_toast_notification">重置终端</string>
-    <string name="select_url">选择 URL</string>
-    <string name="select_url_dialog_title">点击 URL 进行复制或长按打开</string>
-    <string name="select_all_and_share">分享终端输出</string>
-    <string name="select_url_no_found">在终端中找不到 URL</string>
-    <string name="select_url_copied_to_clipboard">URL 已复制到剪贴板</string>
-    <string name="share_transcript_chooser_title">发送文本至：</string>
-    <string name="kill_process">终止进程（%d）</string>
-    <string name="confirm_kill_process">真的要终止此会话吗？</string>
-    <string name="session_rename_title">设置会话名称</string>
-    <string name="session_rename_positive_button">确认</string>
-    <string name="session_new_named_title">新命名会话</string>
-    <string name="session_new_named_positive_button">新建</string>
-    <string name="styling_not_installed">Vterm:Style 插件尚未安装</string>
-    <string name="styling_install">安装</string>
-    <string name="notification_action_exit">退出</string>
-    <string name="notification_action_wake_lock">加上唤醒锁</string>
-    <string name="notification_action_wake_unlock">释放唤醒锁</string>
-    <string name="file_received_title">文件保存至 ~/downloads/</string>
-    <string name="file_received_edit_button">编辑</string>
-    <string name="file_received_open_folder_button">打开文件夹</string>
-    <string name="not_connected">未连接</string>
-    <string name="help_button_text">   帮助   </string>
-    <string name="preferences_button_text">   首选项  </string>
-    <string name="extra_keys_config_desc">在这里您可以像Termux一样设置一些额外按键 (可以看看 <a href="http://wiki.termux.com/wiki/Touch_Keyboard#Extra_Keys_Row">这个</a>) 以及其余项 (e.g. META).\n    留空则使用默认值</string>
-    <string name="cancel">取消</string>
-    <string name="back_to_the_display">返回显示界面</string>
-    <string name="x11">X11</string>
-    <string name="about_app">关于软件</string>
-    <string name="join_us_on_telegram">加入我们的电报频道</string>
-    <string name="join_us_on_telegram_where_we_publish_all_the_news_and_updates_and_receive_your_opinions_and_bugs">加入我们的电报群获取最新的信息，分享您的意见和建议</string>
-    <string name="join">加入</string>
-    <string name="dont_show_again">不再提示</string>
-    <string name="getting_ready_for_you_please_don_t_disconnect_the_network">正在准备中…请保持网络连接</string>
-    <string name="completed_10_it_won_t_take_long">已完成 10%\\n不会太久…</string>
-    <string name="completed_20_it_won_t_take_long">已完成 20%\\n不会太久…</string>
-    <string name="completed_30_it_won_t_take_long">已完成 30%\\n不会太久…</string>
-    <string name="completed_40_it_won_t_take_long">已完成 40%\\n不会太久…</string>
-    <string name="completed_50_it_won_t_take_long">已完成 50%\n不会太久…</string>
-    <string name="completed_75_don_t_disconnect">已完成 75%\n请勿断开连接…</string>
-    <string name="keep_it_up">继续加油…</string>
-    <string name="completed_95_keep_it_up">已完成 95%\n继续加油…</string>
-    <string name="almost_there">已完成 95%</string>
-    <string name="show_advanced_setup">显示详细日志</string>
-    <string name="allow_permissions">请授予必要权限</string>
-    <string name="you_need_to_grant_permission_to_access_the_storage_before_use">在使用前您必须授予存储权限</string>
-    <string name="find_and_allow_access_to_storage_in_settings">在设置中找到本软件的存储权限并设置为允许</string>
-    <string name="do_you_want_to_set_it_up_automatically_or_select_the_bootstrap_file_manually">您想要自动设置还是自行选择已经下载好的初始化包</string>
-    <string name="auto_setup">自动</string>
-    <string name="manual">手动</string>
-    <string name="getting_ready_for_you">正在准备就绪</string>
-    <string name="failed">失败了！</string>
-    <string name="something_went_wrong_during_setup_would_you_like_to_try_again">设置的过程中出现了问题. 要重试吗？</string>
-    <string name="show_log">显示日志</string>
-    <string name="bootstrap_required">需要初始化！</string>
-    <string name="you_can_choose_between_auto_download_and_setup_or_manual_setup_by_choosing_bootstrap_file">您可以选择让软件自动下载或者选择初始化包完成手动设置</string>
-    <string name="manual_setup">手动安装</string>
-    <string name="alpine_desktop">Alpine Xfce4</string>
-    <string name="settings_x11_display_resolution_mode">分辨率模式</string>
-    <string name="settings_x11_display_scale">缩放值（%）</string>
-    <string name="settings_x11_display_resolution">显示分辨率</string>
-    <string name="settings_x11_reseed_screen_title">自调整屏幕</string>
-    <string name="settings_x11_reseed_screen_summary">屏幕尺寸会随着软键盘的呼出而自动调整</string>
-    <string name="settings_x11_pip_title">小窗模式</string>
-    <string name="settings_x11_pip_summary">当返回桌面或者触发多任务界面时，自动以画中画模式显示</string>
-    <string name="settings_x11_full_screen_title">全屏模式</string>
-    <string name="settings_x11_full_screen_summary">显示时触发状态栏沉浸</string>
-    <string name="settings_x11_cutout">隐藏屏幕刘海</string>
-    <string name="settings_x11_keep_screen_on">保持屏幕开启</string>
-    <string name="settings_x11_stretch">拉伸画面以适应屏幕</string>
-    <string name="settings_x11_touchscreen_input_mode">触屏输入模式</string>
-    <string name="settings_x11_display_scale_factor_to_touchpad">将屏幕缩放同样应用至触摸板</string>
-    <string name="settings_x11_stylus_option_title">显示触控笔选项</string>
-    <string name="settings_x11_stylus_option_summary">在屏幕左上角显示用于控制鼠标左击，中击或者右击的控制按钮</string>
-    <string name="settings_x11_mouse_overlay_title">显示鼠标辅助覆盖层</string>
-    <string name="settings_x11_mouse_overlay_summary">屏幕可作为触摸板使用，并且带有鼠标按键</string>
-    <string name="settings_x11_capture_mouse_title">在可用时捕获外接鼠标</string>
-    <string name="settings_x11_capture_mouse_summary">捕获所有硬件鼠标事件，按下ESC键释放</string>
-    <string name="settings_x11_capture_pointer_move">转换捕获的光标</string>
-    <string name="settings_x11_capture_pointer_move_factor">捕获的鼠标移动速度调整（%）</string>
-    <string name="settings_x11_tap_to_move">触摸板: 将鼠标直接移动至触摸点</string>
-    <string name="settings_x11_back_toggle">返回键触发键盘</string>
-    <string name="settings_x11_ext_keyboard_title">显示附加键盘</string>
-    <string name="settiongs_capture_volkey">捕获音量键</string>
-    <string name="settings_x11_hide_extkey_vol">按下音量减键时隐藏附加键盘</string>
-    <string name="settings_x11_deact_speckey_title">在按下任意键后自动解除特殊按键的按住状态</string>
-    <string name="settings_x11_ime_with_hardkeyboard_title">在连接实体键盘的同时显示输入法</string>
-    <string name="settings_x11_prefer_scancode_title">尽量使用扫描码</string>
-    <string name="settings_x11_prefer_scancode_summary">让X-Server处理键盘布局（带有DE设置与setxbkmap）</string>
-    <string name="settings_x11_fix_hard_keyboard_scancode_title">解决实体键盘扫描码问题</string>
-    <string name="settings_x11_fix_hard_keyboard_scancode_summary">解决部分设备的扫描码问题. 在多键盘布局的设备上可能存在问题</string>
-    <string name="settings_x11_capture_shortcut_manually_title">打开无障碍服务实现捕获系统快捷手势</string>
-    <string name="settings_x11_capture_shortcut_manually_summary">打开无障碍设置</string>
-    <string name="settings_x11_intercepting_esc">按下ESC键暂停按键捕获</string>
-    <string name="settings_x11_opacity_extra_keys_bar">附加按键栏的不透明度（%）</string>
-    <string name="settings_extra_keys_config">附加按键设置</string>
-    <string name="settings_clipboard_sharing">开启剪贴板共享</string>
-    <string name="x11_feature_not_supported">不兼容X11</string>
-    <string name="the_x11_feature_is_currently_not_supported_on_android_14_and_above_please_use_a_device_with_android_13_or_below_for_x11_functionality">在安卓14及以上版本里X11不被支持. 请在运行安卓13及以下的设备上使用X11功能</string>
-    <string name="booting_up">正在启动…</string>
-    <string name="press_volume_down_for_right_click">音量减=鼠标右键</string>
-    <string name="press_volume_up_for_left_click">音量加=鼠标左键</string>
-    <string name="press_back_button_for_hide_show_controls_ui">返回键触发控制界面的显示与隐藏</string>
-    <string name="settings_x11_adjust_display_title">为附加按键栏调整显示尺寸</string>
-    <string name="settings_x11_adjust_display_summary">可能会导致屏幕闪烁</string>
-    <string name="settings_x11_ext_keyboard_summary">显示有附加按键的键盘</string>
-    <string name="settings_x11_ime_with_hardkeyboard_summary">要在连接硬件键盘的情况下使用软键盘需要授予WRITE_SECURE_SETTINGS权限</string>
-    <string name="settings_x11_auto_intercept_shortcut_title">启用无障碍权限实现自动开启系统快捷手势的捕获</string>
-    <string name="settings_x11_auto_intercept_shortcut_summary">需要授予WRITE_SECURE_SETTINGS权限</string>
-    <string name="settings_x11_ignore_win_key_title">不捕获Meta/Win/Mod4键</string>
-    <string name="settings_x11_ignore_win_key_summary">允许您在捕获按键的同时使用DeX快捷键</string>
-    <string name="settings_x11_deact_speckey_summary">长按实现不自动解除</string>
-    <string name="settings_tag_output">显示输出</string>
-    <string name="settings_tag_point">鼠标指针</string>
-    <string name="settings_tag_keyboard">键盘</string>
-    <string name="settings_tag_other">杂项</string>
-    <string name="executing_command_please_wait">正在执行命令，请稍后…</string>
     <string name="delete_all_content">除系统外所有数据将被清除</string>
-    <string name="hide_advanced_setup">收起高级选项</string>
     <string name="change_thumbnail">更改缩略图</string>
     <string name="do_you_want_to_change_or_remove">需要更改还是删除</string>
     <string name="change">更改</string>
@@ -354,86 +253,15 @@
     <string name="do_you_want_to_change_the_mirror_before_setting_up_the_current_mirror_is">要在开始安装配置前设置镜像站吗?\n当前镜像是:</string>
     <string name="connecting_to_mirror_in">正在连接镜像站：</string>
     <string name="mirror">镜像站</string>
+    <string name="mirrors">镜像源</string>
+    <string name="letstart">开始吧</string>
+    <string name="welcome">欢迎！</string>
     <string name="welcome_to_vectras_vm_lets_get_started">欢迎使用Vectras VM。让我们开始吧！</string>
     <string name="processing_this_may_take_a_few_minutes">正在处理中...\n这可能需要几分钟.</string>
-    <string name="check_for_updates_from_the_beta_channel">从公测频道获取更新</string>
-    <string name="profile_title">用户配置</string>
-    <string name="profile_edit_button">编辑配置</string>
-    <string name="profile_username_label">用户名</string>
-    <string name="settings_title">设置</string>
-    <string name="settings_enable_notifications">开启通知推送权限</string>
-    <string name="common_ok">确认</string>
-    <string name="common_cancel">取消</string>
-    <string name="common_save">保存</string>
-    <string name="common_loading">加载中…</string>
-    <string name="common_error">发生错误</string>
-    <string name="vm_create_new">新建虚拟机</string>
-    <string name="vm_label_setup_command">配置命令</string>
-    <string name="vm_message_who_created_rom">作者</string>
-    <string name="vm_error_no_support_for_arm">不兼容ARM架构</string>
-    <string name="vm_error_failed_cache_dir_creation">虚拟机缓存文件夹创建失败\n请稍后重试</string>
-    <string name="vm_info_label_creator">作者</string>
-    <string name="vm_info_label_architecture">处理器架构</string>
-    <string name="vm_info_label_size">大小</string>
-    <string name="vm_info_label_file_name">文件名</string>
-    <string name="vm_info_label_verified">可信</string>
-    <string name="vm_info_desc_verified">该虚拟机测试可用且对设备无害</string>
-    <string name="vm_info_label_not_verified">未经验证</string>
-    <string name="vm_info_desc_not_verified">该虚拟机未经验证，可能用不了或者存在非预期行为。谨慎对待</string>
-    <string name="vm_control_power">电源菜单</string>
-    <string name="vm_control_dialog_shutdown_reset_message">想要关机还是重置？这些操作可能会在虚拟机内引发问题。通过长按退出按钮或者按返回键实现让虚拟机在后台运行</string>
-    <string name="vm_device_cdrom">光驱</string>
-    <string name="vm_device_floppy_drive">软驱</string>
-    <string name="vm_device_floppy_drive_a">软驱A</string>
-    <string name="vm_device_floppy_drive_b">软驱B</string>
-    <string name="vm_device_sd_card">SD卡</string>
-    <string name="vm_device_action_change_removable">更换可移动设备</string>
-    <string name="vm_device_action_eject">弹出</string>
-    <string name="vm_device_action_change_or_eject_other">更换或弹出其它未列出设备</string>
-    <string name="vm_device_action_change_or_eject_a_device">更换或弹出设备</string>
-    <string name="vm_device_action_change_a_removable_device">更换可移动设备</string>
-    <string name="vm_device_action_change_disk_file">更换磁盘文件</string>
-    <string name="vm_device_status_ejected">已弹出</string>
-    <string name="vm_device_error_eject_failed">弹出失败</string>
-    <string name="vm_device_status_changed">已更改</string>
-    <string name="vm_device_error_change_failed">更改失败</string>
-    <string name="vm_device_prompt_enter_id">输入设备ID（如cdrom）</string>
-    <string name="vm_device_error_need_to_enter_id">您必须输入设备ID</string>
-    <string name="vm_device_error_not_removable">这不是一个可移动设备</string>
-    <string name="vm_list_no_matching_results">无匹配的结果</string>
-    <string name="vm_list_error_data_corrupted">虚拟机列表数据已损坏，要修复吗？</string>
-    <string name="vm_list_repair_action_needed">得做点什么</string>
-    <string name="vm_list_repair_message">此虚拟机数据已损坏，需要修复</string>
-    <string name="vm_list_repair_button_start">开始修复</string>
-    <string name="common_home">主页</string>
-    <string name="common_more">更多</string>
-    <string name="common_later">以后再说</string>
-    <string name="common_stop">停止</string>
-    <string name="common_yes">是</string>
-    <string name="common_no">否</string>
-    <string name="common_unknown">未知</string>
-    <string name="common_button_go_to_settings">前往设置</string>
-    <string name="common_message_just_a_sec">请稍候…</string>
-    <string name="vm_action_create_new">新建虚拟机</string>
-    <string name="vm_prompt_who_created_rom">作者</string>
-    <string name="vm_error_no_arm_support">不兼容ARM架构</string>
-    <string name="vm_info_label_verified_status">可信</string>
-    <string name="vm_info_label_not_verified_status">未经验证</string>
-    <string name="vm_control_label_power">电源</string>
-    <string name="vm_control_dialog_title_power_options">电源选项</string>
-    <string name="vm_control_dialog_message_shutdown_or_reset">想要关机还是重置？这些操作可能会在虚拟机内引发问题。通过长按退出按钮或者按返回键实现让虚拟机在后台运行</string>
-    <string name="vm_device_label_cdrom">光驱</string>
-    <string name="vm_device_label_floppy_drive">软驱</string>
-    <string name="vm_device_label_floppy_drive_a">软驱A</string>
-    <string name="vm_device_label_floppy_drive_b">软驱B</string>
-    <string name="check_from_the_Beta_channel_instead_of_the_Stable_channel">获取公测版更新</string>
     <string name="update">更新</string>
-    <string name="new_version_is_now_available">新版本可用</string>
     <string name="ok">确定</string>
     <string name="you_are_using_beta_version">您正在使用Beta版本</string>
     <string name="switch_to_check_for_updates_on_the_Beta_channel_now">现在获取新版公测版</string>
-    <string name="there_seems_to_be_no_signal">没有信号</string>
-    <string name="do_you_want_to_exit">要退出吗</string>
     <string name="you_need_to_complete_vectras_vm_setup_before_importing_this_file">您只能在Vectras VM完成配置后导入该文件</string>
     <string name="unable_to_create_the_directory_to_create_the_vm">无法创建虚拟机目录，可能由未授予权限、内部存储空间不足或其他原因造成</string>
     <string name="with">和</string>
@@ -449,21 +277,14 @@
     <string name="dont_miss_out">看过来！</string>
     <string name="disclaimer_here">当您导入任何 ROM 或使用包含任何内容的文件时，即表示接受所有这些条款。点击此处阅读全文。</string>
     <string name="join_now_on_telegram_if_you_want">如果想的话，现在就加入 Telegram。</string>
-    <string name="skip">跳过</string>
     <string name="donate">捐赠</string>
     <string name="donatecontent">如果您喜欢 Vectras VM，您可以在 Patreon 上支持我们。非常感谢！</string>
-    <string name="visit_now">即刻访问</string>
     <string name="you_are_ready_to_go">一切就绪!</string>
     <string name="shared_folder_is_not_used_because_i386_does_not_support_it">I386不支持共享文件夹，功能已关闭</string>
-    <string name="use_uefi_for_x64_only">使用UEFI（仅对x64生效）</string>
+    <string name="use_uefi">使用UEFI</string>
     <string name="remove_and_do_not_keep_files">移除虚拟机文件</string>
     <string name="remove_but_keep_files">保留虚拟机文件</string>
     <string name="remove_vm_content">要移除吗？您可以决定相关文件的去留</string>
-    <string name="macos">macOS</string>
-    <string name="vm_device_label_sd_card">SD卡</string>
-    <string name="seconds_left">秒，请稍等</string>
-    <string name="learn_more">请查阅</string>
-    <string name="open">打开</string>
     <string name="general">通用设置</string>
     <string name="personalization">个性化</string>
     <string name="system">系统</string>
@@ -495,12 +316,12 @@
     <string name="copy">复制</string>
     <string name="search">搜索</string>
     <string name="no_matching_results_found">无匹配的结果</string>
+    <string name="no_matching_results_found_search_content">未找到匹配的结果。\n请尝试添加或移除下方的过滤器。</string>
     <string name="unknow">未知</string>
     <string name="verified">可信</string>
     <string name="verified_content">该虚拟机测试可用且对设备无害</string>
     <string name="not_verified">未经验证</string>
     <string name="not_verified_content">该虚拟机未经验证，可能用不了或者存在非预期行为。谨慎对待</string>
-    <string name="creator">作者</string>
     <string name="architecture">处理器架构</string>
     <string name="sizetext">大小</string>
     <string name="file_name">文件名</string>
@@ -512,7 +333,6 @@
     <string name="floppy_drive_a">软驱A</string>
     <string name="floppy_drive_b">软驱B</string>
     <string name="sd_card">SD卡</string>
-    <string name="no_support_for_arm">不兼容ARM架构</string>
     <string name="change_removable_devices">更换可移动设备</string>
     <string name="ejected">已弹出</string>
     <string name="eject_failed">弹出失败</string>
@@ -542,7 +362,7 @@
     <string name="new_vm">新建虚拟机</string>
     <string name="invalid_file_path_content">无效路径</string>
     <string name="invalid_iso_file_path_content">文件无效，请选择ISO文件</string>
-    <string name="unable_to_copy_iso_file_content">无法复制文件，请将ISO文件置于他处然后再做尝试</string>
+    <string name="unable_to_copy_file_content">无法复制此文件，请尝试从其他位置选择该文件。</string>
     <string name="unable_to_copy_hard_drive_file_content">无法复制，请将文件置于他处然后再做尝试</string>
     <string name="could_not_process_cvbi_file_content">CVBI文件处理失败，文件已经损坏或者路径不可读</string>
     <string name="unable_to_cvbi_file_vm_dir_content">无法创建虚拟机，故CVBI文件处理失败</string>
@@ -583,7 +403,6 @@
     <string name="delete_file_failed_content">删除文件时出错，稍后重试</string>
     <string name="file_deleted">文件已删除</string>
     <string name="open_main_folder">打开主文件夹</string>
-    <string name="you_are_using_x11_instead_of_vnc_content">您正在使用 X11而非 VNC。要使用 VNC，请进入设置-&gt; QEMU，向下滚动到底部，然后在用户界面中选择"VNC"。</string>
     <string name="there_is_no_app_to_perform_this_action">没有可用于进行该操作的APP</string>
     <string name="directory_does_not_exist">文件夹不存在</string>
     <string name="shared_folder_is_too_large_content">共享文件夹体积不应超过516MB，请删除部分文件</string>
@@ -600,10 +419,8 @@
     <string name="themes">主题</string>
     <string name="light">亮色主题</string>
     <string name="dark">暗色主题</string>
-    <string name="this_app_needs_to_be_restarted_for_it_to_take_effect">需要重启生效</string>
     <string name="dynamic_color">动态色彩</string>
     <string name="dynamic_color_description">根据系统自动取色</string>
-    <string name="restart">重启</string>
     <string name="edit">编辑</string>
     <string name="importing">正在导入…</string>
     <string name="completed">完成</string>
@@ -628,83 +445,6 @@
     <string name="cdrom_hint">光驱（只读ISO文件）</string>
     <string name="invalid_file">文件无效</string>
     <string name="processes">进程</string>
-    <string name="vm_device_action_change_removable_devices">更换可移动设备</string>
-    <string name="vm_device_status_ejected_successfully">已弹出</string>
-    <string name="vm_device_status_changed_successfully">已更换</string>
-    <string name="vm_device_error_id_required">您必须输入设备ID</string>
-    <string name="vm_list_message_no_matching_results">无匹配的结果</string>
-    <string name="vm_list_error_data_corrupted_prompt_repair">虚拟机列表数据已损坏，要修复吗？</string>
-    <string name="vm_list_repair_title_action_needed">得做点什么</string>
-    <string name="vm_list_repair_message_data_corrupted">此虚拟机数据已损坏，需要修复</string>
-    <string name="vm_list_repair_button_start_repair">开始修复</string>
-    <string name="file_error_invalid_path">"文件路径无效, 请从别处选择.\n    "</string>
-    <string name="file_error_invalid_iso_format">文件无效，请选择ISO文件</string>
-    <string name="file_error_unable_to_copy_iso">无法复制文件，请将ISO文件置于他处然后再做尝试</string>
-    <string name="file_error_unable_to_copy_hard_drive">无法复制虚拟磁盘，请将文件置于他处然后再做尝试</string>
-    <string name="file_error_could_not_process_cvbi">CVBI文件处理失败，文件已经损坏或者路径不可读</string>
-    <string name="file_error_unable_to_process_cvbi_vm_dir">无法创建虚拟机文件夹，故CVBI文件处理失败</string>
-    <string name="file_error_unable_to_process_thumbnail">无法处理该预览图</string>
-    <string name="device_error_very_low_storage">您设备的可用存储空间太低，请清理。</string>
-    <string name="device_error_not_enough_storage_for_setup">您的设备没有足够的存储空间来完成设置。请清理后重试。</string>
-    <string name="update_status_checking">检查更新</string>
-    <string name="update_message_whats_new">更新内容</string>
-    <string name="update_status_new_available">更新就绪</string>
-    <string name="update_status_up_to_date">已是最新版</string>
-    <string name="update_action_check_now">检查更新</string>
-    <string name="update_desc_check_now">检查是否有新版本</string>
-    <string name="update_action_skip_version">跳过该版本</string>
-    <string name="update_prompt_update_now">现在更新，修复问题的同时体验新功能</string>
-    <string name="vnc_label_external_connection">允许外部VNC连接</string>
-    <string name="vnc_option_use_external_server">使用外部VNC客户端</string>
-    <string name="vnc_hint_enter_display_number">输入序号（推荐0-9）</string>
-    <string name="vnc_message_connection_port_info">开放用于连接的端口</string>
-    <string name="vnc_error_display_number_too_large">数字请设置得小一些</string>
-    <string name="vnc_hint_password_optional">若不需要密码，留空就行</string>
-    <string name="vnc_error_port_in_use">您设置的VNC端口已经被占用。请解除占用并更换其他端口。</string>
-    <string name="vnc_error_display_number_required">您需要为该显示设置序号</string>
-    <string name="system_monitor_title">资源概览</string>
-    <string name="system_monitor_label_qemu_status">状态:</string>
-    <string name="system_monitor_label_qemu_port">端口:</string>
-    <string name="system_monitor_message_running_with_vnc">通过点击系统监视器中的停止按钮来关闭此虚拟机。要控制它，请连接到此端口：</string>
-    <string name="system_monitor_label_storage">存储空间</string>
-    <string name="perm_storage_not_granted_warning">在使用前您必须授予存储权限</string>
-    <string name="perm_action_grant_storage">授予存储权限</string>
-    <string name="perm_battery_optimization_not_disabled_warning">安卓电池优化（MIUI神隐模式/ColorOS后台行为控制等）\n        应当为Vectras VM设置为“无限制”…\n        详情参阅 https://developer.android.com/about/versions/oreo/background\n        以及 https://developer.android.com/guide/components/foreground-services#background-start-restrictions\n\n        \n\n也可查阅 https://dontkillmyapp.com 获取关于厂商针对特定app杀后台的问题\n        按照不同的厂商您需要允许Vectras VM自启动, 关闭DuraSpeed（又称“MTK快霸”）\n        或者在DuraSpeed中为Vectras VM设置白名单,\n        放行 `后台弹出界面`权限</string>
-    <string name="perm_action_disable_battery_optimizations">禁用电池优化</string>
-    <string name="perm_display_over_other_apps_not_granted_warning">"放行“在其他应用上层显示”权限（在MIUI显示为“显示悬浮窗”）\n         对于Vectras VM在后台启动前台活动（Activity）是必要的\n         参阅 https://developer.android.com/guide/components/activities/background-starts 了解详情     "</string>
-    <string name="perm_action_grant_display_over_other_apps">允许“在其他应用上层显示”权限</string>
-    <string name="perm_status_already_granted">已授予</string>
-    <string name="perm_status_already_disabled">已禁用</string>
-    <string name="x11_status_not_connected">未连接</string>
-    <string name="x11_button_help">   帮助   </string>
-    <string name="x11_button_preferences">   首选项  </string>
-    <string name="x11_desc_extra_keys_config">在这里您可以像Termux一样设置一些额外按键 (可以看看 <a href="http://wiki.termux.com/wiki/Touch_Keyboard#Extra_Keys_Row">这个</a>) 以及其余项 (e.g. META).\n    留空则使用默认值</string>
-    <string name="x11_log_level_title">日志级别</string>
-    <string name="x11_log_level_current_value">日志级别已设置到 \"%1$s\"</string>
-    <string name="x11_action_back_to_display">返回显示屏</string>
-    <string name="x11_desc_ui_environment">X11用户界面环境</string>
-    <string name="software_and_driver">软件和驱动</string>
-    <string name="cpu_support_3dfx_content">您设备的 CPU 支持 3dfx 加速。但它可能不稳定或无法正常工作。</string>
-    <string name="cpu_not_support_3dfx_content">您设备的 CPU 不支持 3dfx 加速。</string>
-    <string name="threedfx_is_not_available">3dfx 不可用。</string>
-    <string name="X11_display">X11 显示</string>
-    <string name="settings_for_X11_display">X11 显示设置。</string>
-    <string name="use_X11_display">使用 X11 显示</string>
-    <string name="x11_display_cannot_be_used_at_this_time_content">X11 显示当前不可用，请尝试关闭并重新打开 Vectras VM。</string>
-    <string name="run_qemu_with_xterm">使用 Xterm 运行 Qemu</string>
-    <string name="run_qemu_with_xterm_note">使用 Qemu 监视器更轻松地运行命令，无需切换。</string>
-    <string name="go_to_termux_x11_settings">前往 Termux:X11 设置。</string>
-    <string name="use_sdl">使用 SDL</string>
-    <string name="use_sdl_note">如果您想使用 3dfx 并玩老游戏，请开启此选项（仅适用于 x86_64 和 i386）。</string>
-    <string name="free_palistine">解放巴勒斯坦</string>
-    <string name="x86_64">x86_64</string>
-    <string name="error_CR_CVBI4">发生错误。ROM信息已损坏，已应用部分默认设置。错误代码：CR_CVBI4。</string>
-    <string name="file_format_is_not_supported_hard_drive">文件格式不受支持，可能无法正常工作。常见支持格式包括 qcow2、img、vhd、vhdx、vdi、qcow、vmdk 和 vpc。是否继续？</string>
-    <string name="file_format_is_not_supported_optical_drive">文件格式不受支持，可能无法正常工作。常见支持格式包括 iso、img、cdr 和 toast。是否继续？</string>
-    <string name="file_format_is_not_supported_floppy_drive">文件格式不受支持，可能无法正常工作。常见支持格式包括 img、flp 和 ima。是否继续？</string>
-    <string name="mirrors">镜像源</string>
-    <string name="letstart">开始吧</string>
-    <string name="unable_to_copy_file_content">无法复制此文件，请尝试从其他位置选择该文件。</string>
     <string name="use_vnc">使用VNC</string>
     <string name="installing_system_files">正在安装系统文件</string>
     <string name="connecting">连接中…</string>
@@ -724,25 +464,38 @@
     <string name="there_are_no_logs">没有日志。</string>
     <string name="the_required_package_is_not_installed_content">所需的软件包未安装，您需要先安装它才能使用此功能。</string>
     <string name="need_install_termux_x11_content">未安装 Termux:X11 应用，您需要安装它才能继续。</string>
+    <string name="X11_display">X11 显示</string>
+    <string name="settings_for_X11_display">X11 显示设置。</string>
+    <string name="use_X11_display">使用 X11 显示</string>
     <string name="check_before_extract">解压前检查</string>
     <string name="check_before_extract_note">快速检测错误，避免浪费时间解压后才发现问题。</string>
     <string name="checking">检查中…</string>
+    <string name="x11_display_cannot_be_used_at_this_time_content">X11 显示当前不可用，请尝试关闭并重新打开 Vectras VM。</string>
+    <string name="run_qemu_with_xterm">使用 Xterm 运行 Qemu</string>
+    <string name="run_qemu_with_xterm_note">使用 Qemu 监视器更轻松地运行命令，无需切换。</string>
     <string name="quick_edit">快速编辑</string>
     <string name="write_something">写点什么…</string>
     <string name="switch_to_vnc">切换到VNC</string>
     <string name="preferences">首选项</string>
+    <string name="go_to_termux_x11_settings">前往 Termux:X11 设置。</string>
     <string name="size_gb">大小 (GB)</string>
     <string name="create_a_new_virtual_disk">创建新虚拟磁盘</string>
     <string name="it_will_be_created_in">将创建在</string>
+    <string name="software_and_driver">软件和驱动</string>
     <string name="shared_by">共享者</string>
     <string name="system_update">系统更新</string>
     <string name="system_update_note">有系统更新可用，立即更新以获得完整体验。</string>
+    <string name="use_sdl">使用 SDL</string>
+    <string name="use_sdl_note">如果您想使用 3Dfx 并玩老游戏，请开启此选项（仅适用于 x86_64 和 i386）。</string>
     <string name="qemu_documentation">QEMU 文档</string>
-    <string name="you_need_to_switch_to_sdl_to_use_3dfx">您需要切换到SDL才能使用3dfx。</string>
+    <string name="you_need_to_switch_to_sdl_to_use_3dfx">您需要切换到SDL才能使用3Dfx。</string>
     <string name="device_manager">设备管理器</string>
     <string name="show_in_folder">在文件夹中显示</string>
     <string name="exit">退出</string>
-    <string name="threedfx">3dfx</string>
+    <string name="threedfx">3Dfx</string>
+    <string name="cpu_support_3dfx_content">您设备的 CPU 支持 3Dfx 加速。但它可能不稳定或无法正常工作。</string>
+    <string name="cpu_not_support_3dfx_content">您设备的 CPU 不支持 3Dfx 加速。</string>
+    <string name="threedfx_is_not_available">3Dfx 不可用。</string>
     <string name="refresh">刷新</string>
     <string name="last_crash_note">非常抱歉，应用之前发生了崩溃。</string>
     <string name="virtual_mouse">虚拟鼠标</string>
@@ -788,7 +541,7 @@
     <string name="view_in_an_bui_app">在 An Bui 应用中查看</string>
     <string name="view_in_an_bui_app_note">您可以在此处查看和获取。</string>
     <string name="tools">工具</string>
-    <string name="threedfx_wrappers">3dfx 包装器</string>
+    <string name="threedfx_wrappers">3Dfx 包装器</string>
     <string name="virtio_tools_for_windows">Windows VirtIO 工具</string>
     <string name="download_required">需要下载</string>
     <string name="this_tool_needs_to_be_downloaded_before_use">此工具需要先下载才能使用。下载完成后将通知您。</string>
@@ -860,21 +613,16 @@
     <string name="missing_packages_content">以下是您需要安装的缺少软件包：</string>
     <string name="x11_general_setting_note">在内置和外部显示之间切换时需要重启应用。</string>
     <string name="contains_ads">包含广告</string>
-    <string name="new_session_failsafe">安全模式</string>
-    <string name="use_external_x11_note">使用 Termux:X11 应用代替内置屏幕。</string>
-    <string name="blur_effect">模糊效果</string>
-    <string name="blur_effect_note">模糊周围区域以增加对需要注意的特定区域的聚焦。</string>
-    <string name="g4_cpu_turbo">G4 (高性能)</string>
-    <string name="g4_cpu_basic">G4 (基本)</string>
-    <string name="g2_cpu_workstation">G2 (工作站)</string>
-    <string name="g2_cpu_low_power">G2 (低功耗)</string>
-    <string name="hello_blank_fragment">空白片段</string>
-
-    <string name="no_matching_results_found_search_content">未找到匹配的结果。\n请尝试添加或移除下方的过滤器。</string>
+    <string name="linux" translatable="false">Linux</string>
+    <string name="windows" translatable="false">Windows</string>
+    <string name="macos" translatable="false">macOS</string>
+    <string name="android" translatable="false">Android</string>
+    <string name="bsd" translatable="false">BSD</string>
     <string name="other">其他</string>
     <string name="operating_system">操作系统</string>
     <string name="free_community">免费/社区版</string>
     <string name="high_quality_contains_ads">高质量/包含广告</string>
+    <string name="gui" translatable="false">GUI</string>
     <string name="no_gui">无图形界面</string>
     <string name="random_suggestion">随机推荐</string>
     <string name="search_settings_note">在商店和推荐中搜索。</string>
@@ -921,7 +669,472 @@
     <string name="card_type">卡类型</string>
     <string name="network_card">网卡</string>
     <string name="none">无</string>
-    <string name="run_command_permission_description">在 Vterm 环境中执行任意命令
-        
-    </string>
+    <string name="use_external_x11_note">使用 Termux:X11 应用代替内置屏幕。</string>
+    <string name="blur_effect">模糊效果</string>
+    <string name="blur_effect_note">模糊周围区域以增加对需要注意的特定区域的聚焦。</string>
+    <string name="machine_type">机器类型</string>
+    <string name="machine">机器</string>
+    <string name="nested_virtualization">嵌套虚拟化</string>
+    <string name="play_sound">播放声音</string>
+    <string name="the_system_has_not_been_installed">系统尚未安装。</string>
+    <string name="choose_this_folder">选择此文件夹</string>
+    <string name="change_optical_drive">更改光驱</string>
+    <string name="do_you_want_to_change_create_or_remove_optical_drive">您要更改、创建还是移除？
+
+如果选择创建，您需要选择包含创建光盘所需文件的文件夹。</string>
+    <string name="you_are_not_allowed_to_use_this_folder">您无权使用此文件夹。</string>
+    <string name="delete_broken_vm_content">此虚拟机已损坏，是否要删除它？</string>
+    <string name="report">报告</string>
+    <string name="send_log_to_server_content">此日志将发送到我们的服务器。是否继续？</string>
+    <string name="send">发送</string>
+    <string name="sending">发送中…</string>
+    <string name="thank_you_for_sending_the_report">感谢您发送报告。</string>
+    <string name="send_the_report_failed_content">提交报告时发生错误。请稍后重试。</string>
+    <string name="wifi_card_dummy">Wi-Fi 网卡（虚拟）</string>
+    <string name="pick">选择</string>
+    <string name="capacity_too_large">容量过大。</string>
+    <string name="turnip_and_zink">Turnip 和 Zink</string>
+    <string name="ready_to_install">准备安装。</string>
+    <string name="please_try_again_later">请稍后重试。</string>
+    <string name="turnip_and_zink_setting_note">实验性功能！利用设备 Adreno GPU 的性能来增强 QEMU 3Dfx 等的图形性能。</string>
+    <string name="has_meets_the_requirements_to_install_content">您的设备已满足要求，可以立即开始安装。</string>
+    <string name="your_device_does_not_meet_the_requirements_to_continue">您的设备不满足继续运行的要求。</string>
+    <string name="error_in_core_feature_content">应用的核心功能刚遇到了问题。您可能需要关闭并重新打开应用，功能才能恢复正常。</string>
+    <string name="force_stop">强制停止</string>
+    <string name="sound">声音</string>
+    <string name="sound_note">声卡,…</string>
+    <string name="cards">卡</string>
+    <string name="always_show_logs">始终显示日志</string>
+    <string name="always_show_logs_setting_note">即使虚拟机关机后未发生严重问题，日志显示对话框也会出现。</string>
+    <string name="graphics">显卡</string>
+    <string name="graphics_note">显卡,…</string>
+    <string name="opengl_setting_note">运行虚拟机时显示将支持 OpenGL。使用此功能时 3Dfx 将无法工作。</string>
+    <string name="qemu_opengl_is_not_available_content">OpenGL 仅在使用 X11 显示且启用 OpenGL 时可用。请前往设置了解更多。</string>
+    <string name="input_devices">输入设备</string>
+    <string name="input_devices_note">鼠标、键盘,…</string>
+    <string name="mouse">鼠标</string>
+    <string name="usb_tablet">USB 手写板</string>
+    <string name="types">类型</string>
+    <string name="acceleration">加速</string>
+    <string name="acceleration_note">加速类型,…</string>
+    <string name="acceleration_type">加速类型</string>
+    <string name="tcg_single_thread">TCG（单线程）</string>
+    <string name="tcg_multi_thread">TCG（多线程）</string>
+    <string name="bubble">悬浮球</string>
+    <string name="bubble_setting_note">使用悬浮球来显示隐藏的控制按钮，而不是使用返回键。</string>
+    <string name="links">链接</string>
+    <string name="community">社区</string>
+    <string name="an_error_occurred_while_loading_vm_configs">加载虚拟机配置时发生错误。请稍后重试。</string>
+    <string name="no_graphics_card_is_attached_content">未连接显卡。您将看不到虚拟机内操作系统输出的任何图像。</string>
+    <string name="clone">克隆</string>
+    <string name="cloning">克隆中…</string>
+    <string name="would_you_like_to_create_a_copy_of_this_virtual_machine">是否要创建此虚拟机的副本？</string>
+    <string name="clone_failed_content">克隆时发生错误。请稍后重试。</string>
+    <string name="pin">固定</string>
+    <string name="unpin">取消固定</string>
+    <string name="pin_failed_content">固定时发生错误。请稍后重试。</string>
+
+
+    <!--======================TERMUX STRINGS====================-->
+    <string name="application_name" translatable="false">Vterm</string>
+    <string name="new_session">新建会话</string>
+    <string name="new_session_failsafe">安全模式</string>
+    <string name="toggle_soft_keyboard">键盘</string>
+    <string name="reset_terminal">重置</string>
+    <string name="style_terminal">样式</string>
+    <string name="share_transcript_title">终端显示文本</string>
+    <string name="toggle_keep_screen_on">保持屏幕打开</string>
+    <string name="autofill_password">自动填充密码</string>
+
+    <string name="bootstrap_installer_body">安装中…</string>
+    <string name="bootstrap_error_title">无法安装</string>
+    <string name="bootstrap_error_body">Vterm 无法安装初始化包</string>
+    <string name="bootstrap_error_abort">停止</string>
+    <string name="bootstrap_error_try_again">再次尝试</string>
+    <string name="bootstrap_error_not_primary_user_message">Vterm 只能安装在主用户帐户上</string>
+
+    <string name="max_terminals_reached_title">已达到的最大终端数</string>
+    <string name="max_terminals_reached_message">在开新的之前关闭现有项</string>
+
+    <string name="reset_toast_notification">重置终端</string>
+
+    <string name="select_url">选择 URL</string>
+    <string name="select_url_dialog_title">点击 URL 进行复制或长按打开</string>
+    <string name="select_all_and_share">分享终端输出</string>
+    <string name="select_url_no_found">在终端中找不到 URL</string>
+    <string name="select_url_copied_to_clipboard">URL 已复制到剪贴板</string>
+    <string name="share_transcript_chooser_title">发送文本至：</string>
+
+    <string name="kill_process">终止进程（%d）</string>
+    <string name="confirm_kill_process">真的要终止此会话吗？</string>
+
+    <string name="session_rename_title">设置会话名称</string>
+    <string name="session_rename_positive_button">确认</string>
+    <string name="session_new_named_title">新命名会话</string>
+    <string name="session_new_named_positive_button">新建</string>
+
+    <string name="styling_not_installed">Vterm:Style 插件尚未安装</string>
+    <string name="styling_install">安装</string>
+
+    <string name="notification_action_exit">退出</string>
+    <string name="notification_action_wake_lock">加上唤醒锁</string>
+    <string name="notification_action_wake_unlock">释放唤醒锁</string>
+
+    <string name="file_received_title">文件保存至 ~/downloads/</string>
+    <string name="file_received_edit_button">编辑</string>
+    <string name="file_received_open_folder_button">打开文件夹</string>
+
+
+    <!--======================TERMUX-X11 STRINGS====================-->
+
+    <!-- Log Level -->
+    <string name="cancel">取消</string>
+    <string name="back_to_the_display">返回显示界面</string>
+    <string name="x11">X11</string>
+    <string name="about_app">关于软件</string>
+    <string name="join_us_on_telegram">加入我们的电报频道</string>
+    <string name="join_us_on_telegram_where_we_publish_all_the_news_and_updates_and_receive_your_opinions_and_bugs">加入我们的电报群获取最新的信息，分享您的意见和建议</string>
+    <string name="join">加入</string>
+    <string name="dont_show_again">不再提示</string>
+    <string name="getting_ready_for_you_please_don_t_disconnect_the_network">正在准备中…请保持网络连接</string>
+    <string name="completed_10_it_won_t_take_long">已完成 10%\\n不会太久…</string>
+    <string name="completed_20_it_won_t_take_long">已完成 20%\\n不会太久…</string>
+    <string name="completed_30_it_won_t_take_long">已完成 30%\\n不会太久…</string>
+    <string name="completed_40_it_won_t_take_long">已完成 40%\\n不会太久…</string>
+    <string name="completed_50_it_won_t_take_long">已完成 50%\n不会太久…</string>
+    <string name="completed_75_don_t_disconnect">已完成 75%\n请勿断开连接…</string>
+    <string name="keep_it_up">继续加油…</string>
+    <string name="completed_95_keep_it_up">已完成 95%\n继续加油…</string>
+    <string name="almost_there">已完成 95%</string>
+    <string name="show_advanced_setup">显示详细日志</string>
+    <string name="allow_permissions">请授予必要权限</string>
+    <string name="you_need_to_grant_permission_to_access_the_storage_before_use">在使用前您必须授予存储权限</string>
+    <string name="find_and_allow_access_to_storage_in_settings">在设置中找到本软件的存储权限并设置为允许</string>
+    <string name="do_you_want_to_set_it_up_automatically_or_select_the_bootstrap_file_manually">您想要自动设置还是自行选择已经下载好的初始化包</string>
+    <string name="auto_setup">自动</string>
+    <string name="manual">手动</string>
+    <string name="getting_ready_for_you">正在准备就绪</string>
+    <string name="failed">失败了！</string>
+    <string name="something_went_wrong_during_setup_would_you_like_to_try_again">设置的过程中出现了问题. 要重试吗？</string>
+    <string name="show_log">显示日志</string>
+    <string name="bootstrap_required">需要初始化！</string>
+    <string name="you_can_choose_between_auto_download_and_setup_or_manual_setup_by_choosing_bootstrap_file">您可以选择让软件自动下载或者选择初始化包完成手动设置</string>
+    <string name="manual_setup">手动安装</string>
+
+    <string name="alpine_desktop">Alpine Xfce4</string>
+    <string name="settings_x11_display_resolution_mode">分辨率模式</string>
+    <string name="settings_x11_display_scale">缩放值（%）</string>
+    <string name="settings_x11_display_resolution">显示分辨率</string>
+    <string name="settings_x11_reseed_screen_title">自调整屏幕</string>
+    <string name="settings_x11_reseed_screen_summary">屏幕尺寸会随着软键盘的呼出而自动调整</string>
+    <string name="settings_x11_pip_title">小窗模式</string>
+    <string name="settings_x11_pip_summary">当返回桌面或者触发多任务界面时，自动以画中画模式显示</string>
+    <string name="settings_x11_full_screen_title">全屏模式</string>
+    <string name="settings_x11_full_screen_summary">显示时触发状态栏沉浸</string>
+    <string name="settings_x11_cutout">隐藏屏幕刘海</string>
+    <string name="settings_x11_keep_screen_on">保持屏幕开启</string>
+    <string name="settings_x11_stretch">拉伸画面以适应屏幕</string>
+    <string name="settings_x11_touchscreen_input_mode">触屏输入模式</string>
+    <string name="settings_x11_display_scale_factor_to_touchpad">将屏幕缩放同样应用至触摸板</string>
+    <string name="settings_x11_stylus_option_title">显示触控笔选项</string>
+    <string name="settings_x11_stylus_option_summary">在屏幕左上角显示用于控制鼠标左击，中击或者右击的控制按钮</string>
+    <string name="settings_x11_mouse_overlay_title">显示鼠标辅助覆盖层</string>
+    <string name="settings_x11_mouse_overlay_summary">屏幕可作为触摸板使用，并且带有鼠标按键</string>
+    <string name="settings_x11_capture_mouse_title">在可用时捕获外接鼠标</string>
+    <string name="settings_x11_capture_mouse_summary">捕获所有硬件鼠标事件，按下ESC键释放</string>
+    <string name="settings_x11_capture_pointer_move">转换捕获的光标</string>
+    <string name="settings_x11_capture_pointer_move_factor">捕获的鼠标移动速度调整（%）</string>
+    <string name="settings_x11_tap_to_move">触摸板: 将鼠标直接移动至触摸点</string>
+    <string name="settings_x11_back_toggle">返回键触发键盘</string>
+    <string name="settings_x11_ext_keyboard_title">显示附加键盘</string>
+    <string name="settiongs_capture_volkey">捕获音量键</string>
+    <string name="settings_x11_hide_extkey_vol">按下音量减键时隐藏附加键盘</string>
+    <string name="settings_x11_deact_speckey_title">在按下任意键后自动解除特殊按键的按住状态</string>
+    <string name="settings_x11_ime_with_hardkeyboard_title">在连接实体键盘的同时显示输入法</string>
+    <string name="settings_x11_prefer_scancode_title">尽量使用扫描码</string>
+    <string name="settings_x11_prefer_scancode_summary">让X-Server处理键盘布局（带有DE设置与setxbkmap）</string>
+    <string name="settings_x11_fix_hard_keyboard_scancode_title">解决实体键盘扫描码问题</string>
+    <string name="settings_x11_fix_hard_keyboard_scancode_summary">解决部分设备的扫描码问题. 在多键盘布局的设备上可能存在问题</string>
+    <string name="settings_x11_capture_shortcut_manually_title">打开无障碍服务实现捕获系统快捷手势</string>
+    <string name="settings_x11_capture_shortcut_manually_summary">打开无障碍设置</string>
+    <string name="settings_x11_intercepting_esc">按下ESC键暂停按键捕获</string>
+    <string name="settings_x11_opacity_extra_keys_bar">附加按键栏的不透明度（%）</string>
+    <string name="settings_extra_keys_config">附加按键设置</string>
+    <string name="settings_clipboard_sharing">开启剪贴板共享</string>
+    <string name="x11_feature_not_supported">不兼容X11</string>
+    <string name="the_x11_feature_is_currently_not_supported_on_android_14_and_above_please_use_a_device_with_android_13_or_below_for_x11_functionality">在安卓14及以上版本里X11不被支持. 请在运行安卓13及以下的设备上使用X11功能</string>
+    <string name="booting_up">正在启动…</string>
+    <string name="press_volume_down_for_right_click">音量减=鼠标右键</string>
+    <string name="press_volume_up_for_left_click">音量加=鼠标左键</string>
+    <string name="press_back_button_for_hide_show_controls_ui">返回键触发控制界面的显示与隐藏</string>
+    <string name="settings_x11_adjust_display_title">为附加按键栏调整显示尺寸</string>
+    <string name="settings_x11_adjust_display_summary">可能会导致屏幕闪烁</string>
+    <string name="settings_x11_ext_keyboard_summary">显示有附加按键的键盘</string>
+    <string name="settings_x11_ime_with_hardkeyboard_summary">要在连接硬件键盘的情况下使用软键盘需要授予WRITE_SECURE_SETTINGS权限</string>
+    <string name="settings_x11_auto_intercept_shortcut_title">启用无障碍权限实现自动开启系统快捷手势的捕获</string>
+    <string name="settings_x11_auto_intercept_shortcut_summary">需要授予WRITE_SECURE_SETTINGS权限</string>
+    <string name="settings_x11_ignore_win_key_title">不捕获Meta/Win/Mod4键</string>
+    <string name="settings_x11_ignore_win_key_summary">允许您在捕获按键的同时使用DeX快捷键</string>
+    <string name="settings_x11_deact_speckey_summary">长按实现不自动解除</string>
+    <string name="settings_tag_output">显示输出</string>
+    <string name="settings_tag_point">鼠标指针</string>
+    <string name="settings_tag_keyboard">键盘</string>
+    <string name="settings_tag_other">杂项</string>
+    <string name="executing_command_please_wait">正在执行命令，请稍后…</string>
+
+    <string name="not_connected">未连接</string>
+    <string name="preferences_button_text">   首选项  </string>
+    <string name="help_button_text">   帮助   </string>
+    <string name="exit_button_text">    退出    </string>
+
+    <string name="extra_keys_config_desc">Here you can set value of extra-keys variable like in Termux app (read <a href="http://wiki.termux.com/wiki/Touch_Keyboard#Extra_Keys_Row">this</a>) and more \n
+E.g. <b>META</b> for <i>META key</i>, \n
+<b>KEYBOARD</b> for <i>soft keyboard toggling key</i>, \n
+<b>PREFERENCES</b> for <i>preferences opening key</i>, \n
+<b>MOUSE_HELPER</b> for <i>mouse helper toggling key</i>, \n
+<b>STYLUS_HELPER</b> for <i>stylus click override overlay toggling key</i>, \n
+<b>ZOOM_IN</b> for <i>zoom in key</i>, \n
+<b>ZOOM_OUT</b> for <i>zoom out key</i>, \n
+<b>ZOOM_RESET</b> for <i>zoom reset key</i>, \n
+<b>EXIT</b> for <i>application exit key</i>.</string>
+    <string name="lorie_notification_content_text">下拉以显示选项</string>
+    <string name="lorie_notification_open_preferences">偏好设置</string>
+    <string name="lorie_notification_exit">退出</string>
+    <string name="lorie_notification_restart_activity">重启</string>
+    <string name="lorie_notification_toggle_soft_keyboard">切换输入法</string>
+    <string name="lorie_notification_toggle_additional_key_bar">切换附加键盘</string>
+    <string name="lorie_notification_release_pointer_and_keyboard_capture">释放捕获</string>
+    <string name="lorie_notification_toggle_fullscreen">切换全屏</string>
+
+    <string name="lorie_pref_main">偏好设置</string>
+    <string name="lorie_pref_output">输出</string>
+    <string name="lorie_pref_pointer">指针</string>
+    <string name="lorie_pref_kbd">键盘</string>
+    <string name="lorie_pref_other">其他</string>
+    <string name="lorie_pref_version">版本</string>
+    <string name="lorie_pref_ekbar">附加键盘栏偏好设置</string>
+    <string name="lorie_pref_userActions">对用户操作的响应</string>
+
+    <string name="lorie_pref_displayResolutionMode">显示分辨率模式</string>
+    <string name="lorie_pref_displayScale">显示缩放，%</string>
+    <string name="lorie_pref_displayResolutionExact">显示分辨率</string>
+    <string name="lorie_pref_displayResolutionCustom">显示分辨率</string>
+    <string name="lorie_pref_displayFilteringMode">显示过滤模式</string>
+    <string name="lorie_pref_adjustResolution">调整设定的分辨率以适应屏幕方向</string>
+    <string name="lorie_pref_displayStretch">拉伸以适应显示</string>
+    <string name="lorie_pref_Reseed">软键盘打开时重新调整屏幕</string>
+    <string name="lorie_pref_Reseed_summary">软键盘打开时将调整屏幕大小。</string>
+    <string name="lorie_pref_PIP">画中画模式</string>
+    <string name="lorie_pref_PIP_summary">按下主屏幕键或最近任务键时以画中画模式显示应用</string>
+    <string name="lorie_pref_fullscreen">全屏</string>
+    <string name="lorie_pref_fullscreen_summary">在设备显示屏上切换沉浸模式</string>
+    <string name="lorie_pref_forceOrientation">屏幕方向</string>
+    <string name="lorie_pref_hideCutout">隐藏显示屏刘海（如有）</string>
+    <string name="lorie_pref_screenIdleTimeout">屏幕闲置超时</string>
+
+    <string name="lorie_pref_touchMode">触摸屏输入模式</string>
+    <string name="lorie_pref_scaleTouchpad">对触摸板应用显示缩放系数</string>
+    <string name="lorie_pref_showStylusClickOverride">显示触控笔点击选项</string>
+    <string name="lorie_pref_showStylusClickOverride_summary">触控笔触摸覆盖，左键、中键或右键点击（仅限触控笔）</string>
+    <string name="lorie_pref_stylusIsMouse">启用触控笔鼠标模式</string>
+    <string name="lorie_pref_stylusIsMouse_summary">让触控笔像鼠标一样工作。启用后，触控笔将仅移动光标并发送鼠标点击，忽略压感、角度和倾斜。</string>
+    <string name="lorie_pref_stylusButtonContactModifierMode">触控笔按钮接触修饰模式</string>
+    <string name="lorie_pref_stylusButtonContactModifierMode_summary">启用此选项后，仅当触控笔在按下按钮的同时触碰屏幕时才发送右键或中键。</string>
+    <string name="lorie_pref_showMouseHelper">显示鼠标点击辅助覆盖层</string>
+    <string name="lorie_pref_showMouseHelper_summary">可在触摸板上使用的屏幕鼠标按钮</string>
+    <string name="lorie_pref_pointerCapture">在可能时捕获外部指针设备</string>
+    <string name="lorie_pref_pointerCapture_summary">拦截所有硬件指针事件。按下 Escape 键后指针将返回 Android。</string>
+    <string name="lorie_pref_transformCapturedPointer">转换已捕获指针的移动</string>
+    <string name="lorie_pref_capturedPointerSpeedFactor">已捕获指针速度系数，%</string>
+    <string name="lorie_pref_tapToMove">为触摸板启用点击移动</string>
+    <string name="lorie_pref_ignoreGamepadEvents">忽略游戏手柄输入事件</string>
+    <string name="lorie_pref_ignoreGamepadEvents_summary">阻止游戏手柄和摇杆事件转发到 X 服务器</string>
+
+    <string name="lorie_pref_showAdditionalKbd">显示附加键盘</string>
+    <string name="lorie_pref_showAdditionalKbd_summary">显示带有附加按键的键盘。</string>
+    <string name="lorie_pref_showIMEWhileExternalConnected">外接键盘时显示输入法</string>
+    <string name="lorie_pref_showIMEWhileExternalConnected_summary">连接硬件键盘时显示软键盘。</string>
+    <string name="lorie_pref_preferScancodes">在可能时优先使用扫描码</string>
+    <string name="lorie_pref_preferScancodes_summary">让 X 服务器处理硬件键盘布局（通过桌面环境设置或 setxkbmap）。</string>
+    <string name="lorie_pref_hardwareKbdScancodesWorkaround">硬件键盘扫描码变通方案</string>
+    <string name="lorie_pref_hardwareKbdScancodesWorkaround_summary">修复某些设备上的扫描码问题。可能导致多布局下的问题。</string>
+    <string name="lorie_pref_dexMetaKeyCapture">拦截系统快捷键</string>
+    <string name="lorie_pref_dexMetaKeyCapture_summary">仅限 Samsung Dex。允许拦截“Alt+F4”、“Meta+D”、“Meta+E”等。</string>
+    <string name="lorie_pref_enableAccessibilityService">启用无障碍服务以手动拦截系统快捷键。</string>
+    <string name="lorie_pref_enableAccessibilityService_summary">打开无障碍设置。</string>
+    <string name="lorie_pref_enableAccessibilityServiceAutomatically">启用无障碍服务以自动拦截系统快捷键。</string>
+    <string name="lorie_pref_enableAccessibilityServiceAutomatically_summary">需要 WRITE_SECURE_SETTINGS 权限。</string>
+    <string name="lorie_pref_pauseKeyInterceptingWithEsc">用 Esc 键暂停按键拦截</string>
+    <string name="lorie_pref_filterOutWinkey">过滤掉已拦截的 Win（Meta/Mod4）键。</string>
+    <string name="lorie_pref_filterOutWinkey_summary">允许您在拦截时使用 Dex 快捷键。需要无障碍服务才能工作。</string>
+    <string name="lorie_pref_enforceCharBasedInput">强制基于字符的输入</string>
+    <string name="lorie_pref_enforceCharBasedInput_summary">抑制建议、预测输入和 CJK 语言</string>
+
+    <string name="lorie_pref_clipboardEnable">剪贴板共享</string>
+    <string name="lorie_pref_requestNotificationPermission">请求通知权限</string>
+    <string name="lorie_pref_xrMode">Meta Oculus XR 模式</string>
+    <string name="lorie_pref_configureResponseToUserActions">配置对用户操作的响应</string>
+    <string name="lorie_pref_storeSecondaryDisplayPreferencesSeparately">单独存储副屏偏好设置</string>
+    <string name="lorie_pref_storeSecondaryDisplayPreferencesSeparately_summary">在您要配置的显示屏上打开此屏幕</string>
+
+    <string name="lorie_pref_adjustHeightForEK">防止附加按键栏覆盖显示</string>
+    <string name="lorie_pref_useTermuxEKBarBehaviour">每次按键后停用附加按键栏上的特殊键</string>
+    <string name="lorie_pref_useTermuxEKBarBehaviour_summary">使用长按来锁定特殊键</string>
+    <string name="lorie_pref_ekbarPosition">位置</string>
+    <string name="lorie_pref_ekbarPositionIgnoreOrientation">无论设备方向如何都保持位置</string>
+    <string name="lorie_pref_opacityEKBar">附加按键栏不透明度，%</string>
+    <string name="lorie_pref_extra_keys_config">附加按键配置</string>
+
+    <string name="lorie_pref_swipeUpAction">三指上滑</string>
+    <string name="lorie_pref_swipeDownAction">三指下滑</string>
+    <string name="lorie_pref_volumeUpAction">音量加</string>
+    <string name="lorie_pref_volumeDownAction">音量减</string>
+    <string name="lorie_pref_backButtonAction">返回键</string>
+    <string name="lorie_pref_notificationTapAction">通知点击</string>
+    <string name="lorie_pref_notificationButton0Action">通知第一个按钮</string>
+    <string name="lorie_pref_notificationButton1Action">通知第二个按钮</string>
+    <string name="lorie_pref_mediaKeysAction">媒体键</string>
+
+    <string name="lorie_pref_summary_requiresExactOrCustom">要求“显示分辨率模式”为“精确”或“自定义”</string>
+    <string name="lorie_pref_summary_requiresIntercepting">需要在 Dex 模式或通过无障碍服务拦截系统快捷键</string>
+    <string name="lorie_pref_summary_requiresTrackpadAndNative">要求“触摸屏输入模式”为“触摸板”且“显示分辨率模式”不为“原生”</string>
+    <string name="lorie_pref_summary_screenIdleTimeoutConflict">⚠️ 系统屏幕超时（%s）更长且优先级更高</string>
+    <string name="lorie_pref_screenIdleTimeoutSystem">系统（%s）</string>
+
+
+    <!-- CPUs -->
+    <string name="g4_cpu_turbo">G4 (高性能)</string>
+    <string name="g4_cpu_basic">G4 (基本)</string>
+    <string name="g2_cpu_workstation">G2 (工作站)</string>
+    <string name="g2_cpu_low_power">G2 (低功耗)</string>
+
+    <!-- Feature: User Profile -->
+
+    <!-- Feature: Settings -->
+    <!-- Common Strings -->
+    <!-- ======================= VIRTUAL MACHINE MANAGEMENT ===================== -->
+
+    <!-- VM Creation & Setup -->
+    <!-- Was: new_vm -->
+    <!-- Was: setup_command -->
+    <!-- Was: who_created_this_rom -->
+    <!-- Was: vm_cache_dir_failed_to_create_content -->
+
+    <!-- VM Details & Information -->
+    <!-- Was: creator -->
+    <!-- Was: architecture -->
+    <!-- Was: sizetext -->
+    <!-- Was: file_name -->
+    <!-- Was: verified -->
+    <!-- Was: verified_content -->
+    <!-- Was: not_verified -->
+    <!-- Was: not_verified_content -->
+
+    <!-- VM Controls & Devices -->
+    <!-- Was: power -->
+    <!-- Was: shutdown_or_reset_content -->
+    <!-- Was: change_removable_devices -->
+    <!-- Was: enter_device_id -->
+    <!-- Was: you_need_to_enter_the_device_id -->
+    <!-- Was: this_is_not_a_removable_device -->
+
+    <!-- VM List & Search -->
+    <!-- Was: no_matching_results_found -->
+    <!-- Was: vm_list_data_is_corrupted_content -->
+    <!-- Was: action_needed -->
+    <!-- Was: repair_vm_list_content -->
+
+    <!-- ========================== GENERAL APP STRINGS ========================== -->
+    <!-- Assuming this could be your app name -->
+    <!-- Added common string -->
+    <!-- "No" often used as a negative confirmation, "Cancel" for dismissing -->
+    <!-- Was: unknow -->
+
+    <!-- ========================== VIRTUAL MACHINE (VM) CORE ========================== -->
+    <!-- VM Creation & Setup -->
+    <string name="vm_action_create_new">新建虚拟机</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">空白片段</string>
+    <!-- Was: verified_content -->
+    <!-- Was: not_verified_content -->
+
+    <!-- VM Controls & Power -->
+    <!-- Was: power -->
+    <!-- Added for clarity -->
+    <!-- Was: shutdown_or_reset_content -->
+
+    <!-- VM Removable Devices (CDROM, Floppy, SD Card) -->
+    <!-- Was: ejected -->
+
+    <!-- VM List & Management -->
+    <!-- Was: no_matching_results_found -->
+    <!-- Was: vm_list_data_is_corrupted_content -->
+    <!-- Was: action_needed -->
+    <!-- Was: repair_vm_list_content -->
+    <!-- Was: start_repair -->
+
+    <!-- ========================== FILE & STORAGE OPERATIONS ========================== -->
+    <!-- Was: invalid_file_path_content -->
+    <!-- Was: invalid_iso_file_path_content -->
+    <!-- Was: unable_to_copy_iso_file_content -->
+    <!-- Was: unable_to_copy_hard_drive_file_content -->
+    <!-- Was: could_not_process_cvbi_file_content -->
+    <!-- Was: unable_to_cvbi_file_vm_dir_content -->
+    <!-- Was: unable_to_process_thumbnail_content -->
+
+    <!-- ========================== DEVICE STORAGE & UPDATES ========================== -->
+    <!-- Was: very_low_available_storage_space_content -->
+    <!-- Was: not_enough_storage_to_set_up_content -->
+
+    <!-- Was: update_now_content -->
+
+    <!-- ========================== VNC / EXTERNAL DISPLAY ========================== -->
+    <!-- Was: external -->
+    <!-- Was: need_to_set_smaller_screen_number -->
+    <!-- Was: the_vnc_server_port_you_set_is_currently_in_use_by_other -->
+    <!-- Was: you_need_to_set_a_number_for_the_display -->
+
+    <!-- ========================== SYSTEM MONITOR ========================== -->
+    <!-- Was: status_qemu -->
+    <!-- Was: port_qemu -->
+    <!-- Was: running_vm_with_vnc_server_content -->
+    <!-- Assuming translatable=false -->
+
+    <!-- TermuxX11Activity -->
+    <!-- Was: msg_storage_permission_not_granted_warning -->
+    <!-- Was: action_grant_storage_permission -->
+
+    <!-- Was: msg_battery_optimization_not_disabled_warning -->
+    <!-- Was: action_disable_battery_optimizations -->
+
+    <!-- Was: msg_display_over_other_apps_permission_not_granted_warning -->
+    <!-- Was: action_grant_display_over_other_apps_permission -->
+
+    <!-- Was: action_already_granted -->
+    <!-- Was: action_already_disabled -->
+
+    <!-- Consider removing leading/trailing spaces if not intentional for specific rendering -->
+    <!-- Same as above -->
+
+    <!-- Log Level -->
+    <!-- Was: log_level_value -->
+
+    <!-- <string name="app_name" translatable="false">My Awesome App</string> -->
+
+    <!-- <string name="shared_user_label" translatable="false">Vterm user</string> -->
+
+    <!-- <string name="run_command_permission_description">execute arbitrary commands within Vterm
+        environment
+    </string> -->
+
+    <!-- <string name="bootstrap_error_not_primary_user_message">Vterm can only be installed on the
+        primary user account.
+    </string> -->
+
+    <!-- <string name="max_terminals_reached_message">Close down existing ones before creating new.
+    </string> -->
+
+
+    <!-- ========================== TERMUX-X11 STRINGS ========================== -->
+    <!-- <string name="plugin_info" translatable="false">lol</string> -->
 </resources>

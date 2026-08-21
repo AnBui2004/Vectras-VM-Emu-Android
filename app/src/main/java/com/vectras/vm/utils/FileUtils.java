@@ -39,6 +39,8 @@ import androidx.core.content.FileProvider;
 import androidx.documentfile.provider.DocumentFile;
 
 import com.vectras.vm.R;
+import com.vectras.vm.file.FilePickerDialog;
+import com.vectras.vm.manager.VmFileManager;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -627,6 +629,21 @@ public class FileUtils {
         return false;
     }
 
+    public static boolean copyFile(String filePath, String destFolderPath, String newName) {
+        File file = new File(filePath);
+
+        if (!file.exists()) return false;
+
+        try {
+            copy(file, new File(destFolderPath, newName));
+            return true;
+        } catch (Exception ignored) {
+
+        }
+
+        return false;
+    }
+
     public static boolean delete(String path) {
         try {
             return delete(new File(path));
@@ -701,11 +718,10 @@ public class FileUtils {
             while ((line = reader.readLine()) != null) {
                 content.append(line).append("\n");
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            return "";
         }
         return content.toString();
-
     }
 
     public static boolean writeToFile(String folderPath, String fileName, String content) {
@@ -885,17 +901,24 @@ public class FileUtils {
         try {
             context.startActivity(intent);
         } catch (Exception e) {
-            DialogUtils.oneDialog(
-                    context,
-                    context.getString(R.string.oops),
-                    context.getString(R.string.there_is_no_app_to_perform_this_action),
-                    context.getString(R.string.ok),
-                    true,
-                    R.drawable.error_96px,
-                    true,
-                    null,
-                    null
-            );
+            if (context instanceof Activity activity) {
+                FilePickerDialog filePickerDialog = new FilePickerDialog();
+                filePickerDialog.setLockHome(true);
+                filePickerDialog.browse(activity, folderPath);
+            } else {
+                DialogUtils.oneDialog(
+                        context,
+                        context.getString(R.string.oops),
+                        context.getString(R.string.there_is_no_app_to_perform_this_action),
+                        context.getString(R.string.ok),
+                        true,
+                        R.drawable.error_96px,
+                        true,
+                        null,
+                        null
+                );
+            }
+
             Log.e(TAG, "openFolder: " + e.getMessage());
         }
     }

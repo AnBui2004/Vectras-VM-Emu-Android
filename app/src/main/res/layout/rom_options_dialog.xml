@@ -79,7 +79,7 @@
                 android:layout_marginVertical="16dp"/>
 
             <LinearLayout
-                android:id="@+id/ln_edit"
+                android:id="@+id/ln_pin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -88,6 +88,31 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginBottom="2dp"
                 android:background="@drawable/object_shape_top_high">
+                <ImageView
+                    android:id="@+id/iv_pin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/keep_24px"/>
+                <TextView
+                    android:id="@+id/tv_pin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:padding="8dp"
+                    android:textColor="?attr/colorControlNormal"
+                    android:text="@string/pin"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ln_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="16dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/object_shape_middle_high">
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -125,6 +150,29 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ln_clone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="16dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/object_shape_middle_high">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/content_copy_24px"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:padding="8dp"
+                    android:textColor="?attr/colorControlNormal"
+                    android:text="@string/clone"/>
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/ln_cleanup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -145,6 +193,52 @@
                     android:padding="8dp"
                     android:textColor="?attr/colorControlNormal"
                     android:text="@string/clean_up"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ln_reset_uefi_bios"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="16dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/object_shape_middle_high">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/restore_page_24px"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:padding="8dp"
+                    android:textColor="?attr/colorControlNormal"
+                    android:text="@string/reset_uefi_bios"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ln_show_in_folder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingVertical="8dp"
+                android:paddingHorizontal="16dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/object_shape_middle_high">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/folder_open_24px"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:padding="8dp"
+                    android:textColor="?attr/colorControlNormal"
+                    android:text="@string/show_in_folder"/>
             </LinearLayout>
 
             <LinearLayout

@@ -7,6 +7,7 @@ import android.util.Log;
 import com.vectras.qemu.Config;
 import com.vectras.qemu.MainSettingsManager;
 import com.vectras.qemu.utils.RamInfo;
+import com.vectras.vm.creator.configs.ListManager;
 import com.vectras.vm.creator.utils.VMCreatorSelector;
 import com.vectras.vm.main.vms.DataMainRoms;
 import com.vectras.vm.manager.BatteryEmulatorManager;
@@ -14,7 +15,9 @@ import com.vectras.vm.manager.FirmwareManager;
 import com.vectras.vm.manager.ParamManager;
 import com.vectras.vm.manager.QemuManager;
 import com.vectras.vm.manager.VmFileManager;
+import com.vectras.vm.manager.WifiCardEmulatorManager;
 import com.vectras.vm.settings.ItemSettingsSelector;
+import com.vectras.vm.settings.SettingsData;
 import com.vectras.vm.utils.CpuHelper;
 import com.vectras.vm.utils.DeviceUtils;
 import com.vectras.vm.utils.FileUtils;
@@ -45,6 +48,10 @@ public class StartVM {
                 if (!snapshotParams.contains("-incoming defer"))
                     snapshotParams += " -incoming defer";
                 Log.d("StartVM.env", snapshotParams);
+
+                FileUtils.copyFile(VmFileManager.getPath(vmConfigs.vmID, VmFileManager.COMPILED_BATERRY_ACPI_FILE_NAME), VmFileManager.getTempPath(activity, vmConfigs.vmID));
+                FileUtils.copyFile(VmFileManager.getPath(vmConfigs.vmID, VmFileManager.COMPILED_WIFI_CARD_ACPI_FILE_NAME), VmFileManager.getTempPath(activity, vmConfigs.vmID));
+
                 return snapshotParams;
             }
         }
@@ -55,18 +62,32 @@ public class StartVM {
         if (!ParamManager.hasMachine(extraParams)) {
             String machine = Objects.requireNonNull(VMCreatorSelector.getMachine(activity, MainSettingsManager.getArch(activity), vmData.machine).get("value")).toString();
             if (!machine.isEmpty()) {
-                machineParams = "-M " + machine;
+                machineParams += machine;
+            }
+
+            if (
+                    !vmConfigs.hpet &&
+                            (
+                                    MainSettingsManager.getArch(activity).equals(MainSettingsManager.X86_64_ARCH) ||
+                                            MainSettingsManager.getArch(activity).equals(MainSettingsManager.I386_ARCH)
+                            )
+            ) {
+                if (!machineParams.isEmpty()) machineParams += ",";
+                machineParams += "hpet=off";
             }
 
             if (
                     vmConfigs.nvirt &&
                             !MainSettingsManager.getArch(activity).equals(MainSettingsManager.PPC_ARCH) &&
-                    MainSettingsManager.getArch(activity).equals(MainSettingsManager.ARM64_ARCH)
+                            MainSettingsManager.getArch(activity).equals(MainSettingsManager.ARM64_ARCH)
             ) {
-                machineParams += ",virtualization=true";
+                if (!machineParams.isEmpty()) machineParams += ",";
+                machineParams += "virtualization=true";
             }
 
-            machineParams += " ";
+            if (!machineParams.isEmpty()) {
+                machineParams = "-M " + machineParams + " ";
+            }
         }
 
         String cpuParams = "";
@@ -103,32 +124,93 @@ public class StartVM {
 
             int cores = Integer.parseInt(Objects.requireNonNull(VMCreatorSelector.getCpuCore(MainSettingsManager.getArch(activity), vmConfigs.cores).get("value")).toString());
             int threads = Math.max(1, vmConfigs.threads + 1);
-            if (!extraParams.contains("-smp ")) {
-                if (cores * threads > cpuHelper.getCpuThreads()) {
-                    cpuParams += " -smp sockets=1,cores=" + cpuHelper.getCpuCores() + ",threads=1";
-                } else {
-                    cpuParams += " -smp sockets=1,cores=" + cores + ",threads=" + threads;
-                }
+
+            if (cores * threads > cpuHelper.getCpuThreads()) {
+                cpuParams += " -smp sockets=1,cores=" + cpuHelper.getCpuCores() + ",threads=1";
+            } else {
+                cpuParams += " -smp sockets=1,cores=" + cores + ",threads=" + threads;
             }
         }
 
         if (!cpuParams.isEmpty()) cpuParams += " ";
 
 
+        String memoryParams = "";
+        if (!ParamManager.hasMemory(extraParams)) {
+            memoryParams = "-m ";
+            if (vmConfigs.memory > 0) {
+                memoryParams += vmConfigs.memory;
+            } else {
+                memoryParams += (int) (RamInfo.vectrasMemory(activity) / 100 * 80);
+            }
+        }
+
+        String inputDevicesParams = "";
+        String mouse = Objects.requireNonNull(VMCreatorSelector.getMouse(activity, MainSettingsManager.getArch(activity), vmData.mouse).get("value")).toString();
+        if (!mouse.isEmpty()) {
+            inputDevicesParams += " -device " + mouse;
+        }
+        String keyboard = Objects.requireNonNull(VMCreatorSelector.getKeyboard(activity, MainSettingsManager.getArch(activity), vmData.keyboard).get("value")).toString();
+        if (!keyboard.isEmpty()) {
+            inputDevicesParams += " -device " + keyboard;
+        }
+        String usbController = Objects.requireNonNull(VMCreatorSelector.getUsbController(activity, vmData.usbController).get("value")).toString();
+        if (!usbController.equals(ListManager.NONE_VALUE)) {
+            inputDevicesParams = (usbController.isEmpty() ? " -usb" : (" -device " + usbController)) + inputDevicesParams;
+        } else if (!inputDevicesParams.isEmpty() && !ParamManager.hasUsb(extraParams)) {
+            // This is a fallback case for when the USB controller might be removed from the extra params after the virtual machine generator has validated it.
+            inputDevicesParams = " -usb" + inputDevicesParams;
+        }
+
+
+        String graphicsParams = "";
+        String graphics = Objects.requireNonNull(VMCreatorSelector.getGraphicsCard(activity, vmData.graphicCard).get("value")).toString();
+        if (!graphics.isEmpty()) {
+            graphicsParams = graphics.equals(ListManager.NONE_VALUE) ? " -vga none" : " -device " + graphics;
+        }
+
         String networkParams = "";
         String network = Objects.requireNonNull(VMCreatorSelector.getNetworkCard(activity, vmData.networkCard).get("value")).toString();
         if (!network.isEmpty()) {
-            networkParams = " -device " + network + ",netdev=net0 -netdev user,id=net0";
+            String netDevId = "netdev" + System.currentTimeMillis();
+
+            networkParams = " -device " + network + ",netdev=" + netDevId + " -netdev user,id=" + netDevId;
+        }
+
+        String soundParams = "";
+        String sound = Objects.requireNonNull(VMCreatorSelector.getSoundCard(activity, vmData.soundCard).get("value")).toString();
+        if (!sound.isEmpty()) {
+            String audioDevId = "audiodev" + System.currentTimeMillis();
+
+            soundParams = " -device " +
+                    sound +
+                    (
+                            sound.contains("intel-hda") ?
+                                    " -device hda-duplex" :
+                                    ""
+                    ) +
+                    ",audiodev=" +
+                    audioDevId +
+                    " -audiodev wav,id=" +
+                    audioDevId +
+                    ",out.frequency=48000,path=" +
+                    VmFileManager.getAudioRaw(VectrasApp.getContext(), vmConfigs.vmID);
         }
 
         String bootFromParams = Objects.requireNonNull(VMCreatorSelector.getBootFrom(activity, vmData.bootFrom).get("value")).toString();
         String showBootMenuParams = vmData.isShowBootMenu ? "menu=on" : "";
         String bootParams = "";
         if (!bootFromParams.isEmpty() || !showBootMenuParams.isEmpty()) {
-            bootParams = "-boot " + bootFromParams + (!bootFromParams.isEmpty() && !showBootMenuParams.isEmpty() ? "," : "") + showBootMenuParams + " ";
+            bootParams = " -boot " + bootFromParams + (!bootFromParams.isEmpty() && !showBootMenuParams.isEmpty() ? "," : "") + showBootMenuParams + " ";
         }
 
-        extraParams = machineParams + cpuParams + bootParams + networkParams + " " + extraParams;
+        String accelParams = "";
+        String accel = Objects.requireNonNull(VMCreatorSelector.getAccel(activity, vmData.accel).get("value")).toString();
+        if (!accel.isEmpty()) {
+            accelParams = " -accel " + ((vmData.accel > 1 && !DeviceUtils.is64bit()) ? Objects.requireNonNull(VMCreatorSelector.getAccel(activity, 1).get("value")).toString() : accel);
+        }
+
+        extraParams = machineParams + inputDevicesParams + cpuParams + memoryParams + bootParams + graphicsParams + networkParams + soundParams + accelParams + " " + extraParams;
         return env(activity, extraParams, vmData.itemPath, false);
     }
 
@@ -160,52 +242,28 @@ public class StartVM {
 
             params.add(getQmpParams());
 
-            String ifType;
-            ifType = MainSettingsManager.getIfType(activity);
 
-            String cdrom = "";
-            String hdd0;
-            String hdd1;
 
             if (!img.isEmpty()) {
-                if (ifType.isEmpty()) {
-                    hdd0 = "-hda";
-                    hdd0 += " '" + img + "'";
-                } else {
-                    hdd0 = "-drive";
-                    hdd0 += " media=disk";
-                    hdd0 += ",if=" + ifType;
-                    hdd0 += ",file='" + img + "'";
+                String diskparams = "-drive";
+                diskparams += " media=disk";
+                diskparams += ",discard=unmap";
+                diskparams += ",file='" + img + "'";
 
-                    if ((MainSettingsManager.getArch(activity).equals("ARM64") && ifType.equals("ide")) || MainSettingsManager.getArch(activity).equals("PPC")) {
-                        hdd0 = "-drive";
-                        hdd0 += " media=disk";
-                        hdd0 += ",file='" + img + "'";
-                    }
-                }
-                params.add(hdd0);
+                params.add(diskparams);
             }
 
             if (!vmConfigs.hd1.isEmpty()) {
-                if (ifType.isEmpty()) {
-                    hdd0 = "-hdb";
-                    hdd0 += " '" + vmConfigs.hd1 + "'";
-                } else {
-                    hdd0 = "-drive";
-                    hdd0 += " media=disk";
-                    hdd0 += ",if=" + ifType;
-                    hdd0 += ",file='" + vmConfigs.hd1 + "'";
+                String diskparams = "-drive";
+                diskparams += " media=disk";
+                diskparams += ",discard=unmap";
+                diskparams += ",file='" + vmConfigs.hd1 + "'";
 
-                    if ((MainSettingsManager.getArch(activity).equals("ARM64") && ifType.equals("ide")) || MainSettingsManager.getArch(activity).equals("PPC")) {
-                        hdd0 = "-drive";
-                        hdd0 += " media=disk";
-                        hdd0 += ",file='" + vmConfigs.hd1 + "'";
-                    }
-                }
-                params.add(hdd0);
+                params.add(diskparams);
             }
 
             if (!vmConfigs.imgCdrom.isEmpty()) {
+                String cdrom = "";
                 if (MainSettingsManager.getArch(activity).equals("ARM64")) {
                     cdrom += " -device";
                     cdrom += " nec-usb-xhci,id=usbopticaldiscreader0";
@@ -238,59 +296,29 @@ public class StartVM {
                     cdromParams += " -drive";
                     cdromParams += " if=none,id=cdromdrive1,format=raw,media=cdrom,file='" + vmConfigs.cdrom1 + "'";
                 } else {
-                    if (vmConfigs.imgCdrom.isEmpty() && !extras.contains("-cdrom ")) {
-                        cdromParams = "-cdrom";
-                        cdromParams += " '" + vmConfigs.cdrom1 + "'";
-                    } else {
-                        cdromParams = "-drive";
-                        cdromParams += " media=cdromdrive1";
-                        cdromParams += ",file='" + vmConfigs.cdrom1 + "'";
-                    }
+                    cdromParams = "-drive";
+                    cdromParams += " media=cdromdrive1";
+                    cdromParams += ",file='" + vmConfigs.cdrom1 + "'";
                 }
                 params.add(cdromParams);
             }
 
-            File hdd1File = new File(filesDir + "/data/Vectras/hdd1.qcow2");
-
-            if (hdd1File.exists()) {
-                if (ifType.isEmpty()) {
-                    hdd1 = "-hdb";
-                    hdd1 += " '" + hdd1File.getPath() + "'";
-                } else {
-                    hdd1 = "-drive";
-                    hdd1 += " media=disk";
-                    hdd1 += ",if=" + ifType;
-                    hdd1 += ",file='" + hdd1File.getPath() + "'";
-                }
-
-                params.add(hdd1);
-            }
+//            File hdd1File = new File(filesDir + "/data/Vectras/hdd1.qcow2");
+//
+//            if (hdd1File.exists()) {
+//                hdd1 = "-drive";
+//                hdd1 += " media=disk";
+//                hdd1 += ",file='" + hdd1File.getPath() + "'";
+//
+//                params.add(hdd1);
+//            }
 
             if (!vmConfigs.fda.isEmpty() && !MainSettingsManager.getArch(activity).equals("ARM64")) {
-                if (extras.contains("-fda ")) {
-                    params.add("-drive if=floppy,file='" + vmConfigs.fda + "'");
-                } else {
-                    params.add("-fda");
-                    params.add("'" + vmConfigs.fda + "'");
-                }
+                params.add("-drive if=floppy,file='" + vmConfigs.fda + "'");
             }
 
             if (!vmConfigs.fdb.isEmpty() && !MainSettingsManager.getArch(activity).equals("ARM64")) {
-                if (vmConfigs.fda.isEmpty()) {
-                    if (extras.contains("-fda ")) {
-                        params.add("-drive if=floppy,file='" + vmConfigs.fdb + "'");
-                    } else {
-                        params.add("-fda");
-                        params.add("'" + vmConfigs.fdb + "'");
-                    }
-                } else {
-                    if (extras.contains("-fdb ")) {
-                        params.add("-drive if=floppy,file='" + vmConfigs.fdb + "'");
-                    } else {
-                        params.add("-fdb");
-                        params.add("'" + vmConfigs.fdb + "'");
-                    }
-                }
+                params.add("-drive if=floppy,file='" + vmConfigs.fdb + "'");
             }
 
             if (vmConfigs.sharedFolder) {
@@ -300,89 +328,43 @@ public class StartVM {
                 params.add(driveParams);
             }
 
-//            String boot = "-boot ";
-//            if (extras.contains(".iso ")) {
-//
-//                boot += MainSettingsManager.getBoot(activity);
-//            } else {
-//                boot += "c";
-//            }
-
-            //String soundDevice = "-audiodev pa,id=pa -device AC97,audiodev=pa";
-
-            //params.add(soundDevice);
-
             if (vmConfigs.isUseDefaultBios) {
+                extractFirmware(activity);
+
                 if (MainSettingsManager.getArch(activity).equals("PPC")) {
                     bios = "-L ";
                     bios += "pc-bios";
                 } else if (MainSettingsManager.getArch(activity).equals("ARM64")) {
+                    if (!FileUtils.isFileExists(VmFileManager.getPath(vmConfigs.vmID, "QEMU_VARS.img")))
+                        FileUtils.copyFile(AppConfig.basefiledir + "QEMU_VARS.img", VmFileManager.getPath(vmConfigs.vmID));
+
                     bios = "-drive ";
                     bios += "file=" + AppConfig.basefiledir + "QEMU_EFI.img,format=raw,readonly=on,if=pflash";
                     bios += " -drive ";
-                    bios += "file=" + AppConfig.basefiledir + "QEMU_VARS.img,format=raw,if=pflash";
+                    bios += "file=" + VmFileManager.getPath(vmConfigs.vmID, "QEMU_VARS.img") + ",format=raw,if=pflash";
                 } else if (vmConfigs.isUseUefi) {
+                    String codeFile = "edk2-" + MainSettingsManager.getArch(activity).toLowerCase() + "-code.fd";
+                    String varsFile = "edk2-" + MainSettingsManager.getArch(activity).toLowerCase() + "-vars.fd";
+
+                    if (!FileUtils.isFileExists(VmFileManager.getPath(vmConfigs.vmID, varsFile)))
+                        FileUtils.copyFile(AppConfig.basefiledir + varsFile, VmFileManager.getPath(vmConfigs.vmID));
+
                     bios = "-drive ";
-                    bios += "file=" + AppConfig.basefiledir + "RELEASEX64_OVMF.fd,format=raw,readonly=on,if=pflash";
+                    bios += "file=" + AppConfig.basefiledir + codeFile + ",format=raw,readonly=on,if=pflash";
                     bios += " -drive ";
-                    bios += "file=" + AppConfig.basefiledir + "RELEASEX64_OVMF_VARS.fd,format=raw,if=pflash";
+                    bios += "file=" + VmFileManager.getPath(vmConfigs.vmID, varsFile) + ",format=raw,if=pflash";
                 } else {
                     bios = "-bios ";
                     bios += AppConfig.basefiledir + "bios-vectras.bin";
                 }
-
-                extractFirmware(activity);
             }
-
-//            String machine = "-M ";
-//            if (Objects.equals(MainSettingsManager.getArch(activity), "X86_64")) {
-//                machine += "pc";
-//                params.add(machine);
-//            } else if (Objects.equals(MainSettingsManager.getArch(activity), "ARM64")) {
-//                machine += "virt";
-//                params.add(machine);
-//            }
-
-            if (MainSettingsManager.useMemoryOvercommit(activity)) {
-                params.add("-overcommit");
-                params.add("mem-lock=off");
-            }
-
 
             if (vmConfigs.isUseLocalTime) {
                 params.add("-rtc");
                 params.add("base=localtime");
             }
 
-            //if (!MainSettingsManager.getArch(activity).equals("PPC")) {
-            //params.add("-nodefaults");
-            //}
-
-            //if (!Objects.equals(MainSettingsManager.getArch(activity), "ARM64")) {
             params.add(bios);
-            //}
-
-//            params.add(boot);
-
-            if (!ParamManager.hasMemory(extras)) {
-                String memoryStr = "-m ";
-                if (MainSettingsManager.getArch(activity).equals("PPC") && RamInfo.vectrasMemory(activity) > 2048) {
-                    memoryStr += 2048;
-                } else {
-                    memoryStr += RamInfo.vectrasMemory(activity);
-                }
-                params.add(memoryStr);
-            }
-
-            if (ifType.isEmpty()) {
-                if (extras.contains("-drive media=cdrom,file=")) {
-                    finalextra = extras.replace("-drive media=cdrom,file=", "-cdrom ");
-                }
-            } else {
-                if (extras.contains("-cdrom ")) {
-                    finalextra = extras.replace("-cdrom ", "-drive media=cdrom,file=");
-                }
-            }
         }
 
         params.add(finalextra);
@@ -401,6 +383,11 @@ public class StartVM {
         if (vmConfigs.battery) {
             if (BatteryEmulatorManager.setup(activity, vmConfigs.vmID))
                 params.add("-acpitable file=" + VmFileManager.getCompiledBatteryAcpi(activity, vmConfigs.vmID));
+        }
+
+        if (vmConfigs.wifi) {
+            if (WifiCardEmulatorManager.setup(activity, vmConfigs.vmID))
+                params.add("-acpitable file=" + VmFileManager.getCompiledWifiCardAcpi(activity, vmConfigs.vmID));
         }
 
         return String.join(" ", params);
@@ -449,7 +436,8 @@ public class StartVM {
             params += "-spice port=6999,disable-ticketing=on";
         } else if (MainSettingsManager.getVmUi(context).equals("X11")) {
             params += "-display ";
-            params += MainSettingsManager.getUseSdl(context) ? "sdl" : "gtk" + ",gl=on";
+            params += MainSettingsManager.getUseSdl(context) ? "sdl" : "gtk";
+            if (SettingsData.opengl(context)) params += ",gl=on";
             params += " -monitor ";
             params += MainSettingsManager.getRunQemuWithXterm(context) ? "stdio" : "vc";
         }

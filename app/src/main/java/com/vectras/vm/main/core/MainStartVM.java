@@ -18,11 +18,13 @@ import com.vectras.vm.MainService;
 import com.vectras.vm.R;
 import com.vectras.vm.StartVM;
 import com.vectras.vm.VMManager;
+import com.vectras.vm.crashtracker.CrashTrackerUtils;
 import com.vectras.vm.logger.VectrasStatus;
 import com.vectras.vm.main.vms.DataMainRoms;
 import com.vectras.vm.manager.QmpSender;
 import com.vectras.vm.manager.VmFileManager;
 import com.vectras.vm.manager.VmAudioManager;
+import com.vectras.vm.manager.VmServiceManager;
 import com.vectras.vm.settings.ExternalVNCSettingsActivity;
 import com.vectras.vm.utils.DeviceUtils;
 import com.vectras.vm.utils.DialogUtils;
@@ -72,6 +74,7 @@ public class MainStartVM {
 
     public interface MainStartVMCallback {
         void onStarted(int statusCode, String message);
+
         void onError(int errorCode, String message);
     }
 
@@ -90,7 +93,21 @@ public class MainStartVM {
         }
 
         new Thread(() -> {
-            if (!VMManager.isVMRunning(activity, vmConfig.vmID)) VmFileManager.removeTemp(activity, vmConfig.vmID);
+            if (!VMManager.isVMRunning(activity, vmConfig.vmID)) {
+                try {
+                    VmFileManager.removeTemp(activity, vmConfig.vmID);
+                } catch (SecurityException e) {
+                    VMManager.isQemuStopedWithError = true;
+
+                    if (
+                            activity != null &&
+                                    !activity.isFinishing() &&
+                                    !activity.isDestroyed()
+                    )
+                        activity.runOnUiThread(() -> CrashTrackerUtils.showCoreFeatureErrorDialog(activity, e));
+                    return;
+                }
+            }
 
             String env = StartVM.env(activity, vmConfig);
             activity.runOnUiThread(() -> startNow(activity, vmConfig.itemName, env, vmConfig.vmID, vmConfig.itemIcon, dialog));
@@ -117,14 +134,35 @@ public class MainStartVM {
             StartVmDialog dialog,
             MainStartVMCallback callback
     ) {
+        new Thread(() -> {
+            while (!breakNow && VmServiceManager.isKillingService) {
+                try {
+                    // Wait for all Qemu processes to be terminated, using the delay preset in VMManager.killallqemuprocesses.
+                    Thread.sleep(3000);
+                } catch (InterruptedException ignored) {}
+            }
 
+            new Handler(Looper.getMainLooper()).post(() -> initToStartVm(context, vmName, env, vmID, thumbnailFile, dialog, callback));
+        }).start();
+    }
+
+    public static void initToStartVm(
+            Context context,
+            String vmName,
+            String env,
+            String vmID,
+            String thumbnailFile,
+            StartVmDialog dialog,
+            MainStartVMCallback callback
+    ) {
         if (breakNow) {
             breakNow = false;
             if (callback != null) callback.onError(PENDDING_EMPTY, "");
             return;
         }
 
-        setDefault();
+        // Do not reset when continuing to run on the built-in X11 screen.
+        if (!isLaunchFromPending) setDefault();
 
         if (isLaunchFromPending) {
             isLaunchFromPending = false;
@@ -140,7 +178,7 @@ public class MainStartVM {
                     return;
                 }
             }
-            
+
             lastVMName = vmName;
             lastEnv = env;
             lastVMID = vmID;
@@ -192,7 +230,8 @@ public class MainStartVM {
         }
 
         // Place it here to avoid freezing when the dialog box appears upon returning to the virtual machine.
-        if (dialog == null || !dialog.isShowing()) showDialog((Activity) context, vmID, vmName, thumbnailFile, null);
+        if (dialog == null || !dialog.isShowing())
+            showDialog((Activity) context, vmID, vmName, thumbnailFile, null);
 
         File romDir = new File(Config.getCacheDir() + "/" + finalvmID);
         if (!romDir.exists()) {
@@ -236,7 +275,7 @@ public class MainStartVM {
         }
 
         if (MainSettingsManager.getVncExternal(context) &&
-                NetworkUtils.isPortOpen("localhost", Config.defaultVNCPort + Config.defaultVNCPort, 500)) {
+                NetworkUtils.isPortOpen("localhost", 5900 + Config.defaultVNCPort, 500)) {
             DialogUtils.twoDialog(context, context.getString(R.string.problem_has_been_detected),
                     context.getString(R.string.the_vnc_server_port_you_set_is_currently_in_use_by_other),
                     context.getString(R.string.go_to_settings),
@@ -252,10 +291,30 @@ public class MainStartVM {
         }
 
         new Thread(() -> {
-            boolean isExceeded = env.contains(FileUtils.getExternalFilesDirectory(context).getPath() + "/SharedFolder") && FileUtils.getFolderSize(FileUtils.getExternalFilesDirectory(context).getPath() + "/SharedFolder") * Math.pow(10, -6) > 516;
+            Boolean isExceeded = null;
+            Exception exception = null;
 
+            try {
+                isExceeded = env.contains(FileUtils.getExternalFilesDirectory(context).getPath() + "/SharedFolder") && FileUtils.getFolderSize(FileUtils.getExternalFilesDirectory(context).getPath() + "/SharedFolder") * Math.pow(10, -6) > 516;
+            } catch (SecurityException e) {
+                exception = e;
+            }
+
+            Boolean finalIsExceeded = isExceeded;
+            Exception finalException = exception;
             new Handler(Looper.getMainLooper()).post(() -> {
-                if (isExceeded) {
+                if (finalIsExceeded == null) {
+                    VMManager.isQemuStopedWithError = true;
+
+                    if (context instanceof Activity activity) {
+                        if (!activity.isFinishing() && !activity.isDestroyed())
+                            activity.runOnUiThread(() -> CrashTrackerUtils.showCoreFeatureErrorDialog(activity, finalException));
+                    }
+
+                    return;
+                }
+
+                if (finalIsExceeded) {
                     DialogUtils.twoDialog(
                             context,
                             context.getString(R.string.problem_has_been_detected),
@@ -298,9 +357,22 @@ public class MainStartVM {
     ) {
         VMManager.isQemuStopedWithError = false;
 
-        String cleanUpCommand = " && echo \"" + TAG_FINISHED_WITHOUT_ERROR + "\"\nrm -r " + Config.getCacheVMPath(vmID);
+        String cleanUpCommand = " && echo '" + TAG_FINISHED_WITHOUT_ERROR + "'\nrm -r " + Config.getCacheVMPath(vmID);
 
-        String finalCommand = VMManager.addAudioDevWav(vmID, String.format(runCommandFormat, env + cleanUpCommand));
+        String finalCommand;
+
+        try {
+            finalCommand = VMManager.addAudioDevWav(vmID, String.format(runCommandFormat, env));
+        } catch (SecurityException e) {
+            if (context instanceof Activity activity) {
+                if (!activity.isFinishing() && !activity.isDestroyed())
+                    activity.runOnUiThread(() -> CrashTrackerUtils.showCoreFeatureErrorDialog(activity, e));
+            }
+
+            return;
+        }
+
+        finalCommand = "echo ===== COMMAND =====\necho\necho \"" + finalCommand + "\"\necho\necho ===== LOGS =====\necho\n" + finalCommand + cleanUpCommand;
 
         if (MainSettingsManager.getVmUi(context).equals("X11")) {
             finalCommand = "export DISPLAY=:0 && " + finalCommand;
@@ -395,7 +467,8 @@ public class MainStartVM {
                                 }
                             } else {
                                 forceDisableMigrate = false;
-                                if ( activity != null) activity.runOnUiThread(() -> dialog.setStatus(R.string.booting_up));
+                                if (activity != null)
+                                    activity.runOnUiThread(() -> dialog.setStatus(R.string.booting_up));
                             }
 
                             QmpSender.resume();

@@ -165,26 +165,26 @@
                     android:text="@string/delete_all" />
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/ln_reset_uefi_bios"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:background="@drawable/object_shape_middle_high"
-                android:gravity="center_vertical"
-                android:padding="16dp">
+<!--            <LinearLayout-->
+<!--                android:id="@+id/ln_reset_uefi_bios"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="2dp"-->
+<!--                android:background="@drawable/object_shape_middle_high"-->
+<!--                android:gravity="center_vertical"-->
+<!--                android:padding="16dp">-->
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/restore_page_24px" />
+<!--                <ImageView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:src="@drawable/restore_page_24px" />-->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:text="@string/reset_uefi_bios" />
-            </LinearLayout>
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginLeft="8dp"-->
+<!--                    android:text="@string/reset_uefi_bios" />-->
+<!--            </LinearLayout>-->
 
             <LinearLayout
                 android:id="@+id/reinstallsystem"

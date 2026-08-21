@@ -31,6 +31,14 @@ public class DialogUtils {
         oneDialog(context, title, message, context.getString(R.string.ok), iconid != -1, iconid, true, null, null);
     }
 
+    public static void oopsDialog(Activity activity, String message, boolean isForceFinish) {
+        if (isForceFinish) {
+            oneDialog(activity, activity.getString(R.string.oops), message, activity.getString(R.string.ok), true, R.drawable.error_96px, false, activity::finish, null);
+        } else {
+            oopsDialog(activity, message);
+        }
+    }
+
     public static void oopsDialog(Context context, String message) {
         oneDialog(context, context.getString(R.string.oops), message, R.drawable.error_96px);
     }
@@ -258,22 +266,6 @@ public class DialogUtils {
         if (activity.isFinishing() || activity.isDestroyed()) return false;
         if (dialog == null || !dialog.isShowing() || dialog.getWindow() == null) return false;
         return dialog.getWindow().getDecorView().getWindowToken() != null;
-    }
-
-    public static void joinTelegram(Context _context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(_context);
-        if (!prefs.getBoolean("tgDialog", false)) {
-            threeDialog(_context, _context.getResources().getString(R.string.join_us_on_telegram),
-                    _context.getResources().getString(R.string.join_us_on_telegram_where_we_publish_all_the_news_and_updates_and_receive_your_opinions_and_bugs),
-                    _context.getResources().getString(R.string.join), _context.getResources().getString(R.string.cancel), _context.getResources().getString(R.string.dont_show_again),
-                    true, R.drawable.send_24px, true,
-                    () -> IntentUtils.openTelegramLink(_context), null,
-                    () -> {
-                        SharedPreferences.Editor edit = prefs.edit();
-                        edit.putBoolean("tgDialog", true);
-                        edit.apply();
-                    }, null);
-        }
     }
 
     public static void needInstallTermuxX11(Context _context) {

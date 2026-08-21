@@ -154,7 +154,7 @@ public class TarUtils {
         String destPath = destDir.getCanonicalPath();
         String outPath  = outFile.getCanonicalPath();
 
-        if (!outPath.startsWith(destPath + File.separator)) {
+        if (!outPath.startsWith(destPath + File.separator) && !name.equals("./")) {
             Log.w(TAG, "TarSlip detected: " + name);
             return false;
         }

@@ -424,8 +424,16 @@ public class RomInfo extends AppCompatActivity {
         openurl.setAction(Intent.ACTION_VIEW);
 
         if (urls != null && urls.length > 0 && !urls[0].isEmpty()) {
-            openurl.setData(Uri.parse(urls[new Random().nextInt(urls.length)]));
-            startActivity(openurl);
+            if (urls.length == 1) {
+                IntentUtils.openUrl(this, urls[0]);
+                return;
+            }
+
+            LinksDialog linksDialog = new LinksDialog(this);
+            linksDialog.setLink1(urls[0]);
+            linksDialog.setLink2(urls[1]);
+            if (urls.length > 3) linksDialog.setLink3(urls[2]);
+            linksDialog.show(getSupportFragmentManager(), "links_dialog");
         } else {
             isAllowGetAnbuiContentUrls = false;
 

@@ -46,7 +46,13 @@
         android:largeHeap="true"
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".setupwizard.TurnipZinkSetupWizardActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".settings.EqualizerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
@@ -240,7 +246,7 @@
             android:screenOrientation="sensorLandscape"
             android:supportsPictureInPicture="true"
             android:taskAffinity="com.vectras.vm.x11.X11Activity"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden|adjustNothing" />
         <activity
             android:name=".x11.LoriePreferences"
             android:excludeFromRecents="true"
@@ -282,6 +288,15 @@
             tools:ignore="ExportedReceiver">
             <intent-filter>
                 <action android:name="com.vectras.vm.x11.CHANGE_PREFERENCE" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".x11.LorieBroadcastReceiver" android:exported="true" tools:ignore="ExportedReceiver" android:enabled="true">
+            <intent-filter>
+                <action android:name="com.vectras.vm.x11.CmdEntryPoint.ACTION_START" />
+                <action android:name="com.vectras.vm.x11.ACTION_STOP" />
+                <action android:name="com.vectras.vm.x11.ACTION_PREFERENCES_CHANGED" />
+                <action android:name="com.vectras.vm.x11.ACTION_CUSTOM" />
             </intent-filter>
         </receiver>
 

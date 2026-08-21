@@ -29,6 +29,7 @@ import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -47,6 +48,9 @@ import com.vectras.vm.AboutActivity;
 import com.vectras.vm.AppConfig;
 import com.vectras.vm.creator.VMCreatorActivity;
 import com.vectras.vm.file.FilePickerDialog;
+import com.vectras.vm.main.core.SharedViewModel;
+import com.vectras.vm.main.vms.DataMainRoms;
+import com.vectras.vm.main.vms.VmsSearchAdapter;
 import com.vectras.vm.settings.Minitools;
 import com.vectras.vm.R;
 import com.vectras.vm.WebViewActivity;
@@ -62,7 +66,6 @@ import com.vectras.vm.main.romstore.DataRoms;
 import com.vectras.vm.creator.SetArchActivity;
 import com.vectras.vm.VMManager;
 import com.vectras.vm.adapter.LogsAdapter;
-import com.vectras.vm.main.core.CallbackInterface;
 import com.vectras.vm.main.core.DisplaySystem;
 import com.vectras.vm.main.core.PendingCommand;
 import com.vectras.vm.main.core.SharedData;
@@ -94,24 +97,27 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class MainActivity extends AppCompatActivity implements RomStoreFragment.RomStoreCallToHomeListener, VmsFragment.VmsCallToHomeListener, SoftwareStoreFragment.SoftwareStoreCallToHomeListener {
+public class MainActivity extends AppCompatActivity {
     private final String TAG = "HomeActivity";
     private static final String TAG_VMS_FRAGMENT = "vms_fragment";
     private static final String TAG_ROM_STORE_FRAGMENT = "rom_store_fragment";
     private static final String TAG_SOFTWARE_STORE_FRAGMENT = "software_store_fragment";
     private static final String TAG_MONITOR_FRAGMENT = "monitor_fragment";
-    private final int SEARCH_ROM_STORE = 0;
-    private final int SEARCH_SOFTWARE_STORE = 1;
+    private final int SEARCH_VM = 0;
+    private final int SEARCH_ROM_STORE = 1;
+    private final int SEARCH_SOFTWARE_STORE = 2;
     private int currentBottomBarSelectedItemId = 0;
     private int currentSearchMode = 0;
     public static boolean isActivate = false;
     public static boolean isNeedRecreate = false;
     public static boolean isOpenHome = false;
     public static boolean isOpenRomStore = false;
-    ActivityMainBinding binding;
-    ActivityMainContentBinding bindingContent;
+    public ActivityMainBinding binding;
+    public ActivityMainContentBinding bindingContent;
+    private VmsSearchAdapter adapterVms;
     private RomStoreHomeAdpater adapterRomStore;
     private SoftwareStoreHomeAdapter adapterSoftwareStore;
+    private final List<DataMainRoms> listVmsSearchData = new ArrayList<>();
     private final List<DataRoms> listSearchData = new ArrayList<>();
     private LinearLayoutManager layoutManager;
     private VmsFragment vmsFragment() {
@@ -123,34 +129,16 @@ public class MainActivity extends AppCompatActivity implements RomStoreFragment.
     private Fragment currentFragment;
     private boolean isInVmsFragment = true;
 
-    public static CallbackInterface.HomeCallToVmsListener homeCallToVmsListener;
-
-    public static void refeshVMListNow() {
-        homeCallToVmsListener.refeshVMList();
-    }
-
-    @Override
-    public void updateSearchStatus(boolean isReady) {
-        bindingContent.searchbar.setEnabled(isReady);
-    }
-
-    @Override
-    public void openRomStore() {
-        bindingContent.bottomNavigation.setSelectedItemId(R.id.item_romstore);
-    }
-
     Handler handlerUpdateLog = new Handler(Looper.getMainLooper());
     Runnable updateLogTask = () -> {
 
     };
 
+    SharedViewModel sharedViewModel;
+
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-
-        VmsFragment.vmsCallToHomeListener = this;
-        RomStoreFragment.romStoreCallToHomeListener = this;
-        SoftwareStoreFragment.softwareStoreCallToHomeListener = this;
 
         EdgeToEdge.enable(this);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -207,7 +195,72 @@ public class MainActivity extends AppCompatActivity implements RomStoreFragment.
                     return true;
                 });
 
-        bindingContent.searchbar.setEnabled(false);
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        binding.rvSearch.setLayoutManager(layoutManager);
+        binding.rvSearch.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                int totalItemCount = layoutManager.getItemCount();
+                int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+
+                if (lastVisibleItem >= totalItemCount - 2) {
+                    if (currentSearchMode == SEARCH_VM) {
+                        adapterVms.loadMore();
+                    } else if (currentSearchMode == SEARCH_ROM_STORE) {
+                        adapterRomStore.loadMore();
+                    } else {
+                        adapterSoftwareStore.loadMore();
+                    }
+                }
+            }
+        });
+
+        sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+
+        sharedViewModel.onVmsLoaded.observe(this, event -> {
+            Boolean isLoaded = event.getIfNotHandled();
+            if (currentSearchMode == SEARCH_VM && isLoaded != null) {
+                bindingContent.searchbar.setEnabled(isLoaded);
+
+                if (isLoaded) {
+                    listVmsSearchData.clear();
+                    listVmsSearchData.addAll(SharedData.dataVms);
+                    adapterVms = new VmsSearchAdapter(this, listVmsSearchData, true);
+                    binding.rvSearch.setAdapter(adapterVms);
+//                    adapterVms.submitList(listVmsSearchData);
+                }
+            }
+        });
+
+        sharedViewModel.onRomStoreLoaded.observe(this, event -> {
+            Boolean isLoaded = event.getIfNotHandled();
+            if (currentSearchMode == SEARCH_ROM_STORE && isLoaded != null) {
+                bindingContent.searchbar.setEnabled(isLoaded);
+            }
+        });
+
+        sharedViewModel.onSoftwareStoreLoaded.observe(this, event -> {
+            Boolean isLoaded = event.getIfNotHandled();
+            if (currentSearchMode == SEARCH_SOFTWARE_STORE && isLoaded != null) {
+                bindingContent.searchbar.setEnabled(isLoaded);
+            }
+        });
+
+        sharedViewModel.openRomStore.observe(this, event -> {
+            Boolean isOpen = event.getIfNotHandled();
+            if (currentSearchMode != SEARCH_ROM_STORE && isOpen != null) {
+                bindingContent.bottomNavigation.setSelectedItemId(R.id.item_romstore);
+            }
+        });
+
+        sharedViewModel.requestRefreshVmList.observe(this, event -> {
+            Boolean isHandle = event.getIfNotHandled();
+            if (isHandle != null) {
+                vmsFragment().refresh();
+            }
+        });
 
         bindingContent.bottomNavigation.setOnItemSelectedListener(item -> {
             FragmentManager fragmentManager = getSupportFragmentManager();
@@ -235,8 +288,13 @@ public class MainActivity extends AppCompatActivity implements RomStoreFragment.
                 }
 
                 bindingContent.efabCreate.setVisibility(View.VISIBLE);
-                bindingContent.searchbar.setHint(getText(R.string.home));
-                bindingContent.searchbar.setEnabled(false);
+
+                bindingContent.searchbar.setEnabled(true);
+                bindingContent.searchbar.setHint(getText(R.string.search));
+
+                currentSearchMode = SEARCH_VM;
+                adapterVms = new VmsSearchAdapter(this, listVmsSearchData, true);
+                binding.rvSearch.setAdapter(adapterVms);
             } else {
                 fragmentTransaction.hide(vms);
                 Fragment selectedFragment;
@@ -273,8 +331,11 @@ public class MainActivity extends AppCompatActivity implements RomStoreFragment.
                     selectedFragment = new VmsFragment();
                     selectedTag = TAG_VMS_FRAGMENT;
                     bindingContent.efabCreate.setVisibility(View.VISIBLE);
+                    bindingContent.searchbar.setEnabled(true);
                     bindingContent.searchbar.setHint(getText(R.string.home));
-                    bindingContent.searchbar.setEnabled(false);
+                    currentSearchMode = SEARCH_VM;
+                    adapterVms = new VmsSearchAdapter(this, listVmsSearchData, true);
+                    binding.rvSearch.setAdapter(adapterVms);
                 }
 
                 if (!isInVmsFragment && currentFragment != null) fragmentTransaction.remove(currentFragment);
@@ -321,26 +382,6 @@ public class MainActivity extends AppCompatActivity implements RomStoreFragment.
             }
         });
 
-        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        binding.rvSearch.setLayoutManager(layoutManager);
-        binding.rvSearch.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                int totalItemCount = layoutManager.getItemCount();
-                int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
-
-                if (lastVisibleItem >= totalItemCount - 2) {
-                    if (currentSearchMode == SEARCH_ROM_STORE) {
-                        adapterRomStore.loadMore();
-                    } else {
-                        adapterSoftwareStore.loadMore();
-                    }
-                }
-            }
-        });
-
         binding.searchview.getEditText().
 
                 addTextChangedListener(new TextWatcher() {
@@ -362,7 +403,6 @@ public class MainActivity extends AppCompatActivity implements RomStoreFragment.
         checkMissingLibraries(this);
 
         setupDrawer();
-        DialogUtils.joinTelegram(this);
         NotificationUtils.clearAll(this);
 
         if (MainSettingsManager.getPromptUpdateVersion(this))
@@ -388,7 +428,7 @@ public class MainActivity extends AppCompatActivity implements RomStoreFragment.
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (homeCallToVmsListener != null) homeCallToVmsListener.configurationChanged(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
+        vmsFragment().refresh();
     }
 
     @Override
@@ -500,12 +540,7 @@ public class MainActivity extends AppCompatActivity implements RomStoreFragment.
                 startActivity(new Intent(this, AboutActivity.class));
             }
             if (id == R.id.navigation_item_help) {
-                IntentUtils.openUrl(this, AppConfig.vectrasHelp, true);
-            } else if (id == R.id.navigation_item_website) {
-                String tw = AppConfig.vectrasWebsite;
-                Intent w = new Intent(ACTION_VIEW);
-                w.setData(Uri.parse(tw));
-                startActivity(w);
+                IntentUtils.openUrl(this, AppConfig.community, true);
             } else if (id == R.id.navigation_item_desktop) {
                 DisplaySystem.launch(this);
             } else if (id == R.id.navigation_item_terminal) {
@@ -515,7 +550,6 @@ public class MainActivity extends AppCompatActivity implements RomStoreFragment.
             } else if (id == R.id.navigation_item_settings) {
                 startActivity(new Intent(this, Settings2Activity.class));
             } else if (id == R.id.navigation_data_explorer) {
-//                startActivity(new Intent(this, DataExplorerActivity.class));
                 if (MainSettingsManager.getBuiltInFilePicker(this)) {
                     FilePickerDialog filePickerDialog = new FilePickerDialog();
                     filePickerDialog.setHomeName(getString(R.string.app_name));
@@ -524,27 +558,20 @@ public class MainActivity extends AppCompatActivity implements RomStoreFragment.
                 } else {
                     FileUtils.openFolder(this, AppConfig.maindirpath);
                 }
-            } else if (id == R.id.navigation_item_donate) {
-                String tw = "https://www.patreon.com/VectrasTeam";
-                Intent w = new Intent(ACTION_VIEW);
-                w.setData(Uri.parse(tw));
-                startActivity(w);
             } else if (id == R.id.mini_tools) {
                 Intent intent = new Intent();
                 intent.setClass(this, Minitools.class);
                 startActivity(intent);
             } else if (id == R.id.navigation_qemu_doc) {
                 Intent intent = new Intent();
-                if (FileUtils.isFileExists(getFilesDir().getPath() + "/distro/usr/local/share/qemu/doc/index.html")) {
-                    intent.putExtra("url", "file://" + getFilesDir().getPath() + "/distro/usr/local/share/qemu/doc/index.html");
+                if (FileUtils.isFileExists(getFilesDir().getPath() + "/distro/usr/local/share/doc/qemu/index.html")) {
+                    intent.putExtra("url", "file://" + getFilesDir().getPath() + "/distro/usr/local/share/doc/qemu/index.html");
                     intent.setClass(this, WebViewActivity.class);
                 } else {
                     intent.setAction(ACTION_VIEW);
                     intent.setData(Uri.parse("https://www.qemu.org/docs/master/"));
                 }
                 startActivity(intent);
-            } else if (id == R.id.navigation_item_try_play_store_version) {
-                IntentUtils.launchPlayStoreVersion(this);
             }
 
             return false;
@@ -639,41 +666,68 @@ public class MainActivity extends AppCompatActivity implements RomStoreFragment.
     private void search(String keyword) {
         try {
             // Extract data from JSON and store into ArrayList as class objects
+            List<DataMainRoms> filteredVmsData = new ArrayList<>();
             List<DataRoms> filteredData = new ArrayList<>();
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                filteredData = (currentSearchMode == SEARCH_ROM_STORE ? SharedData.dataRomStore.stream() : SharedData.dataSoftwareStore.stream())
-                        .filter(rom -> {
-                            String romName = (rom.romName != null) ? rom.romName : "";
-                            String romKernel = (rom.romKernel != null) ? rom.romKernel : "";
+                if (currentSearchMode == SEARCH_VM) {
+                    filteredVmsData = (SharedData.dataVms.stream())
+                            .filter(rom -> {
+                                String romName = (rom.itemName != null) ? rom.itemName : "";
+                                String romKernel = (rom.itemArch != null) ? rom.itemArch : "";
 
-                            return (romName.toLowerCase().contains(keyword.toLowerCase())
-                                    || romKernel.toLowerCase().contains(keyword.toLowerCase())) && filterSearch(rom.romArch, rom.romKernel,  rom.gui, rom.containsAds);
-                        })
-                        .collect(Collectors.toList());
+                                return romName.toLowerCase().contains(keyword.toLowerCase()) || romKernel.toLowerCase().contains(keyword.toLowerCase());
+                            })
+                            .collect(Collectors.toList());
+                } else {
+                    filteredData = (currentSearchMode == SEARCH_ROM_STORE ? SharedData.dataRomStore.stream() : SharedData.dataSoftwareStore.stream())
+                            .filter(rom -> {
+                                String romName = (rom.romName != null) ? rom.romName : "";
+                                String romKernel = (rom.romKernel != null) ? rom.romKernel : "";
+
+                                return (romName.toLowerCase().contains(keyword.toLowerCase())
+                                        || romKernel.toLowerCase().contains(keyword.toLowerCase())) && filterSearch(rom.romArch, rom.romKernel,  rom.gui, rom.containsAds);
+                            })
+                            .collect(Collectors.toList());
+                }
+
             } else {
-                for (DataRoms rom : (currentSearchMode == SEARCH_ROM_STORE ? SharedData.dataRomStore : SharedData.dataSoftwareStore)) {
-                    if (rom.romName.toLowerCase().contains(keyword.toLowerCase()) ||
-                            rom.romKernel.toLowerCase().contains(keyword.toLowerCase())) {
-                        if (filterSearch(rom.romArch, rom.romKernel, rom.gui, rom.containsAds)) filteredData.add(rom);
+                if (currentSearchMode == SEARCH_VM) {
+                    for (DataMainRoms rom : SharedData.dataVms) {
+                        if (rom.itemName.toLowerCase().contains(keyword.toLowerCase()) ||
+                                rom.itemArch.toLowerCase().contains(keyword.toLowerCase())) {
+                            filteredVmsData.add(rom);
+                        }
+                    }
+                } else {
+                    for (DataRoms rom : (currentSearchMode == SEARCH_ROM_STORE ? SharedData.dataRomStore : SharedData.dataSoftwareStore)) {
+                        if (rom.romName.toLowerCase().contains(keyword.toLowerCase()) ||
+                                rom.romKernel.toLowerCase().contains(keyword.toLowerCase())) {
+                            if (filterSearch(rom.romArch, rom.romKernel, rom.gui, rom.containsAds)) filteredData.add(rom);
+                        }
                     }
                 }
             }
 
-            listSearchData.clear();
-            listSearchData.addAll(filteredData);
+            if (currentSearchMode == SEARCH_VM) {
+                listVmsSearchData.clear();
+                listVmsSearchData.addAll(filteredVmsData);
+            } else {
+                listSearchData.clear();
+                listSearchData.addAll(filteredData);
+            }
         } catch (Exception e) {
             Log.e("RomManagerActivity", "Json parsing error: " + e.getMessage());
         }
 
-        if (listSearchData.isEmpty()) {
+        if (currentSearchMode == SEARCH_VM ? listVmsSearchData.isEmpty() : listSearchData.isEmpty()) {
             if (
-                    (MainSettingsManager.getSearchFilters(this) ||
+                    currentSearchMode == SEARCH_VM || ((MainSettingsManager.getSearchFilters(this) ||
                     MainSettingsManager.getSearchRandomSuggestion(this)) &&
                     searchArchTags.isEmpty() &&
                             searchOsTags.isEmpty() &&
-                            searchIsContainsAds == null
-                            && searchIsGui == null
+                            searchIsContainsAds == null &&
+                            searchIsGui == null)
             ) {
                 binding.lnSearchempty.setVisibility(View.VISIBLE);
                 binding.lnSearchSuggestions.setVisibility(View.GONE);
@@ -691,7 +745,7 @@ public class MainActivity extends AppCompatActivity implements RomStoreFragment.
 //                }
             }
             binding.rvSearch.setVisibility(View.GONE);
-        } else if (binding.searchview.getEditText().getText().toString().isEmpty()) {
+        } else if (currentSearchMode != SEARCH_VM && binding.searchview.getEditText().getText().toString().isEmpty()) {
             binding.lnSearchempty.setVisibility(View.GONE);
             binding.lnSearchSuggestions.setVisibility(View.VISIBLE);
             binding.lnSearchSuggestionsSearchEmpty.setVisibility(View.GONE);
@@ -709,7 +763,11 @@ public class MainActivity extends AppCompatActivity implements RomStoreFragment.
             binding.rvSearch.setVisibility(View.VISIBLE);
         }
 
-        if (currentSearchMode == SEARCH_ROM_STORE ) {
+        if (currentSearchMode == SEARCH_VM) {
+            if (adapterVms != null) {
+                adapterVms.submitList(listVmsSearchData);
+            }
+        } else if (currentSearchMode == SEARCH_ROM_STORE ) {
             if (adapterRomStore != null) {
                 adapterRomStore.submitList(listSearchData);
             }
@@ -915,8 +973,13 @@ public class MainActivity extends AppCompatActivity implements RomStoreFragment.
         bottomSheetDialog.setContentView(bottomsheetdialogLoggerBinding.getRoot());
         bottomSheetDialog.show();
 
+        bottomsheetdialogLoggerBinding.btnClean.setOnClickListener(_v -> {
+                VectrasStatus.clearLog();
+                bottomsheetdialogLoggerBinding.recyclerLog.getAdapter().notifyDataSetChanged();
+        });
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApp());
-        LogsAdapter mLogAdapter = new LogsAdapter(layoutManager, getApp());
+        LogsAdapter mLogAdapter = new LogsAdapter(layoutManager, getApp(), false);
         bottomsheetdialogLoggerBinding.recyclerLog.setAdapter(mLogAdapter);
         bottomsheetdialogLoggerBinding.recyclerLog.setLayoutManager(layoutManager);
         mLogAdapter.scrollToLastPosition();

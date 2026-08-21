@@ -72,7 +72,7 @@ public class DeviceUtils {
     public static boolean is64bit() {
         try {
             return new CpuHelper().is64Bit();
-        } catch (UnsatisfiedLinkError e) {
+        } catch (UnsatisfiedLinkError | NoClassDefFoundError e) {
             return Build.SUPPORTED_ABIS[0].contains("64") &&
                     Build.SUPPORTED_64_BIT_ABIS != null &&
                     Build.SUPPORTED_64_BIT_ABIS.length > 0;

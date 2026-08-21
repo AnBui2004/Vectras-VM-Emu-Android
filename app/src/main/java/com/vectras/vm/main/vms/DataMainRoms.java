@@ -2,7 +2,13 @@ package com.vectras.vm.main.vms;
 
 import com.google.gson.annotations.SerializedName;
 
-public class DataMainRoms {
+import java.io.Serializable;
+
+// Edit in ExportRomActivity and VmListManager.isSameVmConfig too.
+public class DataMainRoms implements Serializable {
+    // VM list only
+    public boolean pin;
+
     public String vmID = "";
 
     @SerializedName(
@@ -26,14 +32,20 @@ public class DataMainRoms {
     public String itemName = "";
 
     // Board
-    public int machine = 0;
+    public int machine;
+    public boolean hpet = true;
+
+    public int cpu;
+    public int cores;
+    public int threads;
     public boolean nvirt; // Nested virtualization
 
-    public int cpu = 0;
-    public int cores = 0;
-    public int threads = 0;
+    public int memory;
+
+    // Dummy devices
 
     public boolean battery;
+    public boolean wifi;
 
     // Storage
 
@@ -62,13 +74,28 @@ public class DataMainRoms {
 
     public boolean sharedFolder;
 
+    // Input devices
+    public int usbController;
+
+    public int mouse;
+
+    public int keyboard;
+
+    // Graphics
+
+    public int graphicCard;
+
     // Network
 
-    public int networkCard = 0;
+    public int networkCard;
+
+    // Sound
+
+    public int soundCard;
 
     // Firmware
 
-    public int bootFrom = 0;
+    public int bootFrom;
 
     public boolean isShowBootMenu;
 
@@ -77,6 +104,10 @@ public class DataMainRoms {
     public boolean isUseUefi;
 
     public boolean isUseDefaultBios = true;
+
+    // Acceleration
+
+    public int accel;
 
     // Advanced
 
@@ -89,5 +120,5 @@ public class DataMainRoms {
     // Deprecated
 
     @Deprecated
-    public int qmpPort = 0;
+    public int qmpPort;
 }

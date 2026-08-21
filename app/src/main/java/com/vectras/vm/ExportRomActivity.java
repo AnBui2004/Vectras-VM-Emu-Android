@@ -1,9 +1,12 @@
 package com.vectras.vm;
 
+import static android.os.Build.VERSION.SDK_INT;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -96,7 +99,14 @@ public class ExportRomActivity extends AppCompatActivity {
         binding.edAuthor.setText(data.getString("author", ""));
         binding.edContent.setText(data.getString("desc", ""));
 
-        current = VMManager.getVMConfig(getIntent().getIntExtra("POS", 0));
+        DataMainRoms waitingData = SDK_INT >= Build.VERSION_CODES.TIRAMISU ? getIntent().getSerializableExtra("data", DataMainRoms.class) : (DataMainRoms) getIntent().getSerializableExtra("data");
+
+        if (waitingData == null) {
+            DialogUtils.oopsDialog(this, getString(R.string.an_error_occurred_while_loading_vm_configs), true);
+            return;
+        }
+
+        current = waitingData;
 
         folderPicker = registerForActivityResult(
                 new ActivityResultContracts.CreateDocument("application/octet-stream"),
@@ -157,12 +167,23 @@ public class ExportRomActivity extends AppCompatActivity {
 
         vmConfigMap.put("machine", current.machine);
 
+        if (current.itemArch.equals(MainSettingsManager.X86_64_ARCH) ||
+                current.itemArch.equals(MainSettingsManager.I386_ARCH))
+            vmConfigMap.put("hpet", current.hpet);
+
         vmConfigMap.put("cpu", current.cpu);
         vmConfigMap.put("cores", current.cores);
         vmConfigMap.put("threads", current.threads);
-        vmConfigMap.put("nvirt", current.nvirt);
+        if (!current.itemArch.equals(MainSettingsManager.PPC_ARCH))
+            vmConfigMap.put("nvirt", current.nvirt);
+
+        vmConfigMap.put("memory", current.memory);
 
         vmConfigMap.put("battery", current.battery);
+
+        vmConfigMap.put("usbController", current.usbController);
+        vmConfigMap.put("mouse", current.mouse);
+        vmConfigMap.put("keyboard", current.keyboard);
 
         boolean isUsingDiskInQemuExtraParams = VMManager.isHaveADisk(current.itemExtra);
 
@@ -202,7 +223,13 @@ public class ExportRomActivity extends AppCompatActivity {
 
         vmConfigMap.put("sharedFolder", current.sharedFolder);
 
+        vmConfigMap.put("graphicCard", current.graphicCard);
+
         vmConfigMap.put("networkCard", current.networkCard);
+
+        vmConfigMap.put("wifi", current.wifi);
+
+        vmConfigMap.put("soundCard", current.soundCard);
 
         vmConfigMap.put("bootFrom", current.bootFrom);
         vmConfigMap.put("isShowBootMenu", current.isShowBootMenu);
@@ -210,6 +237,8 @@ public class ExportRomActivity extends AppCompatActivity {
 
         vmConfigMap.put("isUseUefi", current.isUseUefi);
         vmConfigMap.put("isUseDefaultBios", current.isUseDefaultBios);
+
+        vmConfigMap.put("accel", current.accel);
 
         vmConfigMap.put("qemu", VmFileManager.pathToTextMark(this, current.vmID, current.itemExtra));
         vmConfigMap.put("arch", current.itemArch);

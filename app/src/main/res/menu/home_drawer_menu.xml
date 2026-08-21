@@ -23,26 +23,14 @@
         android:id="@+id/navigation_data_explorer"
         android:icon="@drawable/folder_24px"
         android:title="@string/open_main_folder"/>
-    <item
-        android:id="@+id/navigation_item_website"
-        android:icon="@drawable/language_24px"
-        android:title="@string/vectras_website" />
-    <item
-        android:id="@+id/navigation_item_donate"
-        android:icon="@drawable/patreon_outline_225"
-        android:title="@string/patreon"/>
-    <item
-        android:id="@+id/navigation_item_help"
-        android:icon="@drawable/help_24px"
-        android:title="@string/help"/>
+        <item
+            android:id="@+id/navigation_item_help"
+            android:icon="@drawable/groups_24px"
+            android:title="@string/join_our_community"/>
     <item
         android:id="@+id/navigation_qemu_doc"
         android:icon="@drawable/docs_24px"
         android:title="@string/qemu_documentation"/>
-    <item
-        android:id="@+id/navigation_item_try_play_store_version"
-        android:icon="@drawable/play_arrow_24px"
-        android:title="@string/try_play_store_version"/>
     <item
         android:id="@+id/navigation_item_info"
         android:icon="@drawable/info_24px"

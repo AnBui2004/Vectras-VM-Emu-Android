@@ -23,7 +23,7 @@
     <string name="zoom_in">Zoom In</string>
     <string name="zoom_out">Zoom Out</string>
     <string name="help">Help</string>
-    <string name="keyboard">KEYBOARD</string>
+    <string name="keyboard">Keyboard</string>
     <string name="name">name</string>
     <string name="size">size:</string>
     <string name="vectras_website">Vectras website</string>
@@ -276,12 +276,12 @@
     <string name="i_agree">I agree</string>
     <string name="dont_miss_out">Don\'t miss out!</string>
     <string name="disclaimer_here">When you import any ROM or use files that contain anything, you accept all of this. Click here to read it all.</string>
-    <string name="join_now_on_telegram_if_you_want">Join now on Telegram if you want.</string>
+    <string name="join_now_on_telegram_if_you_want">We\'re always here. You can join anytime.</string>
     <string name="donate">Donate</string>
     <string name="donatecontent">If you really like Vectras VM, you can donate to us on Patreon. Thanks a lot!</string>
     <string name="you_are_ready_to_go">You are ready to go!</string>
     <string name="shared_folder_is_not_used_because_i386_does_not_support_it">Shared Folder is not used because i386 does not support it.</string>
-    <string name="use_uefi_for_x64_only">Use UEFI (x64 only)</string>
+    <string name="use_uefi">Use UEFI</string>
     <string name="remove_and_do_not_keep_files">Remove and don\'t keep files</string>
     <string name="remove_but_keep_files">Remove and keep files</string>
     <string name="remove_vm_content">Do you want to remove it? You can choose to keep or not keep the files.</string>
@@ -317,7 +317,7 @@
     <string name="search">Search</string>
     <string name="no_matching_results_found">No matching results found.</string>
     <string name="no_matching_results_found_search_content">No matching results found.\nTry adding or removing the filters below.</string>
-    <string name="unknow">Unknow</string>
+    <string name="unknow">Unknown</string>
     <string name="verified">Verified</string>
     <string name="verified_content">It has been tested to work and is not harmful to the device. But it may not work on your device.</string>
     <string name="not_verified">Not verified</string>
@@ -486,16 +486,16 @@
     <string name="system_update">System update</string>
     <string name="system_update_note">A system update is available, update now for a full experience.</string>
     <string name="use_sdl">Use SDL</string>
-    <string name="use_sdl_note">Turn it on if you want to use 3dfx and play old retro games (only with x86_64 and i386).</string>
+    <string name="use_sdl_note">Turn it on if you want to use 3Dfx and play old retro games (only with x86_64 and i386).</string>
     <string name="qemu_documentation">QEMU documentation</string>
-    <string name="you_need_to_switch_to_sdl_to_use_3dfx">You need to switch to SDL to use 3dfx.</string>
+    <string name="you_need_to_switch_to_sdl_to_use_3dfx">You need to switch to SDL to use 3Dfx.</string>
     <string name="device_manager">Device manager</string>
     <string name="show_in_folder">Show in folder</string>
     <string name="exit">Exit</string>
     <string name="threedfx">3dfx</string>
-    <string name="cpu_support_3dfx_content">Your device\'s CPU supports acceleration for 3dfx. But it may be unstable or not working.</string>
-    <string name="cpu_not_support_3dfx_content">Your device\'s CPU does not support acceleration for 3dfx.</string>
-    <string name="threedfx_is_not_available">3dfx is not available.</string>
+    <string name="cpu_support_3dfx_content">Your device\'s CPU supports acceleration for 3Dfx. But it may be unstable or not working.</string>
+    <string name="cpu_not_support_3dfx_content">Your device\'s CPU does not support acceleration for 3Dfx.</string>
+    <string name="threedfx_is_not_available">3Dfx is not available.</string>
     <string name="refresh">Refresh</string>
     <string name="last_crash_note">We are very sorry about an incident that occurred and app crashed earlier.</string>
     <string name="virtual_mouse">Virtual mouse</string>
@@ -540,7 +540,7 @@
     <string name="view_in_an_bui_app">View in the An Bui app</string>
     <string name="view_in_an_bui_app_note">You can view and get it here.</string>
     <string name="tools">Tools</string>
-    <string name="threedfx_wrappers">3dfx wrappers</string>
+    <string name="threedfx_wrappers">3Dfx wrappers</string>
     <string name="virtio_tools_for_windows">VirtIO tools for Windows</string>
     <string name="download_required">Download required</string>
     <string name="this_tool_needs_to_be_downloaded_before_use">This tool needs to be downloaded before use. You will be notified when the download is complete.</string>
@@ -623,7 +623,7 @@
     <string name="filters">Filters</string>
     <string name="filters_settings_note">Search with more control and browse faster.</string>
     <string name="reset_uefi_bios">Reset UEFI/BIOS</string>
-    <string name="reset_uefi_bios_note">All default UEFI/BIOS settings will be reset. Do you want to continue?</string>
+    <string name="reset_uefi_bios_note">All UEFI/BIOS settings will be reset. Do you want to continue?</string>
     <string name="need_to_shut_down_all_running_vm_note">You need to shut down all running virtual machines to perform this action.</string>
     <string name="auto_switch_to_external_mouse">Auto switch to external mouse</string>
     <string name="auto_switch_to_external_mouse_note">Automatically switches when the mouse is connected and disconnected.</string>
@@ -674,6 +674,60 @@
     <string name="change_optical_drive">Change optical drive</string>
     <string name="do_you_want_to_change_create_or_remove_optical_drive">Do you want to change, create or remove?\n\nIf you choose to create, you need to select the folder containing the necessary files to create the optical disc.</string>
     <string name="you_are_not_allowed_to_use_this_folder">You are not allowed to use this folder.</string>
+    <string name="delete_broken_vm_content">This virtual machine is broken, would you like to delete it?</string>
+    <string name="report">Report</string>
+    <string name="send_log_to_server_content">This log will be sent to our server. Do you want to continue?</string>
+    <string name="send">Send</string>
+    <string name="sending">Sending…</string>
+    <string name="thank_you_for_sending_the_report">Thank you for sending the report.</string>
+    <string name="send_the_report_failed_content">An error occurred while submitting the report. Please try again later.</string>
+    <string name="wifi_card_dummy">Wi-Fi card (dummy)</string>
+    <string name="pick">Pick</string>
+    <string name="capacity_too_large">Capacity too large.</string>
+    <string name="turnip_and_zink">Turnip &amp; Zink</string>
+    <string name="ready_to_install">Ready to install.</string>
+    <string name="please_try_again_later">Please try again later.</string>
+    <string name="turnip_and_zink_setting_note">Nightly! Leverage the power of your device\'s Adreno GPU to enhance the graphics performance of QEMU 3Dfx and more.</string>
+    <string name="has_meets_the_requirements_to_install_content">Your device has met the requirements and is ready to begin installation now.</string>
+    <string name="your_device_does_not_meet_the_requirements_to_continue">Your device does not meet the requirements to continue.</string>
+    <string name="error_in_core_feature_content">A core feature of the app has just experienced an issue. You may need to close and reopen the app for the features to work properly again.</string>
+    <string name="force_stop">Force stop</string>
+    <string name="sound">Sound</string>
+    <string name="sound_note">Sound card,…</string>
+    <string name="cards">Cards</string>
+    <string name="always_show_logs">Always show logs</string>
+    <string name="always_show_logs_setting_note">The log display dialog will appear even if no serious problems occurred with the virtual machine after it was powered off.</string>
+    <string name="graphics">Graphics</string>
+    <string name="graphics_note">Graphics card,…</string>
+    <string name="opengl_setting_note">The display will support OpenGL when running a virtual machine. 3Dfx will not work when using this feature.</string>
+    <string name="qemu_opengl_is_not_available_content">OpenGL is only available when using an X11 display and with OpenGL enabled. Go to settings to learn more.</string>
+    <string name="input_devices">Input devices</string>
+    <string name="input_devices_note">USB controller, mouse, keyboard,…</string>
+    <string name="mouse">Mouse</string>
+    <string name="usb_tablet">USB tablet</string>
+    <string name="types">Types</string>
+    <string name="acceleration">Acceleration</string>
+    <string name="acceleration_note">Acceleration type,…</string>
+    <string name="acceleration_type">Acceleration type</string>
+    <string name="tcg_single_thread">TCG (single-threaded)</string>
+    <string name="tcg_multi_thread">TCG (multi-threaded)</string>
+    <string name="bubble">Bubble</string>
+    <string name="bubble_setting_note">Use bubble to show hidden controls instead of using the back button.</string>
+    <string name="links">Links</string>
+    <string name="community">Community</string>
+    <string name="an_error_occurred_while_loading_vm_configs">An error occurred while loading the virtual machine configs. Please try again later.</string>
+    <string name="no_graphics_card_is_attached_content">No graphics card is attached. You will not see any images being output from the operating system inside the virtual machine.</string>
+    <string name="clone">Clone</string>
+    <string name="cloning">Cloning…</string>
+    <string name="would_you_like_to_create_a_copy_of_this_virtual_machine">Would you like to create a copy of this virtual machine?</string>
+    <string name="clone_failed_content">An error occurred while cloning. Please try again later.</string>
+    <string name="pin">Pin</string>
+    <string name="unpin">Unpin</string>
+    <string name="pin_failed_content">An error occurred while pinning. Please try again later.</string>
+    <string name="usb_controller">USB controller</string>
+    <string name="controllers">Controllers</string>
+    <string name="usb_controller_required_content">Some devices require a USB controller, so you have no choice but to use one.</string>
+    <string name="logs">Logs</string>
 
 
     <!--======================TERMUX STRINGS====================-->
@@ -727,14 +781,6 @@
 
 
     <!--======================TERMUX-X11 STRINGS====================-->
-
-    <!-- TermuxX11Activity -->
-
-    <string name="not_connected">Not connected</string>
-    <string name="help_button_text">   Help   </string>
-    <string name="preferences_button_text">   Preferences   </string>
-    <string name="extra_keys_config_desc">Here you can set value of extra-keys variable like in Termux app (read <a href="http://wiki.termux.com/wiki/Touch_Keyboard#Extra_Keys_Row">this</a>) and more (e.g. META).
-    Put empty string for the default value.</string>
 
     <!-- Log Level -->
     <string name="cancel">Cancel</string>
@@ -830,6 +876,143 @@
     <string name="settings_tag_keyboard">Keyboard</string>
     <string name="settings_tag_other">Other</string>
     <string name="executing_command_please_wait">Executing command, please wait…</string>
+
+    <string name="not_connected">Not connected</string>
+    <string name="preferences_button_text">   PREFERENCES   </string>
+    <string name="help_button_text">   HELP   </string>
+    <string name="exit_button_text">   EXIT   </string>
+
+    <string name="extra_keys_config_desc">Here you can set value of extra-keys variable like in Termux app (read <a href="http://wiki.termux.com/wiki/Touch_Keyboard#Extra_Keys_Row">this</a>) and more \n
+E.g. <b>META</b> for <i>META key</i>, \n
+<b>KEYBOARD</b> for <i>soft keyboard toggling key</i>, \n
+<b>PREFERENCES</b> for <i>preferences opening key</i>, \n
+<b>MOUSE_HELPER</b> for <i>mouse helper toggling key</i>, \n
+<b>STYLUS_HELPER</b> for <i>stylus click override overlay toggling key</i>, \n
+<b>ZOOM_IN</b> for <i>zoom in key</i>, \n
+<b>ZOOM_OUT</b> for <i>zoom out key</i>, \n
+<b>ZOOM_RESET</b> for <i>zoom reset key</i>, \n
+<b>EXIT</b> for <i>application exit key</i>.</string>
+    <string name="lorie_notification_content_text">Pull down to show options</string>
+    <string name="lorie_notification_open_preferences">Preferences</string>
+    <string name="lorie_notification_exit">Exit</string>
+    <string name="lorie_notification_restart_activity">Restart</string>
+    <string name="lorie_notification_toggle_soft_keyboard">Toggle IME</string>
+    <string name="lorie_notification_toggle_additional_key_bar">Toggle additional keyboard</string>
+    <string name="lorie_notification_release_pointer_and_keyboard_capture">Release captures</string>
+    <string name="lorie_notification_toggle_fullscreen">Toggle fullscreen</string>
+
+    <string name="lorie_pref_main">Preferences</string>
+    <string name="lorie_pref_output">Output</string>
+    <string name="lorie_pref_pointer">Pointer</string>
+    <string name="lorie_pref_kbd">Keyboard</string>
+    <string name="lorie_pref_other">Other</string>
+    <string name="lorie_pref_version">Version</string>
+    <string name="lorie_pref_ekbar">Extra key bar preferences</string>
+    <string name="lorie_pref_userActions">Response to user actions</string>
+
+    <string name="lorie_pref_displayResolutionMode">Display resolution mode</string>
+    <string name="lorie_pref_displayScale">Display scale, %</string>
+    <string name="lorie_pref_displayResolutionExact">Display resolution</string>
+    <string name="lorie_pref_displayResolutionCustom">Display resolution</string>
+    <string name="lorie_pref_displayFilteringMode">Display filtering mode</string>
+    <string name="lorie_pref_adjustResolution">Adjust the set resolution to fit screen orientation</string>
+    <string name="lorie_pref_displayStretch">Stretch to fit display</string>
+    <string name="lorie_pref_Reseed">Reseed screen while soft keyboard is open</string>
+    <string name="lorie_pref_Reseed_summary">The screen size will be adjusted while Soft Keyboard is open.</string>
+    <string name="lorie_pref_PIP">PIP mode</string>
+    <string name="lorie_pref_PIP_summary">Show app in picture-in-picture mode when home button or recents button is pressed</string>
+    <string name="lorie_pref_fullscreen">Fullscreen</string>
+    <string name="lorie_pref_fullscreen_summary">Toggle immersive mode in your device display</string>
+    <string name="lorie_pref_forceOrientation">Screen orientation</string>
+    <string name="lorie_pref_hideCutout">Hide display cutout (if any)</string>
+    <string name="lorie_pref_screenIdleTimeout">Screen idle timeout</string>
+
+    <string name="lorie_pref_touchMode">Touchscreen input mode</string>
+    <string name="lorie_pref_scaleTouchpad">Apply display scale factor to touchpad</string>
+    <string name="lorie_pref_showStylusClickOverride">Show stylus click options</string>
+    <string name="lorie_pref_showStylusClickOverride_summary">Stylus touch override, left, middle or right click (stylus only)</string>
+    <string name="lorie_pref_stylusIsMouse">Enable stylus mouse mode</string>
+    <string name="lorie_pref_stylusIsMouse_summary">Make your stylus work like a mouse. When activated, stylus will only move the cursor and send mouse clicks, ignoring pressure, angle, and tilt.</string>
+    <string name="lorie_pref_stylusButtonContactModifierMode">Stylus button contact modifier mode</string>
+    <string name="lorie_pref_stylusButtonContactModifierMode_summary">Enable this option to send right or middle mouse buttons only when stylus touches the screen while the button is pressed.</string>
+    <string name="lorie_pref_showMouseHelper">Show mouse click helper overlay</string>
+    <string name="lorie_pref_showMouseHelper_summary">Onscreen mouse buttons usable with touchpad</string>
+    <string name="lorie_pref_pointerCapture">Capture external pointer devices when possible</string>
+    <string name="lorie_pref_pointerCapture_summary">Intercept all hardware pointer events. Pointer is back to Android after pressing Escape key.</string>
+    <string name="lorie_pref_transformCapturedPointer">Transform captured pointer movements</string>
+    <string name="lorie_pref_capturedPointerSpeedFactor">Captured pointer speed factor, %</string>
+    <string name="lorie_pref_tapToMove">Enable tap-to-move for touchpads</string>
+    <string name="lorie_pref_ignoreGamepadEvents">Ignore gamepad input events</string>
+    <string name="lorie_pref_ignoreGamepadEvents_summary">Prevent gamepad and joystick events from being forwarded to X server</string>
+
+    <string name="lorie_pref_showAdditionalKbd">Show additional keyboard</string>
+    <string name="lorie_pref_showAdditionalKbd_summary">Show keyboard with additional keys.</string>
+    <string name="lorie_pref_showIMEWhileExternalConnected">Show IME with external keyboard</string>
+    <string name="lorie_pref_showIMEWhileExternalConnected_summary">Show software keyboard while hardware keyboard is connected.</string>
+    <string name="lorie_pref_preferScancodes">Prefer scancodes when possible</string>
+    <string name="lorie_pref_preferScancodes_summary">Let X server handle hardware keyboard layout (with DE settings or setxkbmap).</string>
+    <string name="lorie_pref_hardwareKbdScancodesWorkaround">Hardware keyboard scancodes workaround</string>
+    <string name="lorie_pref_hardwareKbdScancodesWorkaround_summary">Fixes scancodes on some devices. Might cause problems with multiple layouts.</string>
+    <string name="lorie_pref_dexMetaKeyCapture">Intercept system shortcuts</string>
+    <string name="lorie_pref_dexMetaKeyCapture_summary">Samsung Dex only. Allows interception of &quot;Alt+F4&quot;, &quot;Meta+D&quot;, &quot;Meta+E&quot;, etc.</string>
+    <string name="lorie_pref_enableAccessibilityService">Enable Accessibility service for intercepting system shortcuts manually.</string>
+    <string name="lorie_pref_enableAccessibilityService_summary">Open Accessibility settings.</string>
+    <string name="lorie_pref_enableAccessibilityServiceAutomatically">Enable Accessibility service for intercepting system shortcuts automatically.</string>
+    <string name="lorie_pref_enableAccessibilityServiceAutomatically_summary">Requires WRITE_SECURE_SETTINGS permission.</string>
+    <string name="lorie_pref_pauseKeyInterceptingWithEsc">Pause key intercepting with Esc key</string>
+    <string name="lorie_pref_filterOutWinkey">Filter out intercepted Win (Meta/Mod4) key.</string>
+    <string name="lorie_pref_filterOutWinkey_summary">Allows you to use Dex shortcuts while intercepting. Requires Accessibility service to work.</string>
+    <string name="lorie_pref_enforceCharBasedInput">Enforce char based input</string>
+    <string name="lorie_pref_enforceCharBasedInput_summary">Suppresses suggestions, predictive typing and CJK languages</string>
+
+    <string name="lorie_pref_clipboardEnable">Clipboard sharing</string>
+    <string name="lorie_pref_requestNotificationPermission">Request notification permission</string>
+    <string name="lorie_pref_xrMode">Meta Oculus XR mode</string>
+    <string name="lorie_pref_configureResponseToUserActions">Configure response to user actions</string>
+    <string name="lorie_pref_storeSecondaryDisplayPreferencesSeparately">Store preferences for secondary displays separately</string>
+    <string name="lorie_pref_storeSecondaryDisplayPreferencesSeparately_summary">Open this screen on display you want to configure</string>
+
+    <string name="lorie_pref_adjustHeightForEK">Prevent extra keys bar from covering the display</string>
+    <string name="lorie_pref_useTermuxEKBarBehaviour">Deactivate special keys on additional key bar after each keypress</string>
+    <string name="lorie_pref_useTermuxEKBarBehaviour_summary">Use long-tap to lock special keys</string>
+    <string name="lorie_pref_ekbarPosition">Position</string>
+    <string name="lorie_pref_ekbarPositionIgnoreOrientation">Keep position regardless of device orientation</string>
+    <string name="lorie_pref_opacityEKBar">Opacity of extra keys bar, %</string>
+    <string name="lorie_pref_extra_keys_config">Extra keys config</string>
+
+    <string name="lorie_pref_swipeUpAction">Three finger swipe up</string>
+    <string name="lorie_pref_swipeDownAction">Three finger swipe down</string>
+    <string name="lorie_pref_volumeUpAction">Volume up</string>
+    <string name="lorie_pref_volumeDownAction">Volume down</string>
+    <string name="lorie_pref_backButtonAction">Back button</string>
+    <string name="lorie_pref_notificationTapAction">Notification tap</string>
+    <string name="lorie_pref_notificationButton0Action">Notification first button</string>
+    <string name="lorie_pref_notificationButton1Action">Notification second button</string>
+    <string name="lorie_pref_mediaKeysAction">Media keys</string>
+
+    <string name="lorie_pref_summary_requiresExactOrCustom">Requires "display resolution mode" to be "exact" or "custom"</string>
+    <string name="lorie_pref_summary_requiresIntercepting">Requires intercepting system shortcuts with Dex mode or with Accessibility service</string>
+    <string name="lorie_pref_summary_requiresTrackpadAndNative">Requires "Touchscreen input mode" to be "Trackpad" and "Display resolution mode" to be not "native"</string>
+    <string name="lorie_pref_summary_screenIdleTimeoutConflict">⚠️ System screen timeout (%s) is longer and takes priority</string>
+    <string name="lorie_pref_screenIdleTimeoutSystem">System (%s)</string>
+
+    <string name="github" translatable="false">GitHub</string>
+    <string name="nguyen_bao_an_bui" translatable="false">Nguyen Bao An Bui</string>
+    <string name="internet_archive" translatable="false">Internet Archive</string>
+    <string name="pixeldrain" translatable="false">Pixeldrain</string>
+    <string name="google_drive" translatable="false">Google Drive</string>
+
+    <string name="hpet" translatable="false">HPET</string>
+
+    <string name="usb" translatable="false">USB</string>
+    <string name="ps_2" translatable="false">PS/2</string>
+
+    <string name="opengl" translatable="false">OpenGL</string>
+
+    <!-- USB controllers -->
+    <string name="ehci" translatable="false">EHCI</string>
+    <string name="qemu_xhci" translatable="false">QEMU XHCI</string>
+    <string name="nec_xhci" translatable="false">NEC XHCI</string>
 
     <!-- CPUs -->
     <string name="max_cpu" translatable="false">Max</string>
@@ -932,6 +1115,24 @@
     <string name="pegasos2" translatable="false">bPlan Pegasos II</string>
     <string name="amigaone" translatable="false">Eyetech AmigaOne</string>
     <string name="sam460ex" translatable="false">aCube Sam460ex</string>
+
+    <!-- Sound cards -->
+    <string name="intel_hd_audio_controller_ich9" translatable="false">Intel HD Audio Controller (ich9)</string>
+    <string name="intel_hd_audio_controller_ich6" translatable="false">Intel HD Audio Controller (ich6)</string>
+    <string name="crystal_semiconductor_cs4231a" translatable="false">Crystal Semiconductor CS4231A</string>
+    <string name="intel_82801aa_ac97_audio" translatable="false">Intel 82801AA AC97 Audio</string>
+    <string name="ensoniq_audiopci_es1370" translatable="false">ENSONIQ AudioPCI ES1370</string>
+    <string name="creative_sound_blaster_16" translatable="false">Creative Sound Blaster 16</string>
+    <string name="yamaha_ym3812_opl2" translatable="false">Yamaha YM3812 (OPL2)</string>
+
+    <!-- Graphics cards -->
+    <string name="standard_vga" translatable="false">Standard VGA</string>
+    <string name="vmware_svga" translatable="false">vmWare SVGA</string>
+    <string name="cirrus_vga" translatable="false">Cirrus VGA</string>
+    <string name="qxl_vga" translatable="false">QXL VGA</string>
+    <string name="virtio_vga" translatable="false">VirtIO VGA</string>
+    <string name="ati" translatable="false">ATi</string>
+    <string name="bochs" translatable="false">Bochs</string>
 
     <!-- Feature: User Profile -->
 

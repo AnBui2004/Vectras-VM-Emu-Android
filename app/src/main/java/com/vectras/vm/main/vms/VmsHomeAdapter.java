@@ -14,16 +14,19 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.vectras.qemu.Config;
+import com.bumptech.glide.signature.ObjectKey;
 import com.vectras.vm.R;
 import com.vectras.vm.VMManager;
+import com.vectras.vm.main.core.MainConfigs;
 import com.vectras.vm.main.core.MainStartVM;
 import com.vectras.vm.main.core.RomOptionsDialog;
+import com.vectras.vm.main.core.SharedData;
 import com.vectras.vm.manager.VmFileManager;
+import com.vectras.vm.utils.DialogUtils;
 import com.vectras.vm.utils.FileUtils;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 public class VmsHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
@@ -55,32 +58,62 @@ public class VmsHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         // Get current position of item in recyclerview to bind data and assign values from list
         final MyHolder myHolder = (MyHolder) holder;
         final DataMainRoms current = data.get(position);
+
+        if (current == null) {
+            myHolder.ivIcon.setImageResource(R.drawable.ic_computer_180dp_with_padding);
+            myHolder.textName.setText(activity.getString(R.string.unknow));
+            myHolder.textArch.setText(activity.getString(R.string.unknow));
+
+            myHolder.cdRoms.setOnClickListener(view -> DialogUtils.twoDialog(
+                    activity,
+                    activity.getString(R.string.oops),
+                    activity.getString(R.string.delete_broken_vm_content),
+                    activity.getString(R.string.ok),
+                    activity.getString(R.string.cancel),
+                    true,
+                    R.drawable.error_96px,
+                    true,
+                    () -> VMManager.deleteVmInList(activity, position),
+                    null,
+                    null
+            ));
+
+            return;
+        }
+
         myHolder.textName.setText(current.itemName);
         myHolder.textArch.setText(current.itemArch);
+
+        MainConfigs.refreshVmIds.remove(current.vmID);
         if (!current.itemIcon.isEmpty() && FileUtils.isFileExists(current.itemIcon)){
-            Glide.with(activity.getApplicationContext())
-                    .load(new File(current.itemIcon))
+            File file = new File(current.itemIcon);
+            Glide.with(myHolder.ivIcon)
+                    .load(file)
+                    .signature(new ObjectKey(file.lastModified()))
                     .placeholder(R.drawable.ic_computer_180dp_with_padding)
                     .error(R.drawable.ic_computer_180dp_with_padding)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(myHolder.ivIcon);
         } else if (VmFileManager.isScreenshotPngExists(current.vmID)) {
-            Glide.with(activity.getApplicationContext())
-                    .load(new File(VmFileManager.getScreenshotPng(current.vmID )))
+            File file = new File(VmFileManager.getScreenshotPng(current.vmID));
+            Glide.with(myHolder.ivIcon)
+                    .load(file)
+                    .signature(new ObjectKey(file.lastModified()))
                     .placeholder(R.drawable.ic_computer_180dp_with_padding)
                     .error(R.drawable.ic_computer_180dp_with_padding)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(myHolder.ivIcon);
         } else {
             VMManager.setIconWithName(myHolder.ivIcon, current.itemName);
         }
 
+        myHolder.pin.setVisibility(current.pin ? View.VISIBLE : View.GONE);
+
         myHolder.cdRoms.setOnClickListener(view -> MainStartVM.startNow(activity, current));
 
         myHolder.cdRoms.setOnLongClickListener(v -> {
-            RomOptionsDialog.show(activity, position, current);
+            int pos = holder.getBindingAdapterPosition();
+            if (pos == RecyclerView.NO_POSITION) return true;
+
+            RomOptionsDialog.show(activity, current);
             return true;
         });
     }
@@ -96,7 +129,7 @@ public class VmsHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         CardView cdRoms;
         TextView textName, textArch;
         ImageView ivIcon;
-        ImageButton optionsBtn;
+        ImageView pin;
 
         // create constructor to get widget reference
         public MyHolder(View itemView) {
@@ -105,16 +138,29 @@ public class VmsHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             textName = itemView.findViewById(R.id.textName);
             textArch = itemView.findViewById(R.id.textArch);
             ivIcon = itemView.findViewById(R.id.ivIcon);
-            optionsBtn = itemView.findViewById(R.id.optionsButton);
+            pin = itemView.findViewById(R.id.iv_pin);
         }
 
     }
 
     public void updateData(List<DataMainRoms> newData) {
+        Collections.sort(newData, (o1, o2) -> {
+            if (o1 == null && o2 == null) return 0;
+            if (o1 == null) return 1;
+            if (o2 == null) return -1;
+            if (o1.pin && !o2.pin) return -1;
+            if (!o1.pin && o2.pin) return 1;
+
+            return 0;
+        });
+
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new VmsDiffUtil(this.data, newData));
         this.data.clear();
         this.data.addAll(newData);
+
+        SharedData.dataVms.clear();
+        SharedData.dataVms.addAll(newData);
+
         diffResult.dispatchUpdatesTo(this);
     }
-
 }

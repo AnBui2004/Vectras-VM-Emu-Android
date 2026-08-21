@@ -1,9 +1,12 @@
 package com.vectras.vm.creator;
 
+import static android.os.Build.VERSION.SDK_INT;
+
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -23,20 +26,28 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.signature.ObjectKey;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.vectras.qemu.MainSettingsManager;
 import com.vectras.vm.AppConfig;
 import com.vectras.vm.R;
+import com.vectras.vm.creator.configs.ListManager;
+import com.vectras.vm.creator.editor.AccelerationConfigsDialog;
 import com.vectras.vm.creator.editor.AdvancedConfigsDialog;
 import com.vectras.vm.creator.editor.BoardConfigsDialog;
+import com.vectras.vm.creator.editor.GraphicsConfigsDialog;
+import com.vectras.vm.creator.editor.InputDevicesConfigsDialog;
 import com.vectras.vm.creator.editor.NetworkConfigsDialog;
+import com.vectras.vm.creator.editor.SoundConfigsDialog;
 import com.vectras.vm.creator.utils.CreatorUtils;
 import com.vectras.vm.creator.editor.FirmwareConfigsDialog;
 import com.vectras.vm.creator.editor.StorageConfigsDialog;
 import com.vectras.vm.creator.utils.VMCreatorSelector;
 import com.vectras.vm.file.FilePickerDialog;
+import com.vectras.vm.main.core.MainConfigs;
+import com.vectras.vm.manager.ParamManager;
 import com.vectras.vm.store.RomInfo;
 import com.vectras.vm.SplashActivity;
 import com.vectras.vm.VMManager;
@@ -56,12 +67,15 @@ import com.vectras.vm.utils.IntentUtils;
 import com.vectras.vm.utils.JSONUtils;
 import com.vectras.vm.utils.PackageUtils;
 import com.vectras.vm.utils.ProgressDialog;
+import com.vectras.vm.utils.TextUtils;
 import com.vectras.vm.utils.UIUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -185,6 +199,7 @@ public class VMCreatorActivity extends AppCompatActivity {
                         true,
                         () -> thumbnailPicker.launch("image/*"),
                         () -> {
+                            tempThumbnailFile = null;
                             thumbnailPath = "";
                             binding.ivAddThubnail.setImageResource(R.drawable.add_24px);
                             VMManager.setIconWithName(binding.ivIcon, Objects.requireNonNull(binding.title.getText()).toString());
@@ -205,6 +220,15 @@ public class VMCreatorActivity extends AppCompatActivity {
             dialog.show(getSupportFragmentManager(), "board_configs_dialog");
         });
 
+        binding.lnInputDevices.setOnClickListener(v -> {
+            save();
+
+            InputDevicesConfigsDialog dialog = new InputDevicesConfigsDialog();
+            dialog.setConfigs(current);
+            dialog.setOnDismiss(this::loadConfig);
+            dialog.show(getSupportFragmentManager(), "input_devices_configs_dialog");
+        });
+
         binding.lnStorage.setOnClickListener(v -> {
             save();
 
@@ -223,6 +247,15 @@ public class VMCreatorActivity extends AppCompatActivity {
             dialog.show(getSupportFragmentManager(), "firmware_configs_dialog");
         });
 
+        binding.lnGraphics.setOnClickListener(v -> {
+            save();
+
+            GraphicsConfigsDialog dialog = new GraphicsConfigsDialog();
+            dialog.setConfigs(current);
+            dialog.setOnDismiss(this::loadConfig);
+            dialog.show(getSupportFragmentManager(), "graphics_configs_dialog");
+        });
+
         binding.lnNetwork.setOnClickListener(v -> {
             save();
 
@@ -230,6 +263,24 @@ public class VMCreatorActivity extends AppCompatActivity {
             dialog.setConfigs(current);
             dialog.setOnDismiss(this::loadConfig);
             dialog.show(getSupportFragmentManager(), "network_configs_dialog");
+        });
+
+        binding.lnSound.setOnClickListener(v -> {
+            save();
+
+            SoundConfigsDialog dialog = new SoundConfigsDialog();
+            dialog.setConfigs(current);
+            dialog.setOnDismiss(this::loadConfig);
+            dialog.show(getSupportFragmentManager(), "sound_configs_dialog");
+        });
+
+        binding.lnAcceleration.setOnClickListener(v -> {
+            save();
+
+            AccelerationConfigsDialog dialog = new AccelerationConfigsDialog();
+            dialog.setConfigs(current);
+            dialog.setOnDismiss(this::loadConfig);
+            dialog.show(getSupportFragmentManager(), "acceleration_configs_dialog");
         });
 
         binding.lnAdvanced.setOnClickListener(v -> {
@@ -241,12 +292,18 @@ public class VMCreatorActivity extends AppCompatActivity {
             dialog.show(getSupportFragmentManager(), "advanced_configs_dialog");
         });
 
-        modify = getIntent().getBooleanExtra("MODIFY", false);
-        if (modify) {
+        DataMainRoms waitingData = SDK_INT >= Build.VERSION_CODES.TIRAMISU ? getIntent().getSerializableExtra("data", DataMainRoms.class) : (DataMainRoms) getIntent().getSerializableExtra("data");
+        if (waitingData != null) {
+            modify = true;
             binding.collapsingToolbarLayout.setTitle(getString(R.string.edit));
             created = true;
 
-            loadConfig(VMManager.getVMConfig(getIntent().getIntExtra("POS", 0)));
+            try {
+                loadConfig(waitingData);
+                stopCheckId = true;
+            } catch (IllegalStateException e) {
+                DialogUtils.oopsDialog(this, getString(R.string.an_error_occurred_while_loading_vm_configs), true);
+            }
 
 //            vmID = getIntent().getStringExtra("VMID");
 //
@@ -257,6 +314,7 @@ public class VMCreatorActivity extends AppCompatActivity {
             previousName = current.itemName;
         } else {
             checkVMID();
+            stopCheckId = true;
 
             utils = new CreatorUtils(this, vmID);
 
@@ -469,10 +527,17 @@ public class VMCreatorActivity extends AppCompatActivity {
                 binding.title.setText(current.itemName);
             }
 
+            ArrayList<HashMap<String, Object>> listCpuCores = ListManager.cores(MainSettingsManager.getArch(this));
+            if (current.cores >= listCpuCores.size())
+                current.cores = listCpuCores.size() - 1;
+
             if (current.itemIcon != null && !current.itemIcon.isEmpty()) {
                 thumbnailPath = (current.itemIcon.contains("/") ? current.itemIcon : VmFileManager.getPath(vmID, current.itemIcon));
-                updateThumbnailViewer("");
+            } else {
+                thumbnailPath = "";
             }
+
+            updateThumbnailViewer(tempThumbnailFile != null ? tempThumbnailFile : thumbnailPath);
 
             if (current.itemPath != null && !current.itemPath.isEmpty())
                 current.itemPath = (current.itemPath.contains("/") ? current.itemPath : VmFileManager.getPath(vmID, current.itemPath));
@@ -497,41 +562,54 @@ public class VMCreatorActivity extends AppCompatActivity {
     }
 
     private void setDefault() {
-        String defQemuParams;
-        if (DeviceUtils.is64bit()) {
-            defQemuParams = switch (MainSettingsManager.getArch(this)) {
-                case "ARM64" ->
-                        "-accel tcg,thread=multi -device nec-usb-xhci -device usb-kbd -device usb-mouse -device VGA";
-                case "PPC" -> "-M mac99 -accel tcg,thread=multi";
-                default ->
-                        "-accel tcg,thread=multi -vga std -usb -device usb-tablet";
-            };
-        } else {
-            defQemuParams = switch (MainSettingsManager.getArch(this)) {
-                case "ARM64" ->
-                        "-device nec-usb-xhci -device usb-kbd -device usb-mouse -device VGA";
-                case "PPC" -> "-M mac99";
-                default ->
-                        "-vga std -usb -device usb-tablet";
-            };
-        }
+        current = new DataMainRoms();
+
         binding.title.setText(getString(R.string.new_vm));
-        current.itemExtra = defQemuParams;
 
         String currentArch = MainSettingsManager.getArch(this);
 
-        if (currentArch.equals(MainSettingsManager.X86_64_ARCH)) {
-            current.cores = Math.min(1, VMCreatorSelector.getCpuCorePosition(new CpuHelper().getCpuCores() - 1));
-        } else if (currentArch.equals(MainSettingsManager.ARM64_ARCH)) {
-            current.cores = Math.min(2, VMCreatorSelector.getCpuCorePosition(new CpuHelper().getCpuCores() - 1));
-            current.nvirt = true;
+        switch (currentArch) {
+            case MainSettingsManager.X86_64_ARCH ->
+                    current.cores = Math.min(1, VMCreatorSelector.getCpuCorePosition(new CpuHelper().getCpuCores() - 1));
+            case MainSettingsManager.ARM64_ARCH -> {
+                current.cores = Math.min(2, VMCreatorSelector.getCpuCorePosition(new CpuHelper().getCpuCores() - 1));
+                current.nvirt = true;
+            }
+            case MainSettingsManager.PPC_ARCH -> current.cores = 0;
         }
 
+        current.memory = 512;
+
+        // Force the display output from the graphic card to take priority over the monitor when using ARM64.
+        current.graphicCard = currentArch.equals(MainSettingsManager.ARM64_ARCH) ? 2 : 1; // Standard VGA : Default
+
         current.networkCard = 3; // Intel E1000 (82540EM)
+
+        // ENSONIQ AudioPCI ES1370 : Intel HD Audio Controller (ich6)
+        current.soundCard = currentArch.equals(MainSettingsManager.PPC_ARCH) ? 5 : 2;
+
+        if (currentArch.equals(MainSettingsManager.X86_64_ARCH) || currentArch.equals(MainSettingsManager.I386_ARCH)) {
+            // Default
+            current.usbController = 1;
+        } else if (currentArch.equals(MainSettingsManager.ARM64_ARCH)) {
+            // QEMU XHCI
+            current.usbController = 3;
+            // USB tablet
+            current.mouse = 2;
+            // USB keyboard
+            current.keyboard = 1;
+        }
+
+        // TCG (multi-threaded) : TCG (single-threaded)
+        current.accel = DeviceUtils.is64bit() ? 2 : 1;
     }
 
+    boolean stopCheckId;
+
     private void checkVMID() {
-        if (vmID.isEmpty() || (!modify && VmFileManager.isInUse(vmID))) {
+        if (stopCheckId) return;
+
+        while (vmID.isEmpty() || (!modify && VmFileManager.isInUse(vmID))) {
             vmID = VMManager.idGenerator();
             Log.d(TAG, "Changed to ID:" + vmID);
         }
@@ -564,15 +642,20 @@ public class VMCreatorActivity extends AppCompatActivity {
             DialogUtils.oneDialog(this, getString(R.string.oops), getString(R.string.need_set_name), getString(R.string.ok), true, R.drawable.error_96px, true, null, null);
         } else {
             String _contentDialog = "";
-            if (current.itemExtra.isEmpty()) {
-                _contentDialog = getResources().getString(R.string.qemu_params_is_empty);
-            }
+//            if (current.itemExtra.isEmpty()) {
+//                _contentDialog = getResources().getString(R.string.qemu_params_is_empty);
+//            }
 
             if (isAllDriveEmpty() && !VMManager.isHaveADisk(current.itemExtra)) {
-                if (!_contentDialog.isEmpty()) {
-                    _contentDialog += "\n\n";
-                }
+//                if (!_contentDialog.isEmpty()) {
+//                    _contentDialog += "\n\n";
+//                }
                 _contentDialog += getResources().getString(R.string.you_have_not_added_any_storage_devices);
+            }
+
+            if (current.graphicCard == 0 && !ParamManager.hasVga(current.itemExtra)) {
+                if (!_contentDialog.isEmpty()) _contentDialog += "\n\n";
+                _contentDialog += getResources().getString(R.string.no_graphics_card_is_attached_content);
             }
 
             if (_contentDialog.isEmpty()) {
@@ -593,7 +676,7 @@ public class VMCreatorActivity extends AppCompatActivity {
             FileUtils.writeToFile(AppConfig.maindirpath, "roms-data.json", "[]");
         }
 
-        if (!VMManager.addVM(current, modify ? getIntent().getIntExtra("POS", 0) : -1)) {
+        if (!VMManager.addVM(current, modify ? VMManager.findVmPotision(current.vmID) : -1)) {
             DialogUtils.oneDialog(
                     this,
                     getString(R.string.oops),
@@ -608,6 +691,8 @@ public class VMCreatorActivity extends AppCompatActivity {
             RomInfo.isFinishNow = true;
             MainActivity.isOpenHome = true;
         }
+
+        if (modify) MainConfigs.refreshVmIds.add(current.vmID);
 
         modify = false;
 
@@ -639,10 +724,9 @@ public class VMCreatorActivity extends AppCompatActivity {
 
         current.itemName = Objects.requireNonNull(binding.title.getText()).toString();
         current.itemIcon = thumbnailPath;
-
-
-        current.qmpPort = 8080;
     }
+
+    String tempThumbnailFile;
 
     private void handleThumbnail(Uri uri) {
         showProgressDialog(getString(R.string.just_a_sec));
@@ -654,12 +738,12 @@ public class VMCreatorActivity extends AppCompatActivity {
                 if (FileUtils.isFileExists(VmFileManager.getThumbnail(vmID)))
                     VmFileManager.markPendingDelete(VmFileManager.getThumbnail(vmID));
 
-                String tempPath = utils.getTempPath(VmFileManager.THUMBNAIL_FILE_NAME);
+                tempThumbnailFile = utils.getTempPath(VmFileManager.THUMBNAIL_FILE_NAME);
 
-                ImageUtils.convertToPng(this, uri, tempPath);
+                ImageUtils.convertToPng(this, uri, tempThumbnailFile);
 
                 thumbnailPath = VmFileManager.getThumbnail(vmID);
-                runOnUiThread(() -> updateThumbnailViewer(tempPath));
+                runOnUiThread(() -> updateThumbnailViewer(tempThumbnailFile));
             } catch (Exception e) {
                 runOnUiThread(() -> DialogUtils.oneDialog(this,
                         getString(R.string.oops),
@@ -687,10 +771,9 @@ public class VMCreatorActivity extends AppCompatActivity {
             if (imgFile.exists()) {
                 Glide.with(this)
                         .load(imgFile)
+                        .signature(new ObjectKey(imgFile.lastModified()))
                         .placeholder(R.drawable.ic_computer_180dp_with_padding)
                         .error(R.drawable.ic_computer_180dp_with_padding)
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .into(binding.ivIcon);
             } else {
                 binding.ivAddThubnail.setImageResource(R.drawable.add_24px);
@@ -944,8 +1027,15 @@ public class VMCreatorActivity extends AppCompatActivity {
 
                 try {
                     DataMainRoms newConfigs = new Gson().fromJson(FileUtils.readFromFile(this, new File(VmFileManager.getConfigFile(vmID))), DataMainRoms.class);
+
+                    if (newConfigs == null) {
+                        DialogUtils.oneDialog(this, getResources().getString(R.string.oops), getResources().getString(R.string.error_CR_CVBI4), getResources().getString(R.string.ok), true, R.drawable.warning_48px, true, null, null);
+                        return;
+                    }
+
                     newConfigs.itemExtra = VmFileManager.textMarkToPath(this, vmID, newConfigs.itemExtra);
                     loadConfig(newConfigs);
+                    stopCheckId = true;
                 } catch (JsonSyntaxException e) {
                     DialogUtils.oneDialog(this, getResources().getString(R.string.oops), getResources().getString(R.string.error_CR_CVBI4), getResources().getString(R.string.ok), true, R.drawable.warning_48px, true, null, null);
                     return;
@@ -972,6 +1062,10 @@ public class VMCreatorActivity extends AppCompatActivity {
 
                 if (!jObj.has("versioncode")) {
                     DialogUtils.oneDialog(this, getResources().getString(R.string.problem_has_been_detected), getResources().getString(R.string.this_rom_may_not_be_compatible), R.drawable.warning_24px);
+                } else if (!jObj.isNull("versioncode") && TextUtils.isNumberOnly(jObj.getString("versioncode"))) {
+                    // Compatible with older roms to avoid issues where a graphics card is missing.
+                    if (Integer.parseInt(jObj.getString("versioncode")) < 155)
+                        current.graphicCard = ParamManager.hasVga(current.itemExtra) ? 1 : 2;
                 }
 
                 if (jObj.has("author") && !jObj.isNull("author") && jObj.has("desc") && !jObj.isNull("desc")) {

@@ -22,10 +22,10 @@ import java.io.File;
 public class ToolsManager {
     public static void mount3dfxWrappers(Activity activity) {
         new Thread(() -> {
-            if (!FileUtils.isFileExists(AppConfig.basefiledir + "3dfx-wrappers.iso"))
-                SetupFeatureCore.copyAssetToFile(activity, "roms/3dfx-wrappers.iso", AppConfig.basefiledir + "3dfx-wrappers.iso");
+            if (!FileUtils.isFileExists(AppConfig.basefiledir + "3dfx-wrappers-i686.iso"))
+                SetupFeatureCore.copyAssetToFile(activity, "driver/3dfx-wrappers-i686.iso", AppConfig.basefiledir + "3dfx-wrappers-i686.iso");
 
-            activity.runOnUiThread(() -> QmpSender.changeDynamicSecondaryOpticalDisc(activity, AppConfig.basefiledir + "3dfx-wrappers.iso", ""));
+            activity.runOnUiThread(() -> QmpSender.changeDynamicSecondaryOpticalDisc(activity, AppConfig.basefiledir + "3dfx-wrappers-i686.iso", ""));
         }).start();
     }
 

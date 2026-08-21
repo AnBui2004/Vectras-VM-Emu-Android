@@ -1,49 +1,29 @@
 <div align="center">
 <p align="center">
-  <img src="resources/vectrasvm.png" style="width: 30%;" />
-</p>
-<p align="center">
-  <a href="https://trendshift.io/repositories/12183" target="_blank"><img src="https://trendshift.io/api/badge/repositories/12183" alt="xoureldeen%2FVectras-VM-Android | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+  <img src="resources/vectrasvm2026.png" style="width: 30%;" />
 </p>
 </div>
 
-# 🪴 Vectras VM
-[![Ceasefire Now](https://badge.techforpalestine.org/default)](https://techforpalestine.org/learn-more)
+# 📢 Announcement
 
-![GitHub Repo stars](https://img.shields.io/github/stars/xoureldeen/Vectras-VM-Android)
-![GitHub watchers](https://img.shields.io/github/watchers/xoureldeen/Vectras-VM-Android)
-![GitHub forks](https://img.shields.io/github/forks/xoureldeen/Vectras-VM-Android)
-[![Total downloads](https://img.shields.io/github/downloads/xoureldeen/Vectras-VM-Android/total)](https://github.com/xoureldeen/Vectras-VM-Android/releases)
-[![Discord server](https://img.shields.io/discord/911060166810681345)][link-discord]
-[![Telegram Channel][ico-telegram]][link-telegram]
+We are no longer collaborating with the official Vectras VM as of July 30, 2026. Therefore, this fork will henceforth be separate and have a new direction. The Vectras VM version in this fork will still be maintained and updated as before. Thank you for using both the official Vectras VM and this fork version over the past time. We also thank those who created, maintain, and contribute to Vectras VM. You can visit the [official version here](https://github.com/xoureldeen/Vectras-VM-Android).
+
+# 🪴 Vectras VM
+![GitHub Repo stars](https://img.shields.io/github/stars/AnBui2004/Vectras-VM-Emu-Android)
+![GitHub watchers](https://img.shields.io/github/watchers/AnBui2004/Vectras-VM-Emu-Android)
+![GitHub forks](https://img.shields.io/github/forks/AnBui2004/Vectras-VM-Emu-Android)
+[![Total downloads](https://img.shields.io/github/downloads/AnBui2004/Vectras-VM-Emu-Android/total)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases)
 [![Software License][ico-license]](LICENSE)
 
 Welcome to Vectras VM! A virtual machine app for Android based on QEMU that lets you emulate various OSes including: [![Windows](https://custom-icon-badges.demolab.com/badge/Windows-0078D6?logo=windows11&logoColor=white)](https://www.microsoft.com/en-us/windows) [![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)](https://www.linux.org/) [![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=F0F0F0)](https://www.apple.com/macos) [![Android](https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white)](https://www.android.com/).
 
-If you need help, check out [our documentation](https://vectras.vercel.app/how.html). For quick answers, join the [Vectras Telegram group](http://t.me/vectras_vm_discussion). And here's a suggestion if you're new to Vectras VM:
+If you need help, you can join [our community](https://anbui.ovh/community/). And here's a suggestion if you're new to Vectras VM:
 
 [![Tutorial for beginners](https://img.youtube.com/vi/L6ADe5aVp0Y/mqdefault.jpg)](https://www.youtube.com/watch?v=L6ADe5aVp0Y)
 
 ## 📱 Device Compatibility
 
-Works fine on devices manufactured in 2021 or later and devices equipped with Snapdragon 855 CPU or better. You can try running Vectras VM on unsupported devices, but we cannot guarantee stability or support. Here are the devices tested:
-
-| Brands       | Compatibility status |
-| ------------ | -------------------- |
-| Samsung      | ⭐⭐⭐⭐⭐         |
-| Google Pixel | ⭐⭐⭐⭐⭐         |
-| Xiaomi       | ⭐⭐⭐⭐⭐         |
-| Redmi        | ⭐⭐⭐⭐⭐         |
-| Poco         | ⭐⭐⭐⭐⭐         |
-| ZTE          | ⭐⭐⭐⭐           |
-| RedMagic     | ⭐⭐⭐⭐           |
-| Oppo         | ⭐⭐⭐              |
-| Realme       | ⭐⭐⭐              |
-| OnePlus      | ⭐⭐                |
-| vivo         | ⭐⭐                |
-| IQOO         | ⭐⭐                |
-| Huawei       | ⭐                   |
-| Honor        | ⭐                   |
+Works fine on devices manufactured in 2021 or later and devices equipped with Snapdragon 855 CPU or better. Unexpected problems can occur on devices from Chinese or lesser-known manufacturers because they often have their own operating system optimization methods that differ from stock Android.
 
 ### ⚡ Minimum System Requirements
 - Android 6.0 and up.
@@ -61,123 +41,39 @@ Works fine on devices manufactured in 2021 or later and devices equipped with Sn
 
 # ⬇️ Installation
 
-### ✅ Stable Releases
-
-You can download Vectras VM from the [releases](https://github.com/xoureldeen/Vectras-VM-Android/releases) page or the [official website](https://vectras.vercel.app/download.html).
-
-or
-
-
-[![OpenAPK](https://img.shields.io/badge/Get%20it%20on-OpenAPK-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://www.openapk.net/vectras-vm/com.vectras.vm/)
-
-### 🧪 Beta Releases
-
-We publish a **new beta release after every commit** — so you can always test the latest features and improvements!
-
-[![Download Beta](https://img.shields.io/badge/Download-Beta-blue?style=for-the-badge&logo=github)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases)
-
-### 🔃 Upgrade tool
-Upgrade or change the Qemu version you want to use without resetting the Vectras VM using the Terminal.
-
-QEMU 11.0.0 (for Vectras VM 4.0.8+):
-```bash
-apk add bash && curl -H 'Cache-Control: no-cache' -o setup.sh https://raw.githubusercontent.com/AnBui2004/Vectras-VM-Emu-Android/refs/heads/master/qemu/11.0.0/upgrade.sh && chmod +rwx setup.sh && ./setup.sh; rm setup.sh
-```
-
-QEMU 9.2.2 - 3dfx (recommended and for Vectras VM 4.1.1+):
-```bash
-apk add bash && curl -H 'Cache-Control: no-cache' -o setup.sh https://raw.githubusercontent.com/AnBui2004/Vectras-VM-Emu-Android/refs/heads/master/qemu/9.2.2/upgrade.sh && chmod +rwx setup.sh && ./setup.sh; rm setup.sh
-```
-
-QEMU 7.2.22 - 3dfx (for Vectras VM 4.2.2+):
-```bash
-apk add bash && curl -H 'Cache-Control: no-cache' -o setup.sh https://raw.githubusercontent.com/AnBui2004/Vectras-VM-Emu-Android/refs/heads/master/qemu/7.2.22/upgrade.sh && chmod +rwx setup.sh && ./setup.sh; rm setup.sh
-```
+You can download Vectras VM from the [releases](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases) page.
 
 ### ⚙️ Bootstraps
-QEMU 11.0.0 (for Vectras VM 4.0.8+):
-- [For Android ARM (64-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/4.0.8/base-vectras-vm-arm64-v8a.tar.gz)
-- [See more at the Internet Archive](https://archive.org/details/qemu-11-0-0-for-vectras-vm-nbab)
+QEMU 7.2.22 - 3dfx is here!
 
-QEMU 9.2.4 - 3dfx (only for Vectras VM 3.5.0):
-- [For Android ARM (64-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/3.5.0/base-nosve-vectras-vm-arm64-v8a.tar.gz)
-- [For Android x86 (64-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/3.5.0/base-vectras-vm-x86_64.tar.gz)
-- [See them at the Internet Archive](https://archive.org/details/qemu-9-2-4-3dfx-for-vectras-vm-nbab)
-
-QEMU 9.2.2 - 3dfx (recommended and for Vectras VM 4.1.1+):
-- [For Android ARM (64-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/4.1.1/base-may-2026-vectras-vm-arm64-v8a.tar.gz)
-- [See them at the Internet Archive](https://archive.org/details/qemu-9-2-2-3dfx-for-vectras-vm-nbab)
-
-QEMU 9.2.2 - 3dfx (recommended and for Vectras VM 3.5.1+):
-- [For Android ARM (64-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/3.5.1/base-genegic-nosve-vectras-vm-arm64-v8a.tar.gz)
-- [For Android ARM (32-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/3.5.4/base-vectras-vm-armeabi-v7a.tar.gz)
-- [For Android x86 (64-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/3.5.1/base-generic-vectras-vm-x86_64.tar.gz)
-- [For Android x86 (32-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/3.5.4/base-vectras-vm-x86.tar.gz)
-- [See them at the Internet Archive (64-bit)](https://archive.org/details/qemu-9-2-2-3dfx-for-vectras-vm-nbab)
-- [See them at the Internet Archive (32-bit)](https://archive.org/details/qemu-9-2-2-for-vectras-vm-nbab)
-
-QEMU 9.2.2 - 3dfx (for Vectras VM 3.2.9 - 3.4.9):
-- [For Android ARM (64-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/3.2.9/base-vectras-vm-arm64-v8a.tar.gz)
-- [For Android x86 (64-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/3.2.9/base-vectras-vm-x86_64.tar.gz)
-- [See them at the Internet Archive](https://archive.org/details/qemu-9-2-2-3dfx-for-vectras-vm-nbab)
-
-QEMU 8.2.0 - 3dfx (only for Vectras VM 2.9.5):
-- [For Android ARM (64-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/3.2.9/vectras-vm-arm64-v8a.tar.gz)
-- [For Android x86 (64-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/3.2.9/vectras-vm-x86_64.tar.gz)
-- [See them at the Internet Archive](https://archive.org/details/vectras-vm-x86_64.tar_202603nbab)
-
-QEMU 7.2.22 - 3dfx (for Vectras VM 4.2.2+):
-- [For Android ARM (64-bit)](https://archive.org/download/qemu-7-2-22-for-vectras-vm-nbab/base-june-2026-vectras-vm-arm64-v8a.tar.gz)
-- [See more at the Internet Archive](https://archive.org/details/qemu-7-2-22-for-vectras-vm-nbab)
+- [For Android ARM (64-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/4.4.7/base-qemu-7.2.22-3dfx-july-2026-vectras-vm-arm64-v8a.tar.gz)
+- [For Android ARM (32-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/4.4.7/base-qemu-7.2.22-july-2026-vectras-vm-armeabi-v7a.tar.gz)
+- [For Android x86 (64-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/4.4.7/base-qemu-7.2.22-3dfx-july-2026-vectras-vm-x86_64.tar.gz)
+- [For Android x86 (32-bit)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/download/4.4.7/base-qemu-7.2.22-july-2026-vectras-vm-x86.tar.gz)
 
 ### 💽 3Dfx Wrappers
+Play classic games with 3Dfx support on Windows 95, 98, ME, 2000, and XP! Turnip & Zink will help improve performance if your device has a supported Adreno GPU. Note: It may be unstable and have low performance.
 
-- [For QEMU 9.2.x - 3dfx](https://github.com/AnBui2004/Vectras-VM-Emu-Android/blob/master/3dfx/3dfx-wrappers-3.5.0.iso)
-- [For QEMU 8.2.0 - 3dfx](https://github.com/AnBui2004/Vectras-VM-Emu-Android/blob/master/3dfx/3dfx-wrappers-2.9.5.iso)
+[⬇️ Download here](https://github.com/AnBui2004/Vectras-VM-Emu-Android/blob/master/3dfx/4.1.1%2B/3dfx-wrappers-i686.iso)
 
-# ▶️ We're now on the Play Store
-Vectras VM is on the Play Store with the new Qemu 10, it runs natively on Android instead of requiring proot like the version on GitHub. Try it now!
-
-<a href="https://play.google.com/store/apps/details?id=com.vectrasllc.vm">
-<img src="resources/GetItOnGooglePlay_Badge_Web_color_English.png" style="width: 192px;" />
-</a>
-
-# 💕 Donate
-Help support the project by contributing!
-
-[![Buy Me a Coffee at ko-fi.com][ico-ko-fi]][link-ko-fi]
-[![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dendel%26type%3Dpatrons&style=flat)](https://patreon.com/VectrasTeam)
+### 😼 Advanced
+Advanced options are [here](ADVANCED.md).
 
 # ❤️ Thanks to
 - [3DFX QEMU PATCH](https://github.com/kjliew/qemu-3dfx)
 - [Alpine Linux](https://www.alpinelinux.org/)
 - [Glide](https://github.com/bumptech/glide)
 - [Gson](https://github.com/google/gson)
+- [Mesa for Android Container](https://github.com/lfdevs/mesa-for-android-container)
 - [OkHttp](https://github.com/square/okhttp)
 - [PROOT](https://proot-me.github.io/)
 - [QEMU](https://github.com/qemu/qemu)
 - [Termux](https://github.com/termux)
+- [Vectras VM (Official)](https://github.com/xoureldeen/Vectras-VM-Android)
 - [ZoomImageView](https://github.com/k1slay/ZoomImageView)
 
-## ⭐ Star History
-
-<a href="https://www.star-history.com/?type=date&legend=top-left&repos=xoureldeen%2FVectras-VM-Android%2CAnBui2004%2FVectras-VM-Emu-Android">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=xoureldeen/Vectras-VM-Android%2CAnBui2004/Vectras-VM-Emu-Android&type=date&theme=dark&legend=top-left&sealed_token=tCBSpkm0wCO-niH9BZfotAc5o9pw1qYcHmnl_Tf0CGpqLiLKWlKV8B83nEWskG5QlSQU-aSX65HooXNo165vG8U7TUp9EOPXZiKJpeAroPcxaIGR2G0eTQ" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=xoureldeen/Vectras-VM-Android%2CAnBui2004/Vectras-VM-Emu-Android&type=date&legend=top-left&sealed_token=tCBSpkm0wCO-niH9BZfotAc5o9pw1qYcHmnl_Tf0CGpqLiLKWlKV8B83nEWskG5QlSQU-aSX65HooXNo165vG8U7TUp9EOPXZiKJpeAroPcxaIGR2G0eTQ" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=xoureldeen/Vectras-VM-Android%2CAnBui2004/Vectras-VM-Emu-Android&type=date&legend=top-left&sealed_token=tCBSpkm0wCO-niH9BZfotAc5o9pw1qYcHmnl_Tf0CGpqLiLKWlKV8B83nEWskG5QlSQU-aSX65HooXNo165vG8U7TUp9EOPXZiKJpeAroPcxaIGR2G0eTQ" />
- </picture>
-</a>
-
-[ico-telegram]: https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white
-[ico-discord]: https://img.shields.io/badge/Discord-%235865F2.svg?&logo=discord&logoColor=white
 [ico-version]: https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white
 [ico-license]: https://img.shields.io/badge/License-GPL_v2-blue.svg
-[ico-buymeacoffee]: https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?&logo=buy-me-a-coffee&logoColor=black
-[ico-ko-fi]: https://img.shields.io/badge/Ko--fi-FF5E5B?logo=ko-fi&logoColor=white
 
-[link-discord]: https://discord.gg/t8TACrKSk7
-[link-telegram]: https://t.me/vectras_os
-[link-repo]: https://github.com/xoureldeen/Vectras-VM-Android/
-[link-releases]: https://github.com/xoureldeen/Vectras-VM-Android/releases/
-[link-ko-fi]: https://ko-fi.com/vectrasvm
+[link-repo]: https://github.com/AnBui2004/Vectras-VM-Emu-Android/
+[link-releases]: https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/

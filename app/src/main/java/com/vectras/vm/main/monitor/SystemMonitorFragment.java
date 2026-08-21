@@ -229,6 +229,7 @@ public class SystemMonitorFragment extends Fragment {
         binding.tvQemuarch.setText(getString(R.string.arch) + " " + currentArch + ".");
 
         executor.execute(() -> {
+            if (!isAdded()) return;
             String qemuVersionName = CommandUtils.getQemuVersionName(requireContext());
 
             if (!isAdded()) return;

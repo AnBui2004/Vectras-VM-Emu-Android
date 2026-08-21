@@ -27,6 +27,7 @@ import com.vectras.vm.R;
 import com.vectras.vm.VMManager;
 import com.vectras.vm.creator.utils.VMCreatorSelector;
 import com.vectras.vm.databinding.ActivityMinitoolsBinding;
+import com.vectras.vm.file.FilePickerDialog;
 import com.vectras.vm.main.MainActivity;
 import com.vectras.vm.manager.FirmwareManager;
 import com.vectras.vm.manager.ProcessManager;
@@ -98,11 +99,7 @@ public class Minitools extends AppCompatActivity {
                 this::cleanUp, null, null));
 
         binding.restore.setOnClickListener(v -> DialogUtils.twoDialog(Minitools.this, getResources().getString(R.string.restore), getResources().getString(R.string.restore_content), getResources().getString(R.string.continuetext), getResources().getString(R.string.cancel), true, R.drawable.settings_backup_restore_24px, true,
-                () -> {
-                    int result = VMManager.restoreAll();
-                    DialogUtils.oneDialog(Minitools.this, getString(R.string.done), getString(R.string.restored) + " " + result + ".", R.drawable.settings_backup_restore_24px);
-                    binding.restore.setVisibility(GONE);
-                }, null, null));
+                this::restore, null, null));
 
         binding.deleteallvm.setOnClickListener(v -> DialogUtils.twoDialog(Minitools.this, getResources().getString(R.string.delete_all_vm), getResources().getString(R.string.delete_all_vm_content), getResources().getString(R.string.delete_all), getResources().getString(R.string.cancel), true, R.drawable.delete_24px, true,
                 this::eraserAllVM, null, null));
@@ -113,51 +110,51 @@ public class Minitools extends AppCompatActivity {
         binding.reinstallsystem.setOnClickListener(v -> DialogUtils.twoDialog(Minitools.this, getResources().getString(R.string.reinstall_system), getResources().getString(R.string.reinstall_system_content), getResources().getString(R.string.continuetext), getResources().getString(R.string.cancel), true, R.drawable.system_update_24px, true,
                 this::eraserSystem, null, null));
 
-        if (FirmwareManager.isExistOne()) {
-            binding.lnResetUefiBios.setOnClickListener(v -> {
-                ProgressDialog progressDialog = new ProgressDialog(this);
-                progressDialog.setText(getString(R.string.just_a_sec));
-                progressDialog.show();
-
-                new Thread(() -> {
-                    boolean isQemuRunning = ProcessManager.isQemuRunning(this);
-                    runOnUiThread(() -> {
-                        progressDialog.dismiss();
-
-                        if (isQemuRunning) {
-                            DialogUtils.oopsDialog(Minitools.this, getString(R.string.need_to_shut_down_all_running_vm_note));
-                        } else {
-                            DialogUtils.twoDialog(
-                                    Minitools.this,
-                                    getString(R.string.reset_uefi_bios),
-                                    getString(R.string.reset_uefi_bios_note),
-                                    getString(R.string.reset),
-                                    getString(R.string.cancel),
-                                    true,
-                                    R.drawable.restore_page_24px,
-                                    true,
-                                    () -> {
-                                        progressDialog.show();
-
-                                        new Thread(() -> {
-                                            FirmwareManager.deleteAll();
-                                            runOnUiThread(() -> {
-                                                progressDialog.dismiss();
-
-                                                binding.lnResetUefiBios.setVisibility(GONE);
-                                                Toast.makeText(Minitools.this, getString(R.string.done), Toast.LENGTH_LONG).show();
-                                            });
-                                        }).start();
-                                    },
-                                    null,
-                                    null);
-                        }
-                    });
-                }).start();
-            });
-        } else {
-            binding.lnResetUefiBios.setVisibility(GONE);
-        }
+//        if (FirmwareManager.isExistOne()) {
+//            binding.lnResetUefiBios.setOnClickListener(v -> {
+//                ProgressDialog progressDialog = new ProgressDialog(this);
+//                progressDialog.setText(getString(R.string.just_a_sec));
+//                progressDialog.show();
+//
+//                new Thread(() -> {
+//                    boolean isQemuRunning = ProcessManager.isQemuRunning(this);
+//                    runOnUiThread(() -> {
+//                        progressDialog.dismiss();
+//
+//                        if (isQemuRunning) {
+//                            DialogUtils.oopsDialog(Minitools.this, getString(R.string.need_to_shut_down_all_running_vm_note));
+//                        } else {
+//                            DialogUtils.twoDialog(
+//                                    Minitools.this,
+//                                    getString(R.string.reset_uefi_bios),
+//                                    getString(R.string.reset_uefi_bios_note),
+//                                    getString(R.string.reset),
+//                                    getString(R.string.cancel),
+//                                    true,
+//                                    R.drawable.restore_page_24px,
+//                                    true,
+//                                    () -> {
+//                                        progressDialog.show();
+//
+//                                        new Thread(() -> {
+//                                            FirmwareManager.erase();
+//                                            runOnUiThread(() -> {
+//                                                progressDialog.dismiss();
+//
+//                                                binding.lnResetUefiBios.setVisibility(GONE);
+//                                                Toast.makeText(Minitools.this, getString(R.string.done), Toast.LENGTH_LONG).show();
+//                                            });
+//                                        }).start();
+//                                    },
+//                                    null,
+//                                    null);
+//                        }
+//                    });
+//                }).start();
+//            });
+//        } else {
+//            binding.lnResetUefiBios.setVisibility(GONE);
+//        }
 
         ListUtils.setupMirrorListForListmap(mirrorlist);
     }
@@ -201,12 +198,37 @@ public class Minitools extends AppCompatActivity {
                         true,
                         () -> {
                             FileUtils.createDirectory(AppConfig.recyclebin);
-                            FileUtils.openFolder(this, AppConfig.recyclebin);
+                            if (MainSettingsManager.getBuiltInFilePicker(this)) {
+                                FilePickerDialog filePickerDialog = new FilePickerDialog();
+                                filePickerDialog.setHomeName(getString(R.string.app_name));
+                                filePickerDialog.setLockHome(true);
+                                filePickerDialog.browse(this, AppConfig.recyclebin);
+                            } else {
+                                try {
+                                    FileUtils.openFolder(this, AppConfig.recyclebin);
+                                } catch (Exception e) {
+                                    DialogUtils.oopsDialog(this, getString(R.string.something_went_wrong));
+                                }
+                            }
                         },
                         null,
                         null);
                 binding.restore.setVisibility(GONE);
                 binding.cleanup.setVisibility(GONE);
+            });
+        }).start();
+    }
+
+    private void restore() {
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setText(getString(R.string.just_a_sec));
+        progressDialog.show();
+        new Thread(() -> {
+            int result = VMManager.restoreAll();
+            runOnUiThread(() -> {
+                progressDialog.dismiss();
+                DialogUtils.oneDialog(Minitools.this, getString(R.string.done), getString(R.string.restored) + " " + result + ".", R.drawable.settings_backup_restore_24px);
+                binding.restore.setVisibility(GONE);
             });
         }).start();
     }

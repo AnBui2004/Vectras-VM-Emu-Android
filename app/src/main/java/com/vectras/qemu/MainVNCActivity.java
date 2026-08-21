@@ -810,7 +810,7 @@ public class MainVNCActivity extends VncCanvasActivity {
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_MULTIPLE && event.getKeyCode() == KeyEvent.KEYCODE_UNKNOWN) {
-            vncCanvas.sendText(event.getCharacters());
+            if (vncCanvas.rfb != null) vncCanvas.sendText(event.getCharacters());
             return true;
         } else {
             try {

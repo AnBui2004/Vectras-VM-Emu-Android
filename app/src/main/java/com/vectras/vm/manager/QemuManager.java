@@ -23,12 +23,12 @@ public class QemuManager {
     public static int getAppropriateRefreshRate(Context context, String params, int max) {
         int result = DEFAULT_REFRESH_RATE;
 
-        if (params.contains(" virio-vga") || params.contains(" virio-gpu")) result = max;
-
         if (params.contains("-vga vmware")
                 || params.contains(" vmware-svga")
                 || params.contains("-vga qxl")
                 || params.contains(" qxl-vga")) result = 75;
+
+        if (params.contains(" virio-vga") || params.contains(" virio-gpu")) result = max;
 
         int refreshRateSetting = Integer.parseInt(ItemSettingsSelector.getVncRefreshRateValue(MainSettingsManager.getVncRefreshRate(context)));
 

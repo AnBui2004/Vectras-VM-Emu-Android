@@ -1,10 +1,11 @@
 package com.vectras.vm.x11.utils;
 
+import static android.os.Build.VERSION.SDK_INT;
+
 import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.preference.PreferenceManager;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,7 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import com.termux.shared.termux.extrakeys.ExtraKeysView;
+import com.vectras.vm.x11.extrakeys.ExtraKeysView;
 import com.vectras.vm.x11.X11Activity;
 import com.vectras.vm.R;
 
@@ -54,10 +55,7 @@ public class X11ToolbarViewPager {
                 layout = inflater.inflate(R.layout.view_terminal_toolbar_extra_keys, collection, false);
                 ExtraKeysView extraKeysView = (ExtraKeysView) layout;
                 mActivity.mExtraKeys = new TermuxX11ExtraKeys(mEventListener, mActivity, extraKeysView);
-                int mTerminalToolbarDefaultHeight = mActivity.getTerminalToolbarViewPager().getLayoutParams().height;
-                int height = mTerminalToolbarDefaultHeight *
-                        ((mActivity.mExtraKeys.getExtraKeysInfo() == null) ? 0 : mActivity.mExtraKeys.getExtraKeysInfo().getMatrix().length);
-                extraKeysView.reload(mActivity.mExtraKeys.getExtraKeysInfo(), height);
+                extraKeysView.reload();
                 extraKeysView.setExtraKeysViewClient(mActivity.mExtraKeys);
                 extraKeysView.setOnHoverListener((v, e) -> true);
                 extraKeysView.setOnGenericMotionListener((v, e) -> true);
@@ -76,10 +74,11 @@ public class X11ToolbarViewPager {
                     return true;
                 });
 
-                editText.setOnCapturedPointerListener((v2, e2) -> {
-                    X11Activity.setCapturingEnabled(false);
-                    return false;
-                });
+                if (SDK_INT >= Build.VERSION_CODES.O)
+                    editText.setOnCapturedPointerListener((v2, e2) -> {
+                        X11Activity.setCapturingEnabled(false);
+                        return false;
+                    });
 
                 back.setOnClickListener(v -> mActivity.getTerminalToolbarViewPager().setCurrentItem(0, true));
                 back.setTextColor(0xFFFFFFFF);
@@ -120,11 +119,9 @@ public class X11ToolbarViewPager {
     public static class OnPageChangeListener extends ViewPager.SimpleOnPageChangeListener {
 
         final X11Activity act;
-        final ViewPager mTerminalToolbarViewPager;
 
-        public OnPageChangeListener(X11Activity activity, ViewPager viewPager) {
+        public OnPageChangeListener(X11Activity activity) {
             this.act = activity;
-            this.mTerminalToolbarViewPager = viewPager;
         }
 
         @Override
@@ -132,7 +129,7 @@ public class X11ToolbarViewPager {
             if (position == 0) {
                 act.getLorieView().requestFocus();
             } else {
-                final EditText editText = mTerminalToolbarViewPager.findViewById(R.id.terminal_toolbar_text_input);
+                final EditText editText = act.getTerminalToolbarViewPager().findViewById(R.id.terminal_toolbar_text_input);
                 if (editText != null) editText.requestFocus();
             }
         }

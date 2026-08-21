@@ -78,8 +78,15 @@ public class EqualizerActivity extends AppCompatActivity {
     }
 
     private void initialize() {
-        SoundEffect soundEffect = new SoundEffect(this, 0);
-        short bands = soundEffect.equalizer.getNumberOfBands();
+        SoundEffect soundEffect = null;
+        short bands;
+
+        try {
+            soundEffect = new SoundEffect(this, 0);
+            bands = soundEffect.equalizer.getNumberOfBands();
+        } catch (RuntimeException e) {
+            bands = 0;
+        }
 
         if (bands < 2) {
             binding.lnUnsupport.setVisibility(View.VISIBLE);

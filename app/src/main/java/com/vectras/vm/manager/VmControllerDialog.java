@@ -51,7 +51,7 @@ public class VmControllerDialog extends DialogFragment {
 
     private DialogChangeRemovableDevicesBinding binding;
     private String infoBlock = "";
-    public int position = -1;
+    public DataMainRoms vmConfig;
     public StreamAudio streamAudio;
     public VncCanvas vncCanvas;
     public View screenshotFrame;
@@ -97,9 +97,10 @@ public class VmControllerDialog extends DialogFragment {
 
             isGotInfo.set(true);
             new Handler(Looper.getMainLooper()).post(() -> {
+                if (!isAdded()) return;
                 progressDialog.reset();
 
-                if (position > -1) {
+                if (vmConfig != null) {
                     binding.lnConnect.setOnClickListener(v -> {
                         if (isAdded()) DisplaySystem.launch(requireActivity());
                         dismiss();
@@ -115,8 +116,11 @@ public class VmControllerDialog extends DialogFragment {
 
                     binding.lnRemove.setOnClickListener(v -> {
                         if (isAdded()) {
-                            DataMainRoms vmConfig = VMManager.getVMConfig(position);
-                            VMManager.deleteVMDialog(vmConfig.itemName, position, requireActivity());
+                            try {
+                                VMManager.deleteVMDialog(vmConfig.itemName, vmConfig.vmID, requireActivity());
+                            } catch (IllegalStateException | IndexOutOfBoundsException e) {
+                                DialogUtils.oopsDialog(requireActivity(), getString(R.string.an_error_occurred_while_loading_vm_configs));
+                            }
                         }
                         dismiss();
                     });
@@ -184,7 +188,7 @@ public class VmControllerDialog extends DialogFragment {
 
 
                 binding.lnPause.setOnClickListener(v -> {
-                    VMManager.showPauseDialog(requireActivity());
+                    VMManager.showPauseDialog(requireActivity(), Config.vmID);
                     dismiss();
                 });
 
@@ -284,11 +288,11 @@ public class VmControllerDialog extends DialogFragment {
                             binding.lnSecondaryCdrom.setVisibility(View.GONE);
                         }
 
-                        if (!infoBlock.contains(AppConfig.basefiledir + "3dfx-wrappers.iso"))
+                        if (!infoBlock.contains(AppConfig.basefiledir + "3dfx-wrappers-i686.iso"))
                             binding.ivEject3dfx.setVisibility(View.GONE);
 
                         binding.ln3dfx.setOnClickListener(v -> {
-                            if (infoBlock.contains(AppConfig.basefiledir + "3dfx-wrappers.iso")) {
+                            if (infoBlock.contains(AppConfig.basefiledir + "3dfx-wrappers-i686.iso")) {
                                 QmpSender.ejectDynamicSecondaryOpticalDisc(requireActivity(), infoBlock);
                             } else {
                                 ToolsManager.mount3dfxWrappers(requireActivity());
@@ -392,7 +396,7 @@ public class VmControllerDialog extends DialogFragment {
                 });
 
 
-                if (isAdded() && requireActivity() instanceof MainVNCActivity mainVNCActivity) {
+                if (isAdded() && requireActivity() instanceof MainVNCActivity mainVNCActivity && vncCanvas != null) {
                     binding.sliderBrightness.setValue(vncCanvas.getAlpha() * 100);
                     binding.sliderBrightness.addOnChangeListener((slider, value, fromUser) -> vncCanvas.setAlpha(value / 100));
 
@@ -704,11 +708,17 @@ public class VmControllerDialog extends DialogFragment {
         if (uri != null) {
             try {
                 new Thread(() -> {
-                    File selectedFilePath = new File(Objects.requireNonNull(FileUtils.getPath(getContext(), uri)));
+                    String path = FileUtils.getPath(getContext(), uri);
+
+                    if (path == null) {
+                        showErrorSelectedFileDialog();
+                        dismiss();
+                        return;
+                    }
 
                     if (isAdded()) {
                         requireActivity().runOnUiThread(() -> {
-                            QmpSender.changeFloppyDiskA(requireActivity(), selectedFilePath.getAbsolutePath());
+                            QmpSender.changeFloppyDiskA(requireActivity(), path);
                             dismiss();
                         });
                     }
@@ -774,7 +784,9 @@ public class VmControllerDialog extends DialogFragment {
     }
 
     private void showErrorSelectedFileDialog() {
-        DialogUtils.oneDialog(requireActivity(),
+        if (!isAdded()) return;
+
+        requireActivity().runOnUiThread(() -> DialogUtils.oneDialog(requireActivity(),
                 getString(R.string.oops),
                 getString(R.string.invalid_file_path_content),
                 getString(R.string.ok),
@@ -783,6 +795,6 @@ public class VmControllerDialog extends DialogFragment {
                 true,
                 null,
                 null
-        );
+        ));
     }
 }
