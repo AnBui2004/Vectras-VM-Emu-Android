@@ -108,6 +108,7 @@ public class DataMainRoms implements Serializable {
     // Acceleration
 
     public int accel;
+    public int accelCacheSize;
 
     // Advanced
 

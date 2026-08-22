@@ -5,6 +5,10 @@ import static com.vectras.vm.utils.LibraryChecker.isPackageInstalled2;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -17,7 +21,6 @@ import com.vectras.vm.R;
 import com.vectras.vm.VectrasApp;
 import com.vectras.vm.core.ShellExecutor;
 import com.vectras.vm.core.TermuxX11;
-import com.vectras.vm.main.MainActivity;
 import com.vectras.vm.setupwizard.SetupFeatureCore;
 import com.vectras.vm.utils.DialogUtils;
 import com.vectras.vm.utils.FileUtils;
@@ -152,13 +155,65 @@ public class DisplaySystem {
 
     public static void startTermuxX11(Context context) {
         if (isTermuxClassLoaded || !MainSettingsManager.getVmUi(context).equals("X11")) return;
-        isTermuxClassLoaded = true;
 
         Log.d(TAG, "startTermuxX11...");
         if (isUseBuiltInX11()) {
             Log.d(TAG, "startTermuxX11: Loading loader.apk...");
             new Thread(() -> {
                 SetupFeatureCore.extractX11LoaderApk(context);
+
+                try {
+                    PackageInfo appInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? PackageManager.GET_SIGNING_CERTIFICATES : PackageManager.GET_SIGNATURES);
+                    PackageInfo loaderInfo = context.getPackageManager().getPackageArchiveInfo(TermuxService.PREFIX_PATH + "/libexec/termux-x11/loader.apk", Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? PackageManager.GET_SIGNING_CERTIFICATES : PackageManager.GET_SIGNATURES);
+
+
+                    if (appInfo == null || loaderInfo == null) {
+                        handleWhenLoaderException(context);
+                        return;
+                    }
+
+                    Signature[] appSignatures;
+                    Signature[] loaderSignatures;
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        if (appInfo.signingInfo == null || loaderInfo.signingInfo == null) {
+                            handleWhenLoaderException(context);
+                            return;
+                        }
+
+                        if (appInfo.signingInfo.hasMultipleSigners()) {
+                            appSignatures = appInfo.signingInfo.getApkContentsSigners();
+                        } else {
+                            appSignatures = appInfo.signingInfo.getSigningCertificateHistory();
+                        }
+
+                        if (loaderInfo.signingInfo.hasMultipleSigners()) {
+                            loaderSignatures = loaderInfo.signingInfo.getApkContentsSigners();
+                        } else {
+                            loaderSignatures = loaderInfo.signingInfo.getSigningCertificateHistory();
+                        }
+                    } else {
+                        appSignatures = appInfo.signatures;
+                        loaderSignatures = loaderInfo.signatures;
+                    }
+
+                    if (
+                            appSignatures != null &&
+                                    loaderSignatures != null &&
+                                    appSignatures.length > 0 &&
+                                    loaderSignatures.length > 0 &&
+                                    appSignatures[0].equals(loaderSignatures[0])
+                    ) {
+                        isTermuxClassLoaded = true;
+                    } else {
+                        handleWhenLoaderException(context);
+                        return;
+                    }
+                } catch (PackageManager.NameNotFoundException e) {
+                    handleWhenLoaderException(context);
+                    return;
+                }
+
                 ShellExecutor shellExec = new ShellExecutor();
                 shellExec.exec(TermuxService.PREFIX_PATH + "/bin/termux-x11 :0");
             }).start();
@@ -171,5 +226,13 @@ public class DisplaySystem {
                 }
             }
         }
+    }
+
+    static void handleWhenLoaderException(Context context) {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            DialogUtils.oopsDialog(context, context.getString(R.string.x11_loader_exception_content));
+        });
+
+        FileUtils.delete(TermuxService.PREFIX_PATH + "/libexec/termux-x11/loader.apk");
     }
 }

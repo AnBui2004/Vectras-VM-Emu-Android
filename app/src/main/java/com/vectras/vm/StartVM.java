@@ -208,6 +208,7 @@ public class StartVM {
         String accel = Objects.requireNonNull(VMCreatorSelector.getAccel(activity, vmData.accel).get("value")).toString();
         if (!accel.isEmpty()) {
             accelParams = " -accel " + ((vmData.accel > 1 && !DeviceUtils.is64bit()) ? Objects.requireNonNull(VMCreatorSelector.getAccel(activity, 1).get("value")).toString() : accel);
+            if (vmData.accelCacheSize > 0) accelParams += ",tb-size=" + vmData.accelCacheSize;
         }
 
         extraParams = machineParams + inputDevicesParams + cpuParams + memoryParams + bootParams + graphicsParams + networkParams + soundParams + accelParams + " " + extraParams;

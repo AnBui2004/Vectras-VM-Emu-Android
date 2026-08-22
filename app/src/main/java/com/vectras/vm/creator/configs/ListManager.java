@@ -206,7 +206,7 @@ public class ListManager {
         return list;
     }
 
-    public static ArrayList<HashMap<String, Object>> memoryCapacity(Context context, String arch) {
+    public static ArrayList<HashMap<String, Object>> memoryCapacity(Context context, String arch, boolean limit32bit) {
         ArrayList<HashMap<String, Object>> list = new ArrayList<>();
         UniversalPickerDialog.putToList(list, 1);
         UniversalPickerDialog.putToList(list, 2);
@@ -233,7 +233,7 @@ public class ListManager {
         UniversalPickerDialog.putToList(list, 3840);
         UniversalPickerDialog.putToList(list, 4096);
 
-        if (!arch.equals(MainSettingsManager.X86_64_ARCH) && !arch.equals(MainSettingsManager.ARM64_ARCH))
+        if (limit32bit || (!arch.equals(MainSettingsManager.X86_64_ARCH) && !arch.equals(MainSettingsManager.ARM64_ARCH)))
             return list;
 
         UniversalPickerDialog.putToList(list, 4352);

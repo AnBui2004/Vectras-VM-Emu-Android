@@ -44,7 +44,6 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:hint="@string/hard_drive_0"
-                android:theme="@style/AppTheme.TextInput"
                 app:endIconContentDescription="@string/options"
                 app:endIconDrawable="@drawable/add_24px"
                 app:endIconMode="custom"
@@ -69,7 +68,6 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:hint="@string/hard_drive_1"
-                android:theme="@style/AppTheme.TextInput"
                 app:endIconContentDescription="@string/options"
                 app:endIconDrawable="@drawable/add_24px"
                 app:endIconMode="custom"
@@ -103,7 +101,6 @@
                 app:endIconContentDescription="@string/options"
                 app:endIconDrawable="@drawable/add_24px"
                 app:endIconMode="custom"
-                android:theme="@style/AppTheme.TextInput"
                 app:startIconDrawable="@drawable/album_24px">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -128,7 +125,6 @@
                 app:endIconContentDescription="@string/options"
                 app:endIconDrawable="@drawable/add_24px"
                 app:endIconMode="custom"
-                android:theme="@style/AppTheme.TextInput"
                 app:startIconDrawable="@drawable/album_24px">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -162,7 +158,6 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:hint="@string/floppy_drive_a"
-                    android:theme="@style/AppTheme.TextInput"
                     app:endIconDrawable="@drawable/close_24px"
                     app:startIconDrawable="@drawable/save_24px">
 
@@ -186,7 +181,6 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:hint="@string/floppy_drive_b"
-                    android:theme="@style/AppTheme.TextInput"
                     app:endIconDrawable="@drawable/close_24px"
                     app:startIconDrawable="@drawable/save_24px">
 

@@ -100,13 +100,10 @@
                 android:id="@+id/cpi_memory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true"
                 android:hint="@string/memory_capacity_mb"
                 app:endIconContentDescription="@string/pick"
                 app:endIconDrawable="@drawable/keyboard_arrow_down_24px"
                 app:endIconMode="custom"
-                android:theme="@style/AppTheme.TextInput"
                 app:startIconDrawable="@drawable/memory_alt_24px">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -115,7 +112,6 @@
                     android:layout_height="wrap_content"
                     android:inputType="number"
                     android:maxLength="5"
-                    android:selectAllOnFocus="true"
                     android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 

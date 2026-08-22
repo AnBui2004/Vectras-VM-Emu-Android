@@ -728,6 +728,8 @@
     <string name="controllers">Controllers</string>
     <string name="usb_controller_required_content">Some devices require a USB controller, so you have no choice but to use one.</string>
     <string name="logs">Logs</string>
+    <string name="x11_loader_exception_content">The X11 display cannot be used due to a security issue with the loader.</string>
+    <string name="tcg_cache_size_hint">Cache size (MB)</string>
 
 
     <!--======================TERMUX STRINGS====================-->

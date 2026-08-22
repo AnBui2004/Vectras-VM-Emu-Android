@@ -132,6 +132,7 @@ public class VmListManager {
         if (config1.isUseDefaultBios != config2.isUseDefaultBios) return false;
 
         if (config1.accel != config2.accel) return false;
+        if (config1.accelCacheSize != config2.accelCacheSize) return false;
 
         if (!config1.itemExtra.equals(config2.itemExtra)) return false;
 

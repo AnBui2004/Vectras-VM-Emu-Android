@@ -42,7 +42,6 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="16dp"
                 android:hint="@string/qemu_params"
-                android:theme="@style/AppTheme.TextInput"
                 app:startIconDrawable="@drawable/ic_qemu">
 
                 <com.google.android.material.textfield.TextInputEditText

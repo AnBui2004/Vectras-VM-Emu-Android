@@ -239,6 +239,7 @@ public class ExportRomActivity extends AppCompatActivity {
         vmConfigMap.put("isUseDefaultBios", current.isUseDefaultBios);
 
         vmConfigMap.put("accel", current.accel);
+        vmConfigMap.put("accelCacheSize", current.accelCacheSize);
 
         vmConfigMap.put("qemu", VmFileManager.pathToTextMark(this, current.vmID, current.itemExtra));
         vmConfigMap.put("arch", current.itemArch);

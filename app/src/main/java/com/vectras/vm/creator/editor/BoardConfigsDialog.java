@@ -149,7 +149,7 @@ public class BoardConfigsDialog extends BottomSheetDialogFragment {
             if (binding.tietMemory.getText() != null && !binding.tietMemory.getText().toString().isEmpty()) {
                 int current = Integer.parseInt(binding.tietMemory.getText().toString());
                 int nearest = Integer.MAX_VALUE;
-                ArrayList<HashMap<String, Object>> list = ListManager.memoryCapacity(requireContext(), MainSettingsManager.getArch(requireContext()));
+                ArrayList<HashMap<String, Object>> list = ListManager.memoryCapacity(requireContext(), MainSettingsManager.getArch(requireContext()), false);
 
                 for (int i = 0; i < list.size(); i++) {
                     int distance = Math.abs(((int) list.get(i).get("value")) - current);
@@ -165,7 +165,7 @@ public class BoardConfigsDialog extends BottomSheetDialogFragment {
             }
 
 
-            VMCreatorSelector.memory(requireActivity(), MainSettingsManager.getArch(requireContext()), postion, markSelected, ((position, name, value) -> {
+            VMCreatorSelector.memory(requireActivity(), MainSettingsManager.getArch(requireContext()), false, postion, markSelected, ((position, name, value) -> {
                 binding.tietMemory.setText(value);
                 binding.tietMemory.setSelection(value.length());
             }));
