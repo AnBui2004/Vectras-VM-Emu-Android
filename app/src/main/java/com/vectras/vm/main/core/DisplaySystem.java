@@ -122,12 +122,12 @@ public class DisplaySystem {
                         null
                 );
             } else {
-                if (!PackageUtils.isInstalled("com.termux.x11", context)) {
-                    DialogUtils.needInstallTermuxX11(context);
-                    return;
-                }
-
                 if (!isUseBuiltInX11()) {
+                    if (!PackageUtils.isInstalled("com.termux.x11", context)) {
+                        DialogUtils.needInstallTermuxX11(context);
+                        return;
+                    }
+
                     Log.d(TAG, "launchX11: Opened: com.termux.x11.MainActivity.");
                     Intent intent = new Intent();
                     intent.setClassName("com.termux.x11", "com.termux.x11.MainActivity");
@@ -168,7 +168,7 @@ public class DisplaySystem {
 
 
                     if (appInfo == null || loaderInfo == null) {
-                        handleWhenLoaderException(context);
+                        handleWhenLoaderInvalid(context);
                         return;
                     }
 
@@ -177,7 +177,7 @@ public class DisplaySystem {
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                         if (appInfo.signingInfo == null || loaderInfo.signingInfo == null) {
-                            handleWhenLoaderException(context);
+                            handleWhenLoaderInvalid(context);
                             return;
                         }
 
@@ -206,11 +206,11 @@ public class DisplaySystem {
                     ) {
                         isTermuxClassLoaded = true;
                     } else {
-                        handleWhenLoaderException(context);
+                        handleWhenLoaderInvalid(context);
                         return;
                     }
                 } catch (PackageManager.NameNotFoundException e) {
-                    handleWhenLoaderException(context);
+                    handleWhenLoaderInvalid(context);
                     return;
                 }
 
@@ -228,7 +228,7 @@ public class DisplaySystem {
         }
     }
 
-    static void handleWhenLoaderException(Context context) {
+    static void handleWhenLoaderInvalid(Context context) {
         new Handler(Looper.getMainLooper()).post(() -> {
             DialogUtils.oopsDialog(context, context.getString(R.string.x11_loader_exception_content));
         });

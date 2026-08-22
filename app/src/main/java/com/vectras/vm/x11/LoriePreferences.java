@@ -260,10 +260,24 @@ public class LoriePreferences extends AppCompatActivity implements PreferenceFra
         /** @noinspection DataFlowIssue*/
         @Override @SuppressLint("ApplySharedPref")
         public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
+            if (prefs == null) {
+                Context context = getContext();
+                if (context != null) {
+                    prefs = new Prefs(context);
+                } else if (getActivity() != null) {
+                    prefs = new Prefs(getActivity());
+                }
+            }
+
             getPreferenceManager().setPreferenceDataStore(prefs);
 
-            if ((Integer.parseInt(prefs.touchMode.get()) - 1) > 2)
-                prefs.touchMode.put("1");
+            if (prefs != null && prefs.touchMode.get() != null) {
+                try {
+                    if ((Integer.parseInt(prefs.touchMode.get()) - 1) > 2) prefs.touchMode.put("1");
+                } catch (NumberFormatException ignored) {
+                    prefs.touchMode.put("1");
+                }
+            }
 
             setPreferencesFromResource(R.xml.preferences_x11, root == null ? "main" : root);
 
