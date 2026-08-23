@@ -24,6 +24,7 @@ import com.google.gson.reflect.TypeToken;
 import com.termux.app.TermuxActivity;
 import com.vectras.qemu.MainSettingsManager;
 import com.vectras.vm.AppConfig;
+import com.vectras.vm.MainService;
 import com.vectras.vm.R;
 import com.vectras.vm.VMManager;
 import com.vectras.vm.creator.utils.VMCreatorSelector;
@@ -218,6 +219,7 @@ public class SetupWizard2Activity extends AppCompatActivity {
             uiController(STEP_EXTRACTING_SYSTEM_FILES);
             new Thread(() -> {
                 VMManager.killallqemuprocesses(this);
+                MainService.stopService();
                 if (ACTION == ACTION_CORE_SYSTEM_UPDATE) {
                     FileUtils.delete(getFilesDir().getAbsolutePath() + "/data");
                     FileUtils.delete(getFilesDir().getAbsolutePath() + "/distro");
@@ -525,18 +527,30 @@ public class SetupWizard2Activity extends AppCompatActivity {
         if (uri != null) {
             String abi = Build.SUPPORTED_ABIS[0];
             if (FileUtils.getFileNameFromUri(this, uri).endsWith(abi + ".tar.gz")) {
-                uiController(STEP_INSTALLING_PACKAGES);
-                new Thread(() -> {
-                    try {
-                        FileUtils.copyFileFromUri(this, uri, tarPath);
-                        runOnUiThread(() -> {
-                            isCustomSetupMode = true;
-                            startSetup();
-                        });
-                    } catch (Exception e) {
-                        runOnUiThread(() -> uiController(STEP_ERROR, getString(R.string.the_file_could_not_be_processed_content)));
-                    }
-                }).start();
+                DialogUtils.twoDialog(this,
+                        getString(R.string.warning),
+                        getResources().getString(R.string.install_custom_bootstrap_warning_content),
+                        getResources().getString(R.string.continuetext),
+                        getResources().getString(R.string.cancel),
+                        true,
+                        R.drawable.warning_48px,
+                        true,
+                        () -> {
+                            uiController(STEP_INSTALLING_PACKAGES);
+                            new Thread(() -> {
+                                try {
+                                    FileUtils.copyFileFromUri(this, uri, tarPath);
+                                    runOnUiThread(() -> {
+                                        isCustomSetupMode = true;
+                                        startSetup();
+                                    });
+                                } catch (Exception e) {
+                                    runOnUiThread(() -> uiController(STEP_ERROR, getString(R.string.the_file_could_not_be_processed_content)));
+                                }
+                            }).start();
+                        },
+                        null,
+                        null);
             } else {
                 DialogUtils.oneDialog(this,
                         getString(R.string.invalid_file),

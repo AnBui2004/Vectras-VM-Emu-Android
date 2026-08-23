@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.vectras.qemu.MainSettingsManager;
 import com.vectras.vm.AppConfig;
+import com.vectras.vm.MainService;
 import com.vectras.vm.R;
 import com.vectras.vm.VMManager;
 import com.vectras.vm.creator.utils.VMCreatorSelector;
@@ -245,6 +246,7 @@ public class Minitools extends AppCompatActivity {
 
         new Thread(() -> {
             VMManager.killallqemuprocesses(this);
+            MainService.stopService();
             FileUtils.delete(new File(AppConfig.vmFolder));
             FileUtils.delete(new File(AppConfig.recyclebin));
             FileUtils.delete(new File(AppConfig.romsdatajson));
@@ -274,6 +276,7 @@ public class Minitools extends AppCompatActivity {
 
         new Thread(() -> {
             VMManager.killallqemuprocesses(this);
+            MainService.stopService();
             FileUtils.delete(new File(AppConfig.maindirpath));
             File vDir = new File(AppConfig.maindirpath);
             if (!vDir.mkdirs()) Log.e(TAG, "Unable to create folder: " + AppConfig.maindirpath);
@@ -304,6 +307,7 @@ public class Minitools extends AppCompatActivity {
             MainActivity.isActivate = false;
             AppConfig.needreinstallsystem = true;
             VMManager.killallqemuprocesses(this);
+            MainService.stopService();
             FileUtils.delete(new File(getFilesDir().getAbsolutePath() + "/data"));
             FileUtils.delete(new File(getFilesDir().getAbsolutePath() + "/distro"));
             FileUtils.delete(new File(getFilesDir().getAbsolutePath() + "/usr"));

@@ -966,6 +966,7 @@ public class VMManager {
                 killallqemuprocesses(activity);
                 activity.runOnUiThread(() -> {
                     progressDialog.reset();
+                    MainService.stopService();
                     if (runnable != null) runnable.run();
                 });
             }).start();

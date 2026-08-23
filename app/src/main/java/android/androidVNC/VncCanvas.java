@@ -220,13 +220,13 @@ public class VncCanvas extends AppCompatImageView {
 								retries++;
 								reload();
 							}
-						} else {
-							String error = "VNC connection failed!";
-							if (e.getMessage() != null && (e.getMessage().contains("authentication"))) {
-								error = "VNC authentication failed!";
-							}
-							final String error_ = error + "<br>" + e.getLocalizedMessage();
-							handler.post(() -> Utils.showFatalErrorMessage(getContext(), error_));
+//						} else {
+//							String error = "VNC connection failed!";
+//							if (e.getMessage() != null && (e.getMessage().contains("authentication"))) {
+//								error = "VNC authentication failed!";
+//							}
+//							final String error_ = error + "<br>" + e.getLocalizedMessage();
+//							handler.post(() -> Utils.showFatalErrorMessage(getContext(), error_));
 						}
 					}
 				}

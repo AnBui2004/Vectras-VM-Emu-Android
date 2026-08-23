@@ -814,6 +814,7 @@ public class X11Activity extends AppCompatActivity {
 
             ekbarContentInset = prefs.adjustHeightForEK.get() && showNow ? layoutParams.height : 0;
             applyContentInsets();
+            makeSureHelpersAreVisibleAndInScreenBounds();
         });
     }
 

@@ -709,6 +709,7 @@
     <string name="logs">Nhật ký</string>
     <string name="x11_loader_exception_content">Không thể dùng màn hình X11 vì vấn đề bảo mật ở trình tải.</string>
     <string name="tcg_cache_size_hint">Kích thước bộ đệm (MB)</string>
+    <string name="install_custom_bootstrap_warning_content">Bạn có muốn tiếp tục cài đặt? Bạn chỉ nên sử dụng tệp khởi động ở nguồn uy tín. Nếu bạn không biết bạn đang làm gì thì bạn nên huỷ. Chúng tôi sẽ không chịu trách nhiệm nếu tệp khởi động này không phải của chúng tôi và nó gây ra các thiệt hại cho bạn.</string>
 
     <!--======================TERMUX STRINGS====================-->
     <string name="application_name" translatable="false">Vterm</string>

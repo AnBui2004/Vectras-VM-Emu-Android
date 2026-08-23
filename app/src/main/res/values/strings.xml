@@ -730,6 +730,7 @@
     <string name="logs">Logs</string>
     <string name="x11_loader_exception_content">The X11 display cannot be used due to a security issue with the loader.</string>
     <string name="tcg_cache_size_hint">Cache size (MB)</string>
+    <string name="install_custom_bootstrap_warning_content">Do you want to proceed with the installation? You should only use a bootstrap file from a trusted source. If you are unsure of what you are doing, you should cancel. We will not be held responsible if this bootstrap file does not originate from us and causes you any damage.</string>
 
 
     <!--======================TERMUX STRINGS====================-->
