@@ -85,6 +85,9 @@ QEMU 7.2.22 - 3dfx (for Vectras VM 4.2.2+):
 - [For QEMU 9.2.x - 3dfx](https://github.com/AnBui2004/Vectras-VM-Emu-Android/blob/master/3dfx/old/3dfx-wrappers-3.5.0.iso)
 - [For QEMU 8.2.0 - 3dfx](https://github.com/AnBui2004/Vectras-VM-Emu-Android/blob/master/3dfx/old/3dfx-wrappers-2.9.5.iso)
 
+## 🔬 For developers
+[Build libXlorie.so](termux-x11/README.md)
+
 [ico-telegram]: https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white
 [link-discord]: https://discord.gg/t8TACrKSk7
 [link-telegram]: https://t.me/vectras_os
