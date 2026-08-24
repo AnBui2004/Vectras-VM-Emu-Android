@@ -14,6 +14,7 @@ The reason we use `sd` instead of `patch` is that it is not complicated.
 
 
 ```bash
+cd termux-x11/lorie/src/main/cpp
 # Replace them so it works with Vectras VM.
 sd '_com_termux_x11_' '_com_vectras_vm_x11_' lorie/cmdentrypoint.cpp
 sd '/data/data/com.termux/' '/data/data/com.vectras.vm/' lorie/cmdentrypoint.cpp
