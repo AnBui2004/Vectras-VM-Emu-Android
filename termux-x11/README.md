@@ -3,6 +3,8 @@ This is what will help patch it.
 ```bash
 sudo apt update && sudo apt install cargo -y
 cargo install sd
+echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
 ```
 # 2. Clone Termux:X11
 Clone Termux:X11 to your PC.
