@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/author"
                 app:startIconDrawable="@drawable/account_circle_24px"
-                android:layout_marginBottom="16px">
+                android:layout_marginBottom="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/ed_author"

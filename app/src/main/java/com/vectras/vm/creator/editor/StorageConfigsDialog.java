@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -18,11 +20,14 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.vectras.qemu.MainSettingsManager;
+import com.vectras.qemu.utils.RamInfo;
 import com.vectras.vm.AppConfig;
 import com.vectras.vm.Fragment.CreateImageDialogFragment;
 import com.vectras.vm.R;
+import com.vectras.vm.creator.configs.ListManager;
 import com.vectras.vm.creator.utils.CreatorUtils;
 import com.vectras.vm.creator.utils.EditorUtils;
+import com.vectras.vm.creator.utils.VMCreatorSelector;
 import com.vectras.vm.databinding.CreatorStorageDialogBinding;
 import com.vectras.vm.file.FilePickerDialog;
 import com.vectras.vm.main.vms.DataMainRoms;
@@ -31,9 +36,12 @@ import com.vectras.vm.manager.VmFileManager;
 import com.vectras.vm.utils.DialogUtils;
 import com.vectras.vm.utils.FileUtils;
 import com.vectras.vm.utils.IntentUtils;
+import com.vectras.vm.utils.TextUtils;
 import com.vectras.vterm.Terminal2;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,6 +53,9 @@ public class StorageConfigsDialog extends BottomSheetDialogFragment {
     DataMainRoms configs;
 
     boolean isSave = true;
+
+    int availableMemory = Integer.MAX_VALUE;
+    int warningMemory = Integer.MAX_VALUE;
 
     public void setConfigs(DataMainRoms configs) {
         this.configs = configs;
@@ -70,6 +81,9 @@ public class StorageConfigsDialog extends BottomSheetDialogFragment {
             dismiss();
             return EditorUtils.getDummyDialog(requireActivity());
         }
+
+        availableMemory = RamInfo.vectrasMemory(requireActivity());
+        warningMemory = availableMemory / 100 * 20;
 
         binding = CreatorStorageDialogBinding.inflate(getLayoutInflater());
 
@@ -328,6 +342,16 @@ public class StorageConfigsDialog extends BottomSheetDialogFragment {
                 this::startCreateOpticalDisk);
 
         binding.drive.setOnClickListener(v -> pickStorageFile(SELECT_DISK_0_FILE_MODE));
+        binding.drive.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable editable) {
+                checkL2Cache();
+            }
+        });
         binding.driveField.setOnClickListener(v -> pickStorageFile(SELECT_DISK_0_FILE_MODE));
         binding.driveField.setEndIconOnClickListener(v -> {
             if (Objects.requireNonNull(binding.drive.getText()).toString().isEmpty()) {
@@ -339,6 +363,16 @@ public class StorageConfigsDialog extends BottomSheetDialogFragment {
 
 
         binding.tieHd1.setOnClickListener(v -> pickStorageFile(SELECT_DISK_1_FILE_MODE));
+        binding.tieHd1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable editable) {
+                checkL2Cache();
+            }
+        });
         binding.tilHd1.setOnClickListener(v -> pickStorageFile(SELECT_DISK_1_FILE_MODE));
         binding.tilHd1.setEndIconOnClickListener(v -> {
             if (Objects.requireNonNull(binding.tieHd1.getText()).toString().isEmpty()) {
@@ -346,6 +380,47 @@ public class StorageConfigsDialog extends BottomSheetDialogFragment {
             } else {
                 storageFileOptionDialog(SELECT_DISK_1_FILE_MODE);
             }
+        });
+
+        binding.tietL2CacheSize.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable editable) {
+                checkL2Cache();
+            }
+        });
+
+        binding.cpiL2CacheSize.setEndIconOnClickListener(v -> {
+            // 8 = 256
+            int postion = 8;
+            boolean markSelected = false;
+
+            if (binding.tietL2CacheSize.getText() != null && !binding.tietL2CacheSize.getText().toString().isEmpty()) {
+                int current = Integer.parseInt(binding.tietL2CacheSize.getText().toString());
+                int nearest = Integer.MAX_VALUE;
+                ArrayList<HashMap<String, Object>> list = ListManager.memoryCapacity(requireContext(), MainSettingsManager.getArch(requireContext()), true);
+
+                for (int i = 0; i < list.size(); i++) {
+                    int distance = Math.abs(((int) list.get(i).get("value")) - current);
+                    if (distance == 0) {
+                        postion = i;
+                        markSelected = true;
+                        break;
+                    } else if (distance < nearest) {
+                        nearest = distance;
+                        postion = i;
+                    }
+                }
+            }
+
+
+            VMCreatorSelector.memory(requireActivity(), MainSettingsManager.getArch(requireContext()), true, postion, markSelected, ((position, name, value) -> {
+                binding.tietL2CacheSize.setText(value);
+                binding.tietL2CacheSize.setSelection(value.length());
+            }));
         });
 
 
@@ -606,6 +681,8 @@ public class StorageConfigsDialog extends BottomSheetDialogFragment {
             setDrive(SELECT_DISK_1_FILE_MODE, (configs.hd1.contains("/") ? "" : VmFileManager.getPath(vmId)).concat(configs.hd1));
         }
 
+        if (configs.hdL2CacheSize > 0) binding.tietL2CacheSize.setText(String.valueOf(configs.hdL2CacheSize));
+
         if (MainSettingsManager.getArch(getContext()).equals(MainSettingsManager.ARM64_ARCH)) {
             binding.lnFloppyContainer.setVisibility(View.GONE);
         } else {
@@ -632,6 +709,8 @@ public class StorageConfigsDialog extends BottomSheetDialogFragment {
     private void save() {
         configs.itemPath = Objects.requireNonNull(binding.drive.getText()).toString();
         configs.hd1 = Objects.requireNonNull(binding.tieHd1.getText()).toString();
+
+        configs.hdL2CacheSize = binding.tietL2CacheSize.getText() == null || binding.tietL2CacheSize.getText().toString().isEmpty() ? 0 : Integer.parseInt(binding.tietL2CacheSize.getText().toString());
 
         configs.fda = Objects.requireNonNull(binding.tieFda.getText()).toString();
         configs.fdb = Objects.requireNonNull(binding.tieFdb.getText()).toString();
@@ -727,5 +806,35 @@ public class StorageConfigsDialog extends BottomSheetDialogFragment {
         } else {
             PENDING_SELECT_FILE_MODE = -1;
         }
+    }
+
+    void checkL2Cache() {
+        if (
+                binding.tietL2CacheSize.getText() != null &&
+                        !binding.tietL2CacheSize.getText().toString().isEmpty() &&
+                        Integer.parseInt(binding.tietL2CacheSize.getText().toString()) >= warningMemory
+        ) {
+            binding.cpiL2CacheSize.setError(getString(R.string.capacity_too_large));
+            return;
+        }
+
+        if (binding.tietL2CacheSize.getText() != null &&
+                !binding.tietL2CacheSize.getText().toString().isEmpty() &&
+                (
+                        binding.drive.getText() != null &&
+                                !binding.drive.getText().toString().isEmpty() &&
+                                !FormatManager.isQcow2Format(binding.drive.getText().toString())
+                ) ||
+                (
+                        binding.tieHd1.getText() != null &&
+                                !binding.tieHd1.getText().toString().isEmpty() &&
+                                !FormatManager.isQcow2Format(binding.tieHd1.getText().toString())
+                )
+        ) {
+            binding.cpiL2CacheSize.setError(getString(R.string.only_qcow2_format_is_supported));
+            return;
+        }
+
+        binding.cpiL2CacheSize.setError(null);
     }
 }

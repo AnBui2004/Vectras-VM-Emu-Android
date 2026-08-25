@@ -12,6 +12,7 @@ import com.vectras.vm.creator.utils.VMCreatorSelector;
 import com.vectras.vm.main.vms.DataMainRoms;
 import com.vectras.vm.manager.BatteryEmulatorManager;
 import com.vectras.vm.manager.FirmwareManager;
+import com.vectras.vm.manager.FormatManager;
 import com.vectras.vm.manager.ParamManager;
 import com.vectras.vm.manager.QemuManager;
 import com.vectras.vm.manager.VmFileManager;
@@ -249,6 +250,8 @@ public class StartVM {
                 String diskparams = "-drive";
                 diskparams += " media=disk";
                 diskparams += ",discard=unmap";
+                if (vmConfigs.hdL2CacheSize > 0 && FormatManager.isQcow2Format(img))
+                    diskparams += ",l2-cache-size=" + vmConfigs.hdL2CacheSize + "M";
                 diskparams += ",file='" + img + "'";
 
                 params.add(diskparams);
@@ -258,6 +261,8 @@ public class StartVM {
                 String diskparams = "-drive";
                 diskparams += " media=disk";
                 diskparams += ",discard=unmap";
+                if (vmConfigs.hdL2CacheSize > 0 && FormatManager.isQcow2Format(vmConfigs.hd1))
+                    diskparams += ",l2-cache-size=" + vmConfigs.hdL2CacheSize + "M";
                 diskparams += ",file='" + vmConfigs.hd1 + "'";
 
                 params.add(diskparams);

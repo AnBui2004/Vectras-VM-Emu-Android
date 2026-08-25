@@ -64,7 +64,8 @@ public class VmListManager {
         List<DataMainRoms> data = getAllVm(context);
 
         for (int i = 0; i < data.size(); i++) {
-            UniversalPickerDialog.putToList(list, data.get(i).itemName, data.get(i).vmID);
+            if (data.get(i) != null && data.get(i).itemName != null && data.get(i).vmID != null)
+                UniversalPickerDialog.putToList(list, data.get(i).itemName, data.get(i).vmID);
         }
 
         return list;
@@ -106,6 +107,7 @@ public class VmListManager {
 
         if (!config1.itemPath.equals(config2.itemPath)) return false;
         if (!config1.hd1.equals(config2.hd1)) return false;
+        if (config1.hdL2CacheSize != config2.hdL2CacheSize) return false;
 
         if (!config1.imgCdrom.equals(config2.imgCdrom)) return false;
         if (!config1.cdrom1.equals(config2.cdrom1)) return false;

@@ -731,6 +731,9 @@
     <string name="x11_loader_exception_content">The X11 display cannot be used due to a security issue with the loader.</string>
     <string name="tcg_cache_size_hint">Cache size (MB)</string>
     <string name="install_custom_bootstrap_warning_content">Do you want to proceed with the installation? You should only use a bootstrap file from a trusted source. If you are unsure of what you are doing, you should cancel. We will not be held responsible if this bootstrap file does not originate from us and causes you any damage.</string>
+    <string name="l2_cache_size_hint">L2 cache size (MB)</string>
+    <string name="only_qcow2_format_is_supported">Only the qcow2 format is supported.</string>
+    <string name="terminal_warning_content">Before continue, ensure you fully understand what you are doing. You should alway double-check the commands you use to ensure they function correctly and do not cause unintended issues. In particular, if someone is guiding you, double-check the commands they provide. We accept no responsibility for any unintended damage resulting from the use of commands not provided by us.</string>
 
 
     <!--======================TERMUX STRINGS====================-->
@@ -793,7 +796,9 @@
     <string name="join_us_on_telegram">Join us on Telegram</string>
     <string name="join_us_on_telegram_where_we_publish_all_the_news_and_updates_and_receive_your_opinions_and_bugs">Join us on Telegram where we publish all the news and updates and receive your opinions and bugs.</string>
     <string name="join">Join</string>
+    <string name="accept">Accept</string>
     <string name="dont_show_again">Don\'t show again</string>
+    <string name="accept_and_dont_show_again">Accept &amp; don\'t show again</string>
     <string name="getting_ready_for_you_please_don_t_disconnect_the_network">Getting ready for you…\nPlease don\'t disconnect the network.</string>
     <string name="completed_10_it_won_t_take_long">Completed 10%\nIt won\'t take long…</string>
     <string name="completed_20_it_won_t_take_long">Completed 20%\nIt won\'t take long…</string>

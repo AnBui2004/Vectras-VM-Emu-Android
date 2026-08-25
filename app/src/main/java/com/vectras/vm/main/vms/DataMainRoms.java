@@ -56,6 +56,7 @@ public class DataMainRoms implements Serializable {
     public String itemPath = "";
 
     public String hd1 = "";
+    public int hdL2CacheSize;
 
 
     @SerializedName(

@@ -40,15 +40,10 @@
                 android:id="@+id/sbv_usb_controller"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
+                android:layout_marginBottom="16dp"
                 app:title="@string/usb_controller"
                 app:subtitle="@string/defaulttext"
                 android:background="@drawable/object_shape_single_high"/>
-
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="16dp" />
 
             <com.vectras.vm.view.SelectBoxView
                 android:id="@+id/sbv_mouse"

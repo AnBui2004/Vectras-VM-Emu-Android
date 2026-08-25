@@ -34,6 +34,16 @@ public class SettingsData {
         return get(context, "x11_bubble");
     }
 
+    // Hints
+
+    public static boolean terminalWarning(Context context) {
+        return get(context, "terminal_warning");
+    }
+
+    public static void terminalWarning(Context context, boolean value) {
+        set(context, "terminal_warning", value);
+    }
+
     // Core
 
     public static boolean get(Context context, String key) {

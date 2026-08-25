@@ -20,7 +20,7 @@ buildscript {
     }
 }
 tasks.register('clean', Delete) {
-    delete rootProject.buildDir
+    delete getLayout().getBuildDirectory()
 }
 
 allprojects {

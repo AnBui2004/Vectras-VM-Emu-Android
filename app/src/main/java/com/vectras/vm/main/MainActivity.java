@@ -74,6 +74,7 @@ import com.vectras.vm.main.romstore.RomStoreFragment;
 import com.vectras.vm.main.vms.VmsFragment;
 import com.vectras.vm.logger.VectrasStatus;
 import com.vectras.vm.settings.Settings2Activity;
+import com.vectras.vm.settings.SettingsData;
 import com.vectras.vm.settings.UpdaterActivity;
 import com.vectras.vm.utils.DialogUtils;
 import com.vectras.vm.utils.FileUtils;
@@ -82,6 +83,7 @@ import com.vectras.vm.utils.LibraryChecker;
 import com.vectras.vm.utils.NotificationUtils;
 import com.vectras.vm.utils.PackageUtils;
 import com.vectras.vm.utils.UIUtils;
+import com.vectras.vterm.TerminalManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -544,7 +546,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (id == R.id.navigation_item_desktop) {
                 DisplaySystem.launch(this);
             } else if (id == R.id.navigation_item_terminal) {
-                startActivity(new Intent(this, TermuxActivity.class));
+                TerminalManager.openTerminal(this);
             } else if (id == R.id.navigation_item_view_logs) {
                 showLogsDialog();
             } else if (id == R.id.navigation_item_settings) {

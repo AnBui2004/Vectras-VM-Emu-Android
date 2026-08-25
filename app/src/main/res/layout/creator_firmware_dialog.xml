@@ -57,15 +57,10 @@
                 android:id="@+id/cbv_uselocaltime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
+                android:layout_marginBottom="16dp"
                 app:setText="@string/use_local_time"
                 app:setChecked="true"
                 android:background="@drawable/object_shape_bottom_high"/>
-
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="16dp" />
 
             <com.vectras.vm.view.CheckBoxView
                 android:id="@+id/cbv_useuefi"

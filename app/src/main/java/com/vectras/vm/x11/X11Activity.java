@@ -94,6 +94,7 @@ public class X11Activity extends AppCompatActivity {
     public static final String ACTION_CUSTOM = "com.vectras.vm.x11.ACTION_CUSTOM";
 
     public static Handler handler = new Handler();
+    private final Runnable connectRetry = this::tryConnect;
     FrameLayout frm;
     private TouchInputHandler mInputHandler;
     protected ICmdEntryInterface service = null;
@@ -431,19 +432,20 @@ public class X11Activity extends AppCompatActivity {
 
     private RectF getVisibleFrmRect() {
         final ViewPager pager = getTerminalToolbarViewPager();
-        Rect frmRect = new Rect();
-        frm.getGlobalVisibleRect(frmRect);
-        RectF result = new RectF(frmRect.left, frmRect.top, frmRect.right, frmRect.bottom);
+        final LorieView lorieView = getLorieView();
+        final View sharedParent = (View) frm.getParent(); // also mouse/stylus aux buttons' parent
+
+        // lorieView's available rect already excludes insets/caption/IME, just offset it to sharedParent's coordinates.
+        RectF result = new RectF(lorieView.getAvailableRect());
+        result.offset(frm.getLeft() + lorieView.getLeft(), frm.getTop() + lorieView.getTop());
         if (pager.getVisibility() == View.VISIBLE) {
-            // getGlobalVisibleRect ignores setRotation(), so we compute bounds from bar thickness
-            // directly. For LEFT/RIGHT the pager is rotated 90°: its measured height is always
-            // the on-screen thin dimension regardless of orientation.
+            // ekbar may not already be excluded from availableRect, so clamp against it separately.
             int barThickness = pager.getMeasuredHeight();
             switch (getPagerPosition()) {
-                case PAGER_POSITION_TOP:    result.top    += barThickness; break;
-                case PAGER_POSITION_BOTTOM: result.bottom -= barThickness; break;
-                case PAGER_POSITION_LEFT:   result.left   += barThickness; break;
-                case PAGER_POSITION_RIGHT:  result.right  -= barThickness; break;
+                case PAGER_POSITION_TOP:    result.top    = Math.max(result.top, barThickness); break;
+                case PAGER_POSITION_BOTTOM: result.bottom = Math.min(result.bottom, sharedParent.getHeight() - barThickness); break;
+                case PAGER_POSITION_LEFT:   result.left   = Math.max(result.left, barThickness); break;
+                case PAGER_POSITION_RIGHT:  result.right  = Math.min(result.right, sharedParent.getWidth() - barThickness); break;
             }
         }
         return result;
@@ -495,6 +497,11 @@ public class X11Activity extends AppCompatActivity {
         LinearLayout primaryLayer = findViewById(R.id.mouse_buttons);
         LinearLayout secondaryLayer = findViewById(R.id.mouse_buttons_secondary_layer);
 
+        primaryLayer.setOnHoverListener((v, e) -> true);
+        primaryLayer.setOnGenericMotionListener((v, e) -> true);
+        if (SDK_INT >= VERSION_CODES.O)
+            primaryLayer.setOnCapturedPointerListener((v, e) -> true);
+
         boolean mouseHelperEnabled = prefs.showMouseHelper.get() && "1".equals(prefs.touchMode.get());
         primaryLayer.setVisibility(mouseHelperEnabled ? View.VISIBLE : View.GONE);
 
@@ -537,35 +544,33 @@ public class X11Activity extends AppCompatActivity {
         pos.setOnTouchListener(new View.OnTouchListener() {
             final int touchSlop = (int) Math.pow(ViewConfiguration.get(X11Activity.this).getScaledTouchSlop(), 2);
             final int tapTimeout = ViewConfiguration.getTapTimeout();
-            final float[] startOffset = new float[2];
-            final int[] startPosition = new int[2];
+            final float[] startRaw = new float[2];
+            final float[] startLayerPos = new float[2];
             long startTime;
 
             @Override
             public boolean onTouch(View v, MotionEvent e) {
                 switch (e.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        primaryLayer.getLocationInWindow(startPosition);
-                        startOffset[0] = e.getX();
-                        startOffset[1] = e.getY();
+                        startRaw[0] = e.getRawX();
+                        startRaw[1] = e.getRawY();
+                        startLayerPos[0] = primaryLayer.getX();
+                        startLayerPos[1] = primaryLayer.getY();
                         startTime = SystemClock.uptimeMillis();
                         pos.setPressed(true);
                         break;
                     case MotionEvent.ACTION_MOVE: {
                         final RectF frmRect = getVisibleFrmRect();
-                        final ViewPager pager = getTerminalToolbarViewPager();
-                        int[] offset = new int[2];
-                        primaryLayer.getLocationInWindow(offset);
-                        primaryLayer.setX(MathUtils.clamp(offset[0] - startOffset[0] + e.getX(), frmRect.left, frmRect.right - primaryLayer.getWidth()));
-                        primaryLayer.setY(MathUtils.clamp(offset[1] - startOffset[1] + e.getY(), frmRect.top, frmRect.bottom - primaryLayer.getHeight()));
+                        float newX = startLayerPos[0] + (e.getRawX() - startRaw[0]);
+                        float newY = startLayerPos[1] + (e.getRawY() - startRaw[1]);
+                        primaryLayer.setX(MathUtils.clamp(newX, frmRect.left, frmRect.right - primaryLayer.getWidth()));
+                        primaryLayer.setY(MathUtils.clamp(newY, frmRect.top, frmRect.bottom - primaryLayer.getHeight()));
                         break;
                     }
                     case MotionEvent.ACTION_UP: {
-                        final int[] _pos = new int[2];
-                        primaryLayer.getLocationInWindow(_pos);
-                        int deltaX = (int) (startOffset[0] - e.getX()) + (startPosition[0] - _pos[0]);
-                        int deltaY = (int) (startOffset[1] - e.getY()) + (startPosition[1] - _pos[1]);
                         pos.setPressed(false);
+                        float deltaX = e.getRawX() - startRaw[0];
+                        float deltaY = e.getRawY() - startRaw[1];
 
                         if (deltaX * deltaX + deltaY * deltaY < touchSlop && SystemClock.uptimeMillis() - startTime <= tapTimeout) {
                             v.performClick();
@@ -617,13 +622,15 @@ public class X11Activity extends AppCompatActivity {
     }
 
     boolean tryConnect() {
-        if (getLorieView().connected())
+        if (getLorieView().connected()) {
+            handler.removeCallbacks(connectRetry);
             return false;
+        }
 
         if (service == null) {
             Log.v("X11Activity", "service = null");
             boolean sent = getLorieView().requestConnection();
-            handler.postDelayed(this::tryConnect, 250);
+            scheduleConnect();
             return true;
         }
 
@@ -637,14 +644,19 @@ public class X11Activity extends AppCompatActivity {
                 clientConnectedStateChanged();
                 getLorieView().reloadPreferences(prefs);
             } else
-                handler.postDelayed(this::tryConnect, 250);
+                scheduleConnect();
         } catch (Exception e) {
             Log.e("X11Activity", "Something went wrong while we were establishing connection", e);
             service = null;
 
-            handler.postDelayed(this::tryConnect, 250);
+            scheduleConnect();
         }
         return false;
+    }
+
+    void scheduleConnect() {
+        handler.removeCallbacks(connectRetry);
+        handler.postDelayed(connectRetry, 250);
     }
 
     void onPreferencesChanged(String key) {
@@ -821,13 +833,12 @@ public class X11Activity extends AppCompatActivity {
 
     private int ekbarContentInset = 0;
     private int imeHeight = 0;
-    private int captionHeight = 0;
 
     private void applyContentInsets() {
         int imeContentInset = prefs.Reseed.get() ? imeHeight : 0;
         int pos = getPagerPosition();
         getLorieView().setContentInsets(pos == PAGER_POSITION_LEFT ? ekbarContentInset : 0,
-                captionHeight + (pos == PAGER_POSITION_TOP ? ekbarContentInset : 0),
+                pos == PAGER_POSITION_TOP ? ekbarContentInset : 0,
                 pos == PAGER_POSITION_RIGHT ? ekbarContentInset : 0,
                 imeContentInset + (pos == PAGER_POSITION_BOTTOM ? ekbarContentInset : 0));
         getLorieView().setObscuredBottom(imeHeight - imeContentInset);
@@ -849,13 +860,6 @@ public class X11Activity extends AppCompatActivity {
 
         imeHeight = height;
         setTerminalToolbarViewLayout();
-    }
-
-    // The window header of desktop windowing can not be hidden, so its space has to be given up even
-    // in fullscreen mode, where fitsSystemWindows does not apply system insets.
-    public void setCaptionHeight(int height) {
-        captionHeight = height;
-        applyContentInsets();
     }
 
     public void toggleExtraKeys(boolean visible, boolean saveState) {

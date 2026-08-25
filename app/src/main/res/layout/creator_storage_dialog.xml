@@ -85,16 +85,30 @@
                     android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.divider.MaterialDivider
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/cpi_l2_cache_size"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="10dp"/>
+                android:hint="@string/l2_cache_size_hint"
+                app:startIconDrawable="@drawable/memory_alt_24px"
+                app:endIconContentDescription="@string/pick"
+                app:endIconDrawable="@drawable/keyboard_arrow_down_24px"
+                app:endIconMode="custom">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/tiet_l2_cache_size"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="4"
+                    android:singleLine="true" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/cdromField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:hint="@string/optical_drive_0"
@@ -143,13 +157,8 @@
                 android:id="@+id/ln_floppy_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:orientation="vertical">
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="10dp"/>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_fda"
@@ -177,7 +186,6 @@
                     android:id="@+id/til_fdb"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:hint="@string/floppy_drive_b"
@@ -197,15 +205,11 @@
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="16dp"/>
-
             <com.vectras.vm.view.SwitchView
                 android:id="@+id/sv_shared_folder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 app:title="@string/shared_folder"
                 app:subtitle="SharedFolder/"
                 android:background="@drawable/object_shape_single_high"/>

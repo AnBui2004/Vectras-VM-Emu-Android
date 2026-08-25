@@ -42,6 +42,7 @@ import com.vectras.vm.utils.PermissionUtils;
 import com.vectras.vm.utils.TarUtils;
 import com.vectras.vm.utils.UIUtils;
 import com.vectras.vterm.Terminal2;
+import com.vectras.vterm.TerminalManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -180,7 +181,7 @@ public class SetupWizard2Activity extends AppCompatActivity {
 
         binding.selectMirrorOption.setOnClickListener(v -> selectMirror());
 
-        binding.ivOpenTerminal.setOnClickListener(v -> startActivity(new Intent(this, TermuxActivity.class)));
+        binding.ivOpenTerminal.setOnClickListener(v -> TerminalManager.openTerminal(this));
 
         binding.btnTryAgain.setOnClickListener(v -> {
             if (ACTION == ACTION_SYSTEM_UPDATE) {

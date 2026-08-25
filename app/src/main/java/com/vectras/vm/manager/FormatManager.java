@@ -26,4 +26,8 @@ public class FormatManager {
                 || lower.endsWith(".flp")
                 || lower.endsWith(".ima");
     }
+
+    public static boolean isQcow2Format(String fileName) {
+        return fileName.toLowerCase().endsWith(".qcow2");
+    }
 }

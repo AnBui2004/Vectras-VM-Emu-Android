@@ -710,6 +710,9 @@
     <string name="x11_loader_exception_content">Không thể dùng màn hình X11 vì vấn đề bảo mật ở trình tải.</string>
     <string name="tcg_cache_size_hint">Kích thước bộ đệm (MB)</string>
     <string name="install_custom_bootstrap_warning_content">Bạn có muốn tiếp tục cài đặt? Bạn chỉ nên sử dụng tệp khởi động ở nguồn uy tín. Nếu bạn không biết bạn đang làm gì thì bạn nên huỷ. Chúng tôi sẽ không chịu trách nhiệm nếu tệp khởi động này không phải của chúng tôi và nó gây ra các thiệt hại cho bạn.</string>
+    <string name="l2_cache_size_hint">Kích thước bộ đệm L2 (MB)</string>
+    <string name="only_qcow2_format_is_supported">Chỉ hỗ trợ định dạng qcow2.</string>
+    <string name="terminal_warning_content">Trước khi tiếp tục, hãy chắc chắn rằng bạn đang biết bạn thật sự đang làm gì. Bạn nên luôn kiểm tra lại các lệnh mà bạn sử dụng để chúng hoạt động đúng để chúng không gây ra các sự cố ngoài ý muốn. Đặc biệt, nếu đang có ai đó hướng dẫn bạn, hãy kiểm tra lại lệnh mà họ cung cấp cho bạn. Chúng tôi sẽ không chịu trách nhiệm nếu lệnh bạn đang sử dụng không phải do chúng tôi cung cấp và xảy ra bất cứ thiệt hại ngoài ý muốn nào xảy ra đối với bạn.</string>
 
     <!--======================TERMUX STRINGS====================-->
     <string name="application_name" translatable="false">Vterm</string>
@@ -779,7 +782,9 @@
     <string name="join_us_on_telegram">Tham gia với chúng tôi trên Telegram</string>
     <string name="join_us_on_telegram_where_we_publish_all_the_news_and_updates_and_receive_your_opinions_and_bugs">Tham gia với chúng tôi trên Telegram, nơi chúng tôi đăng tải tất cả tin tức, cập nhật và nhận ý kiến cũng như báo lỗi từ bạn.</string>
     <string name="join">Tham gia</string>
+    <string name="accept">Chấp nhận</string>
     <string name="dont_show_again">Không hiển thị lại</string>
+    <string name="accept_and_dont_show_again">Chấp nhận &amp; không hiện lại</string>
     <string name="getting_ready_for_you_please_don_t_disconnect_the_network">Đang chuẩn bị cho bạn…\nVui lòng không ngắt kết nối mạng.</string>
     <string name="completed_10_it_won_t_take_long">Đã hoàn thành 10%\nSẽ không mất nhiều thời gian đâu…</string>
     <string name="completed_20_it_won_t_take_long">Đã hoàn thành 20%\nSẽ không mất nhiều thời gian đâu…</string>

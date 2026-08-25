@@ -28,8 +28,8 @@ android {
         applicationId "com.vectras.vm"
         minSdk minApi
         targetSdk targetApi
-        versionCode 172
-        versionName "4.6.5"
+        versionCode 173
+        versionName "4.6.6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -88,7 +88,7 @@ android {
     }
 
     buildToolsVersion '36.1.0'
-    ndkVersion '27.3.13750724'
+    ndkVersion '28.2.13676358'
 
     externalNativeBuild {
         cmake {

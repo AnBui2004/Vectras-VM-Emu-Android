@@ -33,3 +33,9 @@ android {
 dependencies {
     implementation libs.androidx.annotation
 }
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}

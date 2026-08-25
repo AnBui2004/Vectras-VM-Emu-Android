@@ -197,6 +197,8 @@ public class ExportRomActivity extends AppCompatActivity {
             vmConfigMap.put("hd1", new File(Objects.requireNonNull(Uri.parse(current.hd1).getPath())).getName());
         }
 
+        vmConfigMap.put("hdL2CacheSize", current.hdL2CacheSize);
+
         if (FileUtils.isFileExists(current.imgCdrom)) {
             vmConfigMap.put("cdrom", new File(Objects.requireNonNull(Uri.parse(current.imgCdrom).getPath())).getName());
         } else {
