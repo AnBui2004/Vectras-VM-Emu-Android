@@ -75,7 +75,7 @@ Advanced options are [here](ADVANCED.md).
 - [Vectras VM (Official)](https://github.com/xoureldeen/Vectras-VM-Android)
 - [ZoomImageView](https://github.com/k1slay/ZoomImageView)
 
-# License
+# 📜 License
 
 This project is licensed under the following terms:
 
