@@ -1,3 +1,13 @@
+/*
+ * Copyright (C) 2026 Nguyen Bao An Bui
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
+
 package com.anbui.elephant.interaction;
 
 import android.content.Context;
@@ -10,7 +20,7 @@ import androidx.preference.PreferenceManager;
 import com.anbui.elephant.log.LogPrinter;
 import com.anbui.elephant.retrofit2utils.Retrofit2Utils;
 import com.google.gson.Gson;
-import com.vectras.vm.utils.JSONUtils;
+import com.google.gson.JsonSyntaxException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -75,10 +85,15 @@ public class Interaction {
             isRequesting = false;
             isAllowAction = true;
 
-            if (isSuccess && JSONUtils.isValidFromString(body)) {
-                dataInteraction = new Gson().fromJson(body, DataInteraction.class);
-                callback.onResult(true, dataInteraction.views, dataInteraction.likes);
-                LogPrinter.print(TAG, "Get succeed.");
+            if (isSuccess) {
+                try {
+                    dataInteraction = new Gson().fromJson(body, DataInteraction.class);
+                    callback.onResult(true, dataInteraction.views, dataInteraction.likes);
+                    LogPrinter.print(TAG, "Get succeed.");
+                } catch (JsonSyntaxException e) {
+                    callback.onResult(false, 1, 0);
+                    LogPrinter.print(TAG, "Get unsucceed.");
+                }
             } else {
                 callback.onResult(false, 1, 0);
                 LogPrinter.print(TAG, "Get unsucceed.");
@@ -133,12 +148,17 @@ public class Interaction {
                 isTryingView = false;
             }
 
-            if (isSuccess && JSONUtils.isValidFromString(body)) {
-                DataInteraction data = new Gson().fromJson(body, DataInteraction.class);
-                dataInteraction.views = data.count;
-                setViews();
-                callback.onResult(true, data.count, getLikeCount());
-                LogPrinter.print(TAG, "View succeed.");
+            if (isSuccess) {
+                try {
+                    DataInteraction data = new Gson().fromJson(body, DataInteraction.class);
+                    dataInteraction.views = data.count;
+                    setViews();
+                    callback.onResult(true, data.count, getLikeCount());
+                    LogPrinter.print(TAG, "View succeed.");
+                } catch (JsonSyntaxException e) {
+                    callback.onResult(false, 1, 0);
+                    LogPrinter.print(TAG, "View unsucceed.");
+                }
             } else {
                 callback.onResult(false, 1, 0);
                 LogPrinter.print(TAG, "View unsucceed.");
@@ -196,12 +216,17 @@ public class Interaction {
                 isTryingLike = false;
             }
 
-            if (isSuccess && JSONUtils.isValidFromString(body)) {
-                DataInteraction data = new Gson().fromJson(body, DataInteraction.class);
-                dataInteraction.likes = data.count;
-                setLikes();
-                callback.onResult(true, getViewCount(), data.count);
-                LogPrinter.print(TAG, "Like succeed.");
+            if (isSuccess) {
+                try {
+                    DataInteraction data = new Gson().fromJson(body, DataInteraction.class);
+                    dataInteraction.likes = data.count;
+                    setLikes();
+                    callback.onResult(true, getViewCount(), data.count);
+                    LogPrinter.print(TAG, "Like succeed.");
+                } catch (JsonSyntaxException e) {
+                    callback.onResult(false, 1, 0);
+                    LogPrinter.print(TAG, "Like unsucceed.");
+                }
             } else {
                 callback.onResult(false, 1, 0);
                 LogPrinter.print(TAG, "Like unsucceed.");

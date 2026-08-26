@@ -75,6 +75,13 @@ Advanced options are [here](ADVANCED.md).
 - [Vectras VM (Official)](https://github.com/xoureldeen/Vectras-VM-Android)
 - [ZoomImageView](https://github.com/k1slay/ZoomImageView)
 
+# License
+
+This project is licensed under the following terms:
+
+* **Directory `app/src/main/java/com/anbui/elephant` (excluding `vm`)**: Licensed under [Apache License 2.0](LICENSE-APACHE-2.0).
+* **The rest of the project**: Licensed under [GNU General Public License v3.0](LICENSE).
+
 [ico-version]: https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white
 [ico-license]: https://img.shields.io/badge/License-GPL_v2-blue.svg
 
