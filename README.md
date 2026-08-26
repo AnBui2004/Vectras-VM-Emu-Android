@@ -81,6 +81,7 @@ This project is licensed under the following terms:
 
 * **Directory `app/src/main/java/com/anbui/elephant` (excluding `vm`)**: Licensed under [Apache License 2.0](LICENSE-APACHE-2.0).
 * **The rest of the project**: Licensed under [GNU General Public License v2.0](LICENSE).
+* **Brand Assets (Logo / Icon / Name):** The logo, icon, and brand name are the intellectual property of **Nguyen Bao An Bui**. All rights reserved. You are **not permitted** to use this logo, icon, or brand name for forks, commercial products, or republished applications without written consent. This applies to the following files: `nbablab.png`, `notebook_param_48.png`, and `nguyen_bao_an_bui.xml`.
 
 [ico-version]: https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white
 [ico-license]: https://img.shields.io/badge/License-GPL_v2-blue.svg
