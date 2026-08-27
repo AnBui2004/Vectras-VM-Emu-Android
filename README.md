@@ -69,7 +69,7 @@ Advanced options are [here](ADVANCED.md).
 - [Gson](https://github.com/google/gson)
 - [Mesa for Android Container](https://github.com/lfdevs/mesa-for-android-container)
 - [OkHttp](https://github.com/square/okhttp)
-- [PROOT](https://proot-me.github.io/)
+- [PRoot](https://github.com/termux/proot)
 - [QEMU](https://github.com/qemu/qemu)
 - [Termux](https://github.com/termux)
 - [Vectras VM (Official)](https://github.com/xoureldeen/Vectras-VM-Android)
