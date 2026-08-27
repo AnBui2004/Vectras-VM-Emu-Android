@@ -63,7 +63,6 @@ Play classic games with 3Dfx support on Windows 95, 98, ME, 2000, and XP! Turnip
 Advanced options are [here](ADVANCED.md).
 
 # ❤️ Thanks to
-- [3DFX QEMU PATCH](https://github.com/kjliew/qemu-3dfx)
 - [Alpine Linux](https://www.alpinelinux.org/)
 - [Glide](https://github.com/bumptech/glide)
 - [Gson](https://github.com/google/gson)
@@ -71,6 +70,7 @@ Advanced options are [here](ADVANCED.md).
 - [OkHttp](https://github.com/square/okhttp)
 - [PRoot](https://github.com/termux/proot)
 - [QEMU](https://github.com/qemu/qemu)
+- [QEMU MESA GL/3Dfx Glide Pass-Through](https://github.com/kjliew/qemu-3dfx)
 - [Termux](https://github.com/termux)
 - [Vectras VM (Official)](https://github.com/xoureldeen/Vectras-VM-Android)
 - [ZoomImageView](https://github.com/k1slay/ZoomImageView)
