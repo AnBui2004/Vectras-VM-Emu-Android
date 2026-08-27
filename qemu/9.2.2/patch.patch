@@ -1,0 +1,69 @@
+diff --git a/ui/vnc.c b/ui/vnc.c
+index 5fcb35bf25..2b9b7db193 100644
+--- a/ui/vnc.c
++++ b/ui/vnc.c
+@@ -59,6 +59,9 @@
+ #define VNC_REFRESH_INTERVAL_BASE GUI_REFRESH_INTERVAL_DEFAULT
+ #define VNC_REFRESH_INTERVAL_INC  50
+ #define VNC_REFRESH_INTERVAL_MAX  GUI_REFRESH_INTERVAL_IDLE
++
++#define VNC_DEFAULT_REFRESH_RATE 30
++
+ static const struct timeval VNC_REFRESH_STATS = { 0, 500000 };
+ static const struct timeval VNC_REFRESH_LOSSY = { 2, 0 };
+ 
+@@ -3228,8 +3231,8 @@ static void vnc_refresh(DisplayChangeListener *dcl)
+ 
+     if (has_dirty && rects) {
+         vd->dcl.update_interval /= 2;
+-        if (vd->dcl.update_interval < VNC_REFRESH_INTERVAL_BASE) {
+-            vd->dcl.update_interval = VNC_REFRESH_INTERVAL_BASE;
++        if (vd->dcl.update_interval < vd->min_interval) {
++            vd->dcl.update_interval = vd->min_interval;
+         }
+     } else {
+         vd->dcl.update_interval += VNC_REFRESH_INTERVAL_INC;
+@@ -3594,6 +3597,9 @@ static QemuOptsList qemu_vnc_opts = {
+         },{
+             .name = "power-control",
+             .type = QEMU_OPT_BOOL,
++        },{
++            .name = "refresh-rate",
++            .type = QEMU_OPT_NUMBER,
+         },
+         { /* end of list */ }
+     },
+@@ -4023,6 +4029,7 @@ void vnc_display_open(const char *id, Error **errp)
+     const char *saslauthz;
+     int lock_key_sync = 1;
+     int key_delay_ms;
++    int refresh_rate;
+     const char *audiodev;
+     const char *passwordSecret;
+ 
+@@ -4036,6 +4043,12 @@ void vnc_display_open(const char *id, Error **errp)
+         return;
+     }
+ 
++    refresh_rate = qemu_opt_get_number(opts, "refresh-rate", VNC_DEFAULT_REFRESH_RATE);
++    if (refresh_rate <= 0 || refresh_rate > 120) {
++        refresh_rate = VNC_DEFAULT_REFRESH_RATE;
++    }
++    vd->min_interval = 1000 / refresh_rate;
++
+     reverse = qemu_opt_get_bool(opts, "reverse", false);
+     if (vnc_display_get_addresses(opts, reverse, &saddr_list, &wsaddr_list,
+                                   errp) < 0) {
+diff --git a/ui/vnc.h b/ui/vnc.h
+index acc53a2cc1..ee09c04755 100644
+--- a/ui/vnc.h
++++ b/ui/vnc.h
+@@ -185,6 +185,8 @@ struct VncDisplay
+ #endif
+ 
+     AudioState *audio_state;
++
++    int min_interval;
+ };
+ 
+ typedef struct VncTight {
