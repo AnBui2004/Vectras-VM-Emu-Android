@@ -89,6 +89,16 @@ This project is licensed under the following terms:
 * **The rest of the project**: Licensed under [GNU General Public License v2.0](LICENSE).
 * **Brand Assets (Logo / Icon / Name):** The logo, icon, and brand name are the intellectual property of **Nguyen Bao An Bui**. All rights reserved. You are **not permitted** to use this logo, icon, or brand name for forks, commercial products, or republished applications without written consent. This applies to the following files: `nbablab.png`, `notebook_param_48.png`, and `nguyen_bao_an_bui.xml`.
 
+# ⭐ Star History
+
+<a href="https://www.star-history.com/?repos=AnBui2004%2FVectras-VM-Emu-Android&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=AnBui2004/Vectras-VM-Emu-Android&type=date&theme=dark&legend=top-left&sealed_token=2MHlTtOXa6VoJumMfNYZ0BfKwzks9M-RGdd1Pboywmt9W8DRhiUrhui7fg2Zat1LzPFb6Fxxk2O4rF2AZ25n7mBjTrfrNC6xGlsX4EK_F3z8doYa0FfT_o6E1mIzztJ-fU2z0iHvTZ2ECAea4yxwqz7x9q4iPTWxSI3Ryl3pSpBlSdn9DVqgmzcwc1ZD" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=AnBui2004/Vectras-VM-Emu-Android&type=date&legend=top-left&sealed_token=2MHlTtOXa6VoJumMfNYZ0BfKwzks9M-RGdd1Pboywmt9W8DRhiUrhui7fg2Zat1LzPFb6Fxxk2O4rF2AZ25n7mBjTrfrNC6xGlsX4EK_F3z8doYa0FfT_o6E1mIzztJ-fU2z0iHvTZ2ECAea4yxwqz7x9q4iPTWxSI3Ryl3pSpBlSdn9DVqgmzcwc1ZD" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=AnBui2004/Vectras-VM-Emu-Android&type=date&legend=top-left&sealed_token=2MHlTtOXa6VoJumMfNYZ0BfKwzks9M-RGdd1Pboywmt9W8DRhiUrhui7fg2Zat1LzPFb6Fxxk2O4rF2AZ25n7mBjTrfrNC6xGlsX4EK_F3z8doYa0FfT_o6E1mIzztJ-fU2z0iHvTZ2ECAea4yxwqz7x9q4iPTWxSI3Ryl3pSpBlSdn9DVqgmzcwc1ZD" />
+ </picture>
+</a>
+
 [ico-version]: https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white
 [ico-license]: https://img.shields.io/badge/License-GPL_v2-blue.svg
 
