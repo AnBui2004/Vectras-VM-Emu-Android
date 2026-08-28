@@ -75,7 +75,7 @@ Advanced options are [here](ADVANCED.md).
 - [Vectras VM (Official)](https://github.com/xoureldeen/Vectras-VM-Android)
 - [ZoomImageView](https://github.com/k1slay/ZoomImageView)
 
-## 💡 Credits & Intellectual Property Notice
+# 💡 Credits & Intellectual Property Notice
 
 This repository uses the **Vectras VM** name and logo, which are the original intellectual property and designs of **Noureldeen Elsayed** (established in 2023).
 
