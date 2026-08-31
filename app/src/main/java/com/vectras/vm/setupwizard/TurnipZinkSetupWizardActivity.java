@@ -146,8 +146,8 @@ public class TurnipZinkSetupWizardActivity extends AppCompatActivity {
                 " echo \"Installing packages...\";" +
                 " apk add aria2 mesa-dri-gallium mesa-vulkan-swrast vulkan-loader mesa-utils vulkan-tools mesa-egl mesa-gbm mesa-vulkan-ati mesa-vulkan-broadcom mesa-vulkan-freedreno mesa-vulkan-panfrost;" +
                 " echo \"Downloading...\";" +
-                " aria2c -x 4 --async-dns=false --disable-ipv6 --check-certificate=false -o setup0.tar.gz " + libglvndFileUrl + ";" +
-                " aria2c -x 4 --async-dns=false --disable-ipv6 --check-certificate=false -o setup1.tar.gz " + mesaFileUrl + ";" +
+                " aria2c -x 4 --async-dns=false --disable-ipv6 -o setup0.tar.gz " + libglvndFileUrl + ";" +
+                " aria2c -x 4 --async-dns=false --disable-ipv6 -o setup1.tar.gz " + mesaFileUrl + ";" +
                 " echo \"Installing...\";" +
                 " tar -xzvf setup0.tar.gz -C /;" +
                 " tar -xzvf setup1.tar.gz -C /;" +
