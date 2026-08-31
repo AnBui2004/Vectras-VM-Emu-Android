@@ -421,7 +421,15 @@ public class StartVM {
 
         if (MainSettingsManager.getVmUi(context).equals("VNC")) {
             if (!MainSettingsManager.getVncExternalPassword(context).isEmpty()) {
-                params += "-object secret,id=vncpass,data=\"" + MainSettingsManager.getVncExternalPassword(context) + "\"";
+                // The command runs through a shell and QEMU parses data= with
+                // its own option parser, so both " (shell/quoting) and ,
+                // (option separator) and \ (escape) in the password must be
+                // escaped to keep them from breaking out of the secret value.
+                String escapedPassword = MainSettingsManager.getVncExternalPassword(context)
+                        .replace("\\", "\\\\")
+                        .replace("\"", "\\\"")
+                        .replace(",", "\\,");
+                params += "-object secret,id=vncpass,data=\"" + escapedPassword + "\"";
             }
 
             params += (params.isEmpty() ? "" : " ") + "-vnc ";
