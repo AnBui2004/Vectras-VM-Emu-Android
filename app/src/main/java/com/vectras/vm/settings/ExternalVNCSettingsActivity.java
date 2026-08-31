@@ -36,7 +36,15 @@ public class ExternalVNCSettingsActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
         MainSettingsManager.setVncExternal(this, binding.swEnabled.isChecked());
-        MainSettingsManager.setVncExternalDisplay(this, Objects.requireNonNull(binding.etDisplay.getText()).toString());
+        // Persist the display number only when it parses; MainActivity
+        // parses this value on every resume, so saving raw text (e.g. a
+        // stray "-") would crash the app on the next launch.
+        try {
+            Integer.parseInt(binding.etDisplay.getText().toString());
+            MainSettingsManager.setVncExternalDisplay(this, binding.etDisplay.getText().toString());
+        } catch (NumberFormatException ignored) {
+
+        }
         MainSettingsManager.setVncExternalPassword(this, Objects.requireNonNull(binding.etPassword.getText()).toString());
     }
 
@@ -104,9 +112,20 @@ public class ExternalVNCSettingsActivity extends AppCompatActivity {
                 binding.cvCopyport.setVisibility(View.VISIBLE);
         }
 
-        int result = Integer.parseInt(display) + 5900;
+        // The field allows signed input (and pastes), so partial or huge
+        // values like "-", "1-", or a 12-digit number must not crash here.
+        int displayNumber;
+        try {
+            displayNumber = Integer.parseInt(display);
+        } catch (NumberFormatException e) {
+            binding.tilDisplay.setError(getString(R.string.you_need_to_set_a_number_for_the_display));
+            binding.cvCopyport.setVisibility(View.GONE);
+            return;
+        }
 
-        if (result > 65535) {
+        int result = displayNumber + 5900;
+
+        if (result > 65535 || result < 5900) {
             binding.tilDisplay.setError(getString(R.string.need_to_set_smaller_screen_number));
             if (binding.cvCopyport.getVisibility() == View.VISIBLE)
                 binding.cvCopyport.setVisibility(View.GONE);
