@@ -29,6 +29,7 @@ public class SoftwareStoreHomeAdapter extends RecyclerView.Adapter<RecyclerView.
     private List<DataRoms> fullList;
     private final List<DataRoms> displayList;
     private final boolean isBrighterItemBackground;
+    private final int textAvailDefaultColor = Color.LTGRAY;
 
     public SoftwareStoreHomeAdapter(Context context, List<DataRoms> data, boolean isBrighterItemBackground) {
         this.context = context;
@@ -81,7 +82,10 @@ public class SoftwareStoreHomeAdapter extends RecyclerView.Adapter<RecyclerView.
                 context.startActivity(intent);
             });
             myHolder.textAvail.setText(context.getString(R.string.available) + (current.containsAds ? " • " + context.getString(R.string.contains_ads) : ""));
+            // Reset the color a previous recycled bind may have set to red.
+            myHolder.textAvail.setTextColor(textAvailDefaultColor);
         } else {
+            myHolder.linearItem.setOnClickListener(null);
             myHolder.textAvail.setText(context.getString(R.string.unavailable) + (current.containsAds ? " • " + context.getString(R.string.contains_ads) : ""));
             myHolder.textAvail.setTextColor(Color.RED);
         }
