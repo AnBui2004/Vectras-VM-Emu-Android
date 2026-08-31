@@ -414,7 +414,7 @@ public class SetupWizard2Activity extends AppCompatActivity {
                         } else {
                             bootstrapFileLink = Objects.requireNonNull(mmap.get(DeviceUtils.is64bit() ? "amd64" : "x86")).toString();
                         }
-                        downloadBootstrapsCommand = " aria2c -x 4 --async-dns=false --disable-ipv6 --check-certificate=false -o setup.tar.gz " + bootstrapFileLink;
+                        downloadBootstrapsCommand = " aria2c -x 4 --async-dns=false --disable-ipv6 -o setup.tar.gz " + bootstrapFileLink;
                     }
                 }
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
