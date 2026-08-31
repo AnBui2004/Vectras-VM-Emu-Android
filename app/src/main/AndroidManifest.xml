@@ -32,11 +32,11 @@
 
     <!-- Signature-level guard for the exported RunCommandService: only apps
          signed with this key may push commands into the app's shell. -->
-    <permission
-        android:name="com.termux.permission.RUN_COMMAND"
-        android:protectionLevel="signature" />
+<!--    <permission-->
+<!--        android:name="com.termux.permission.RUN_COMMAND"-->
+<!--        android:protectionLevel="signature" />-->
 
-    <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
+<!--    <uses-permission android:name="com.termux.permission.RUN_COMMAND" />-->
 
     <uses-feature
         android:name="android.hardware.touchscreen"
@@ -242,11 +242,11 @@
         <service
             android:name="com.termux.app.TermuxService"
             android:exported="false" />
-        <service
-            android:name="com.termux.app.RunCommandService"
-            android:exported="true"
-            android:permission="com.termux.permission.RUN_COMMAND"
-            android:stopWithTask="true" /> <!-- Termux-X11 -->
+<!--        <service-->
+<!--            android:name="com.termux.app.RunCommandService"-->
+<!--            android:exported="true"-->
+<!--            android:permission="com.termux.permission.RUN_COMMAND"-->
+<!--            android:stopWithTask="true" /> &lt;!&ndash; Termux-X11 &ndash;&gt;-->
         <activity
             android:name=".x11.X11Activity"
             android:configChanges="fontScale|orientation|screenSize|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|screenLayout|touchscreen|uiMode|smallestScreenSize|density"

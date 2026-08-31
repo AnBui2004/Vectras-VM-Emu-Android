@@ -24,7 +24,7 @@ import java.util.Properties;
  * When allow-external-apps property is set to "true" in ~/.termux/termux.properties,  
  * is able to process execute intents sent by third-party applications.
  *
- * Third-party program must declare com.termux.permission.RUN_COMMAND permission and it should be
+ * Third-party program must declare com.vectras.vm.permission.RUN_COMMAND permission and it should be
  * granted by user.
  *
  * Absolute path of command or script must be given in "RUN_COMMAND_PATH" extra.
@@ -44,29 +44,29 @@ import java.util.Properties;
  *
  * Sample code to run command "top" with java:
  *   Intent intent = new Intent();
- *   intent.setClassName("com.termux", "com.termux.app.RunCommandService");
- *   intent.setAction("com.termux.RUN_COMMAND");
- *   intent.putExtra("com.termux.RUN_COMMAND_PATH", "/data/data/com.termux/files/usr/bin/top");
- *   intent.putExtra("com.termux.RUN_COMMAND_ARGUMENTS", new String[]{"-n", "5"});
- *   intent.putExtra("com.termux.RUN_COMMAND_WORKDIR", "/data/data/com.termux/files/home");
- *   intent.putExtra("com.termux.RUN_COMMAND_BACKGROUND", false);
+ *   intent.setClassName("com.vectras,vm", "com.termux.app.RunCommandService");
+ *   intent.setAction("com.vectras.vm.permission.RUN_COMMAND");
+ *   intent.putExtra("com.vectras.vm.permission.RUN_COMMAND_PATH", "/data/data/com.vectras.vm/files/usr/bin/top");
+ *   intent.putExtra("com.vectras.vm.permission.RUN_COMMAND_ARGUMENTS", new String[]{"-n", "5"});
+ *   intent.putExtra("com.vectras.vm.permission.RUN_COMMAND_WORKDIR", "/data/data/com.vectras.vm/files/home");
+ *   intent.putExtra("com.vectras.vm.permission.RUN_COMMAND_BACKGROUND", false);
  *   startService(intent);
  *
  * Sample code to run command "top" with "am startservice" command:
- * am startservice --user 0 -n com.termux/com.termux.app.RunCommandService 
- * -a com.termux.RUN_COMMAND 
- * --es com.termux.RUN_COMMAND_PATH '/data/data/com.termux/files/usr/bin/top' 
- * --esa com.termux.RUN_COMMAND_ARGUMENTS '-n,5' 
- * --es com.termux.RUN_COMMAND_WORKDIR '/data/data/com.termux/files/home'
- * --ez com.termux.RUN_COMMAND_BACKGROUND 'false'
+ * am startservice --user 0 -n com.vectras.vm/com.termux.app.RunCommandService
+ * -a com.vectras.vm.permission.RUN_COMMAND 
+ * --es com.vectras.vm.permission.RUN_COMMAND_PATH '/data/data/com.vectras.vm/files/usr/bin/top'
+ * --esa com.vectras.vm.permission.RUN_COMMAND_ARGUMENTS '-n,5' 
+ * --es com.vectras.vm.permission.RUN_COMMAND_WORKDIR '/data/data/com.vectras.vm/files/home'
+ * --ez com.vectras.vm.permission.RUN_COMMAND_BACKGROUND 'false'
  */
 public class RunCommandService extends Service {
 
-    public static final String RUN_COMMAND_ACTION = "com.termux.RUN_COMMAND";
-    public static final String RUN_COMMAND_PATH = "com.termux.RUN_COMMAND_PATH";
-    public static final String RUN_COMMAND_ARGUMENTS = "com.termux.RUN_COMMAND_ARGUMENTS";
-    public static final String RUN_COMMAND_WORKDIR = "com.termux.RUN_COMMAND_WORKDIR";
-    public static final String RUN_COMMAND_BACKGROUND = "com.termux.RUN_COMMAND_BACKGROUND";
+    public static final String RUN_COMMAND_ACTION = "com.vectras.vm.permission.RUN_COMMAND";
+    public static final String RUN_COMMAND_PATH = "com.vectras.vm.permission.RUN_COMMAND_PATH";
+    public static final String RUN_COMMAND_ARGUMENTS = "com.vectras.vm.permission.RUN_COMMAND_ARGUMENTS";
+    public static final String RUN_COMMAND_WORKDIR = "com.vectras.vm.permission.RUN_COMMAND_WORKDIR";
+    public static final String RUN_COMMAND_BACKGROUND = "com.vectras.vm.permission.RUN_COMMAND_BACKGROUND";
 
     private static final String NOTIFICATION_CHANNEL_ID = "termux_run_command_notification_channel";
     private static final int NOTIFICATION_ID = 1338;

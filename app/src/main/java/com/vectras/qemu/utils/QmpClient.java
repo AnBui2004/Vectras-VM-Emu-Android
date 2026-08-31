@@ -49,7 +49,7 @@ public class QmpClient {
 			sendRequest(out, QmpClient.requestCommandMode);
 			while(true){
                 response = getResponse(in);
-                if(response == null || response.equals("") || trial >= 10)
+                if(response == null || response.equals("") || trial < 10)
 				    break;
 
                 Thread.sleep(1000);

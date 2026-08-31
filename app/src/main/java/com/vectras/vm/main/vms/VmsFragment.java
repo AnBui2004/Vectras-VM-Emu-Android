@@ -28,6 +28,7 @@ import com.vectras.vm.utils.DeviceUtils;
 import com.vectras.vm.utils.DialogUtils;
 import com.vectras.vm.utils.FileUtils;
 import com.vectras.vm.utils.PermissionUtils;
+import com.vectras.vm.utils.ProgressDialog;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -86,11 +87,15 @@ public class VmsFragment extends Fragment {
         binding.bnRepair.setOnClickListener(V -> {
             // The repair walk scans every VM folder and rewrites
             // roms-data.json; do it off the UI thread and report back when done.
+            ProgressDialog progressDialog = new ProgressDialog(requireActivity());
+            progressDialog.show();
             executor.execute(() -> {
                 VMManager.startFixRomsDataJson();
                 if (!isAdded()) return;
-                requireActivity().runOnUiThread(() ->
-                        VMManager.fixRomsDataJsonResult(requireActivity()));
+                requireActivity().runOnUiThread(() -> {
+                    progressDialog.reset();
+                    VMManager.fixRomsDataJsonResult(requireActivity());
+                });
             });
         });
 

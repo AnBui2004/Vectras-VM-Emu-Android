@@ -19,6 +19,7 @@ The reason we use `sd` instead of `patch` is that it is not complicated.
 cd termux-x11/lorie/src/main/cpp
 # Replace them so it works with Vectras VM.
 sd '_com_termux_x11_' '_com_vectras_vm_x11_' lorie/cmdentrypoint.cpp
+sd 'com/termux/x11/CmdEntryPoint' 'com/vectras/vm/x11/CmdEntryPoint' lorie/cmdentrypoint.cpp
 sd '/data/data/com.termux/' '/data/data/com.vectras.vm/' lorie/cmdentrypoint.cpp
 sd 'com/termux/x11/MainActivity' 'com/vectras/vm/x11/X11Activity' lorie/activity.cpp
 sd 'com/termux/x11/LorieView' 'com/vectras/vm/x11/LorieView' lorie/activity.cpp

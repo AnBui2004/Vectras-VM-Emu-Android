@@ -78,21 +78,36 @@ public class PendingCommand {
                     }
 
                     command = "";
+                } else if (command.startsWith("qemu-system")) {
+                    DialogUtils.twoDialog(
+                            activity,
+                            activity.getString(R.string.a_vm_is_waiting),
+                            activity.getString(R.string.a_vm_is_waiting_content),
+                            activity.getString(R.string.continuetext),
+                            activity.getString(R.string.cancel),
+                            true,
+                            R.drawable.stack_24px,
+                            true,
+                            () -> {
+                                Log.i(TAG, "Run VM...");
+
+                                Config.vmID = "quick_run_" + VMManager.idGenerator();
+                                new Thread(() -> {
+                                    VmFileManager.removeTemp(activity, Config.vmID);
+
+                                    String env = StartVM.env(activity, command, "", true);
+                                    FileUtils.createDirectory(AppConfig.vmFolder + Config.vmID);
+                                    activity.runOnUiThread(() -> {
+                                        MainStartVM.startNow(activity, "Quick run", env, Config.vmID, null, null);
+                                        VMManager.lastQemuCommand = command;
+                                        command = "";
+                                    });
+                                }).start();
+                            },
+                            null,
+                            null);
                 } else {
-                    Log.i(TAG, "Run VM...");
-
-                    Config.vmID = "quick_run_" + VMManager.idGenerator();
-                    new Thread(() -> {
-                        VmFileManager.removeTemp(activity, Config.vmID);
-
-                        String env = StartVM.env(activity, command, "", true);
-                        FileUtils.createDirectory(AppConfig.vmFolder + Config.vmID);
-                        activity.runOnUiThread(() -> {
-                            MainStartVM.startNow(activity, "Quick run", env, Config.vmID, null, null);
-                            VMManager.lastQemuCommand = command;
-                            command = "";
-                        });
-                    }).start();
+                    command = "";
                 }
             }
         }
