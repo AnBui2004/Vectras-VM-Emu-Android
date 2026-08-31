@@ -84,8 +84,14 @@ public class VmsFragment extends Fragment {
         binding.bnRomstore.setOnClickListener(v -> sharedViewModel.openRomStore.setValue(new Event<>(true)));
 
         binding.bnRepair.setOnClickListener(V -> {
-            VMManager.startFixRomsDataJson();
-            VMManager.fixRomsDataJsonResult(requireActivity());
+            // The repair walk scans every VM folder and rewrites
+            // roms-data.json; do it off the UI thread and report back when done.
+            executor.execute(() -> {
+                VMManager.startFixRomsDataJson();
+                if (!isAdded()) return;
+                requireActivity().runOnUiThread(() ->
+                        VMManager.fixRomsDataJsonResult(requireActivity()));
+            });
         });
 
         binding.wrlRomlist.setOnRefreshListener(() -> {
