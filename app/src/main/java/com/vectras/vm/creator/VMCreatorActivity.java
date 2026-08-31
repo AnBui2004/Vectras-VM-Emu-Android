@@ -877,7 +877,12 @@ public class VMCreatorActivity extends AppCompatActivity {
     private void importRom(Uri fileUri, String filePath, String fileName) {
         if (isFinishing() || isDestroyed()) return;
 
-        if (!(fileName.endsWith(".cvbi") || filePath.endsWith(".cvbi.zip"))) {
+        // fileName is always present (it comes from the picker/URI), while
+        // filePath can legitimately be empty when the file lives on a
+        // content provider - exactly the case the URI import path exists
+        // for. So the extension must be checked against fileName, which
+        // also covers the .cvbi.zip bundle form.
+        if (!(fileName.endsWith(".cvbi") || fileName.endsWith(".cvbi.zip"))) {
             DialogUtils.oneDialog(this,
                     getResources().getString(R.string.problem_has_been_detected),
                     getResources().getString(R.string.format_not_supported_please_select_file_with_format_cvbi),
