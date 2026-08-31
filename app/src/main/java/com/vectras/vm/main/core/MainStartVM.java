@@ -420,7 +420,17 @@ public class MainStartVM {
 
                                 Boolean[] result = VMManager.getMigrateStatus();
 
+                                // Treat an unreachable/errored QMP response as
+                                // failure after a grace period so this loop can
+                                // never spin forever and leave the boot dialog
+                                // stuck on "Resuming".
+                                long migratePollingDeadline = System.currentTimeMillis() + 120_000;
+
                                 while (!result[0] && !result[1]) {
+                                    if (System.currentTimeMillis() > migratePollingDeadline) {
+                                        result[1] = true;
+                                        break;
+                                    }
                                     try {
                                         Thread.sleep(1000);
                                     } catch (Exception ignored) {
