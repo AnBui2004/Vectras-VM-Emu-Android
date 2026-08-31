@@ -91,7 +91,9 @@ public class SoftwareStoreFragment extends Fragment {
 
     private void loadFromServer() {
         SharedViewModel sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
-        sharedViewModel.onSoftwareStoreLoaded.setValue(new Event<>(true));
+        // false = loading: MainActivity disables the search bar while the
+        // store list is still downloading, mirroring the ROM store flow.
+        sharedViewModel.onSoftwareStoreLoaded.setValue(new Event<>(false));
 
         binding.linearload.setVisibility(View.VISIBLE);
 
