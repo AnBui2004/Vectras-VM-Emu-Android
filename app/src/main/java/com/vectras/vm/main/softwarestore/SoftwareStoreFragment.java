@@ -108,7 +108,7 @@ public class SoftwareStoreFragment extends Fragment {
     }
 
     private void loadData() {
-        List<DataRoms> dataSoftware = new ArrayList<>();
+        List<DataRoms> dataSoftware;
 
         try {
             Gson gson = new Gson();
@@ -117,7 +117,13 @@ public class SoftwareStoreFragment extends Fragment {
         } catch (Exception e) {
             binding.linearload.setVisibility(View.GONE);
             binding.linearnothinghere.setVisibility(View.VISIBLE);
+            dataSoftware = new ArrayList<>();
         }
+
+        // Gson returns null (it does not throw) for a "null"/blank body.
+        // Pushing null into the LiveData makes the observer call
+        // loadFromServer() again, looping network requests forever.
+        if (dataSoftware == null) dataSoftware = new ArrayList<>();
 
         homeSoftwareStoreViewModel.setSoftwareList(dataSoftware);
         data.clear();
