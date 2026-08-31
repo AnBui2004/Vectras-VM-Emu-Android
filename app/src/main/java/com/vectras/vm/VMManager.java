@@ -854,6 +854,22 @@ public class VMManager {
     public static boolean isthiscommandsafe(@NonNull String _command, Context _context) {
         Log.d("VMManager.isthiscommandsafe", _command);
 
+        // The command is written to a bash shell's stdin, so characters that
+        // trigger shell expansion, redirection, or process substitution let a
+        // crafted VM config execute arbitrary code even though the blacklist
+        // below only rejects & \n ; |.
+        String shellMetaCharacters = "$`><";
+        if (_command.contains(shellMetaCharacters.substring(0, 1))
+                || _command.contains(shellMetaCharacters.substring(1, 2))) {
+            latestUnsafeCommandReason = _context.getString(R.string.command_are_not_allowed_to_contain_shell_expansion);
+            return false;
+        }
+        if (_command.contains(shellMetaCharacters.substring(2, 3))
+                || _command.contains(shellMetaCharacters.substring(3, 4))) {
+            latestUnsafeCommandReason = _context.getString(R.string.command_are_not_allowed_to_contain_redirection);
+            return false;
+        }
+
         if (_command.startsWith("qemu")) {
             if (!_command.contains("&")) {
                 if (!_command.contains("\n")) {
