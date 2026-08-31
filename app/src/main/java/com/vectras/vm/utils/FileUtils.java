@@ -484,19 +484,23 @@ public class FileUtils {
             Uri uri
     ) throws Exception {
 
-        InputStream in = new FileInputStream(sourcePath);
-        OutputStream out = context.getContentResolver().openOutputStream(uri);
-        byte[] buffer = new byte[32 * 1024];
-        if (DeviceUtils.totalMemoryCapacity(context) < 3L * 1024 * 1024 * 1024) {
-            buffer = new byte[4 * 1024];
-        } else if (DeviceUtils.totalMemoryCapacity(context) < 5L * 1024 * 1024 * 1024) {
-            buffer = new byte[8 * 1024];
-        } else if (DeviceUtils.totalMemoryCapacity(context) < 7L * 1024 * 1024 * 1024) {
-            buffer = new byte[16 * 1024];
-        }
-        int len;
-        while ((len = in.read(buffer)) != -1) {
-            out.write(buffer, 0, len);
+        // Streams must be closed for the write to be committed by the
+        // document provider and to avoid leaking FDs on error paths.
+        try (InputStream in = new FileInputStream(sourcePath);
+             OutputStream out = context.getContentResolver().openOutputStream(uri)) {
+            byte[] buffer = new byte[32 * 1024];
+            if (DeviceUtils.totalMemoryCapacity(context) < 3L * 1024 * 1024 * 1024) {
+                buffer = new byte[4 * 1024];
+            } else if (DeviceUtils.totalMemoryCapacity(context) < 5L * 1024 * 1024 * 1024) {
+                buffer = new byte[8 * 1024];
+            } else if (DeviceUtils.totalMemoryCapacity(context) < 7L * 1024 * 1024 * 1024) {
+                buffer = new byte[16 * 1024];
+            }
+            int len;
+            while ((len = in.read(buffer)) != -1) {
+                out.write(buffer, 0, len);
+            }
+            out.flush();
         }
     }
 
@@ -691,8 +695,11 @@ public class FileUtils {
 
     public static boolean deleteFolderHard(File file) {
         try {
-            String command = "rm -rf " + file.getAbsolutePath();
-            Process process = Runtime.getRuntime().exec(command);
+            // exec(String) splits on whitespace, so paths containing spaces
+            // would be tokenized into separate arguments and rm -rf would
+            // delete unintended sibling paths. Pass the path as one argument.
+            Process process = Runtime.getRuntime().exec(
+                    new String[]{"rm", "-rf", file.getAbsolutePath()});
             process.waitFor();
             return true;
         } catch (Exception e) {
