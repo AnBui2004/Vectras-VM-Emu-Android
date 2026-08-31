@@ -133,8 +133,12 @@ public class VmsSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public void submitList(List<DataMainRoms> newData) {
-        fullList.clear();
-        fullList = new ArrayList<>(newData);
+        // fullList usually aliases the caller's list (it is assigned in the
+        // constructor), so clear() would wipe the data this copy is meant to
+        // keep. Replace the reference instead of mutating the source list.
+        if (fullList != newData) {
+            fullList = new ArrayList<>(newData);
+        }
 
         displayList.clear();
 
