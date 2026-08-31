@@ -282,8 +282,10 @@ public class StartVM {
                         cdrom = "-cdrom";
                         cdrom += " '" + vmConfigs.imgCdrom + "'";
                     } else {
+                        // QEMU only accepts media=disk|cdrom, so the drive must be
+                        // defined with if=none plus an id instead of media=cdromdriveN.
                         cdrom = "-drive";
-                        cdrom += " media=cdromdrive1";
+                        cdrom += " if=none,id=cdromdrive1,format=raw,media=cdrom";
                         cdrom += ",file='" + vmConfigs.imgCdrom + "'";
                     }
                 }
@@ -303,8 +305,9 @@ public class StartVM {
                     cdromParams += " if=none,id=cdromdrive1,format=raw,media=cdrom,file='" + vmConfigs.cdrom1 + "'";
                 } else {
                     cdromParams = "-drive";
-                    cdromParams += " media=cdromdrive1";
+                    cdromParams += " if=none,id=cdromdrive1,format=raw,media=cdrom";
                     cdromParams += ",file='" + vmConfigs.cdrom1 + "'";
+                    cdromParams += " -device ide-cd,drive=cdromdrive1";
                 }
                 params.add(cdromParams);
             }
