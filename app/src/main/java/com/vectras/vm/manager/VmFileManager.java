@@ -252,9 +252,9 @@ public class VmFileManager {
 
     // Find the location of the aml file if getExternalCacheDir() is null.
     public static String findCompiledBatteryAcpi(Context context, String vmId) {
-        String audioFilePath = VmFileManager.getInternalTempPath(context, vmId, COMPILED_BATERRY_ACPI_FILE_NAME);
-        if (FileUtils.isFileExists(audioFilePath)) return audioFilePath;
-        return VmFileManager.getAudioRaw(context, vmId);
+        String amlFilePath = VmFileManager.getInternalTempPath(context, vmId, COMPILED_BATERRY_ACPI_FILE_NAME);
+        if (FileUtils.isFileExists(amlFilePath)) return amlFilePath;
+        return VmFileManager.getCompiledBatteryAcpi(context, vmId);
     }
 
     public static String getCompiledWifiCardAcpi(Context context, String vmId) {
@@ -263,9 +263,9 @@ public class VmFileManager {
 
     // Find the location of the aml file if getExternalCacheDir() is null.
     public static String findCompiledWifiCardAcpi(Context context, String vmId) {
-        String audioFilePath = VmFileManager.getInternalTempPath(context, vmId, COMPILED_WIFI_CARD_ACPI_FILE_NAME);
-        if (FileUtils.isFileExists(audioFilePath)) return audioFilePath;
-        return VmFileManager.getAudioRaw(context, vmId);
+        String amlFilePath = VmFileManager.getInternalTempPath(context, vmId, COMPILED_WIFI_CARD_ACPI_FILE_NAME);
+        if (FileUtils.isFileExists(amlFilePath)) return amlFilePath;
+        return VmFileManager.getCompiledWifiCardAcpi(context, vmId);
     }
 
     public static boolean removeAudioRaw(Context context, String vmId) {
