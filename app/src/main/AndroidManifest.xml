@@ -167,7 +167,7 @@
         <activity
             android:name=".CqcmActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".creator.QemuParamsEditorActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
