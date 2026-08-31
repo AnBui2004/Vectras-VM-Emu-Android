@@ -182,7 +182,9 @@ public class Terminal2 {
 
     private resultData startProcess(String command, Process process, Terminal2Callback callback) {
         resultData data = new resultData();
-        AtomicInteger exitCode = new AtomicInteger();
+        // Start as ERROR so a failure before waitFor() (stream setup,
+        // proot dying mid-read) is never mistaken for a clean exit 0.
+        AtomicInteger exitCode = new AtomicInteger(ERROR);
 
         int MAX_LOG_SIZE = 200_000; // ~200KB text
         StringBuilder output = new StringBuilder();
@@ -217,12 +219,16 @@ public class Terminal2 {
             } catch (InterruptedException e) {
                 exitCode.set(ERROR);
             }
-            data.status = exitCode.get();
 
             reader.close();
         } catch (Exception e) {
             output.append(e.getMessage());
+            exitCode.set(ERROR);
             Log.e(TAG, "streamLog: ", e);
+        } finally {
+            if (process.isAlive()) {
+                process.destroy();
+            }
         }
 
         data.status = exitCode.get();
