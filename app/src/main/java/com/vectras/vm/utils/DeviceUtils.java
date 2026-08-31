@@ -47,7 +47,7 @@ public class DeviceUtils {
                 long availableBytes = availableBlocks * blockSize;
                 long availableMB = availableBytes / (1024 * 1024);
 
-                return availableMB < 2048;
+                return availableMB < (isCheckVeryLow ? 256 : 2048);
             } catch (Exception e) {
                 Log.e(TAG, "Error getting storage stats", e);
             }
