@@ -49,7 +49,7 @@ public class QmpClient {
 			sendRequest(out, QmpClient.requestCommandMode);
 			while(true){
                 response = getResponse(in);
-                if(response == null || response.equals("") || trial <10)
+                if(response == null || response.equals("") || trial >= 10)
 				    break;
 
                 Thread.sleep(1000);
@@ -82,6 +82,13 @@ public class QmpClient {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+			if (localSocket != null) {
+				try {
+					localSocket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 
 		}
