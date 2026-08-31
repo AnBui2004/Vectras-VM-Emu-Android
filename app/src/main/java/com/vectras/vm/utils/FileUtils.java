@@ -575,6 +575,7 @@ public class FileUtils {
                 return delete(new File(oldPath));
             } catch (Exception e) {
                 Log.e(TAG, "move: ", e);
+                return false;
             }
         }
         return true;
