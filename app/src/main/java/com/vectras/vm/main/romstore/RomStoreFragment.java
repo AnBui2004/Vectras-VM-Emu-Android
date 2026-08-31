@@ -107,7 +107,7 @@ public class RomStoreFragment extends Fragment {
     }
 
     private void loadData() {
-        List<DataRoms> dataRoms = new ArrayList<>();
+        List<DataRoms> dataRoms;
 
         try {
             Gson gson = new Gson();
@@ -116,7 +116,13 @@ public class RomStoreFragment extends Fragment {
         } catch (Exception e) {
             binding.linearload.setVisibility(View.GONE);
             binding.linearnothinghere.setVisibility(View.VISIBLE);
+            dataRoms = new ArrayList<>();
         }
+
+        // Gson returns null (it does not throw) for a "null"/blank body.
+        // Pushing null into the LiveData makes the observer call
+        // loadFromServer() again, looping network requests forever.
+        if (dataRoms == null) dataRoms = new ArrayList<>();
 
         homeRomStoreViewModel.setRomsList(dataRoms);
         data.clear();
