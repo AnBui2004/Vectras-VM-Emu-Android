@@ -175,57 +175,59 @@ public class ZipUtils {
                 buffer = new byte[128 * 1024];
 
             while ((entry = zin.getNextEntry()) != null) {
-                File newFile = new File(outdir, entry.getName());
+                if (isAllowExtract(entry, destDir)) {
+                    File newFile = new File(outdir, entry.getName());
 
-                if (entry.isDirectory()) {
-                    newFile.mkdirs();
-                    continue;
-                }
+                    if (entry.isDirectory()) {
+                        newFile.mkdirs();
+                        continue;
+                    }
 
-                newFile.getParentFile().mkdirs();
+                    newFile.getParentFile().mkdirs();
 
-                FileOutputStream fos = new FileOutputStream(newFile);
-                int len;
-                long fileExtracted = 0;
+                    FileOutputStream fos = new FileOutputStream(newFile);
+                    int len;
+                    long fileExtracted = 0;
 
-                long lastProgress = -1;
-                while ((len = zin.read(buffer)) > 0) {
-                    fos.write(buffer, 0, len);
-                    fileExtracted += len;
-                    extractedSize += len;
-                    if (totalSize > 0) {
-                        long progress = extractedSize * 100 / totalSize;
+                    long lastProgress = -1;
+                    while ((len = zin.read(buffer)) > 0) {
+                        fos.write(buffer, 0, len);
+                        fileExtracted += len;
+                        extractedSize += len;
+                        if (totalSize > 0) {
+                            long progress = extractedSize * 100 / totalSize;
 
-                        if (progress > lastProgress) {
-                            lastProgress = progress;
-                            updateStatus(
-                                    statusTextView,
-                                    progressBar,
-                                    (progress == 0 || progress > 100 ?
-                                            context.getString(R.string.importing) :
-                                            context.getString(R.string.completed) + " " + progress + "%")
-                                            + "\n" + context.getString(R.string.please_stay_here),
-                                    (int) progress
-                            );
-                        }
-                    } else {
-                        if (extractedSize > lastProgress + (1024 * 1024) || lastProgress < 1) {
-                            lastProgress = extractedSize;
-                            long mb = extractedSize / (1024 * 1024);
-                            updateStatus(
-                                    statusTextView,
-                                    progressBar,
-                                    (mb == 0 ?
-                                            context.getString(R.string.importing) :
-                                            context.getString(R.string.completed) + " " + NumberUtils.getFormatSizeFromMB(mb))
-                                            + "\n" + context.getString(R.string.please_stay_here),
-                                    0
-                            );
+                            if (progress > lastProgress) {
+                                lastProgress = progress;
+                                updateStatus(
+                                        statusTextView,
+                                        progressBar,
+                                        (progress == 0 || progress > 100 ?
+                                                context.getString(R.string.importing) :
+                                                context.getString(R.string.completed) + " " + progress + "%")
+                                                + "\n" + context.getString(R.string.please_stay_here),
+                                        (int) progress
+                                );
+                            }
+                        } else {
+                            if (extractedSize > lastProgress + (1024 * 1024) || lastProgress < 1) {
+                                lastProgress = extractedSize;
+                                long mb = extractedSize / (1024 * 1024);
+                                updateStatus(
+                                        statusTextView,
+                                        progressBar,
+                                        (mb == 0 ?
+                                                context.getString(R.string.importing) :
+                                                context.getString(R.string.completed) + " " + NumberUtils.getFormatSizeFromMB(mb))
+                                                + "\n" + context.getString(R.string.please_stay_here),
+                                        0
+                                );
+                            }
                         }
                     }
+                    fos.close();
+                    zin.closeEntry();
                 }
-                fos.close();
-                zin.closeEntry();
             }
             //zin also closes the inputstream2
             zin.close();
