@@ -926,8 +926,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean filterSearch(String arch, String os, boolean gui, boolean isContainsAds) {
-        return (searchArchTags.isEmpty() || searchArchTags.contains(arch)) &&
-                (searchOsTags.isEmpty() || searchOsTags.contains(os)) &&
+        // Store data and chips mix casing ("i386" vs "I386", "aarch64" vs
+        // "ARM64"), so compare tags case-insensitively instead of with a
+        // case-sensitive contains() that silently drops matches.
+        return (searchArchTags.isEmpty() || searchArchTags.toLowerCase().contains(String.valueOf(arch).toLowerCase())) &&
+                (searchOsTags.isEmpty() || searchOsTags.toLowerCase().contains(String.valueOf(os).toLowerCase())) &&
                 (searchIsContainsAds == null || searchIsContainsAds == isContainsAds) &&
                 (searchIsGui == null || searchIsGui == gui);
     }
