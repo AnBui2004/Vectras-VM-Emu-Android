@@ -59,7 +59,8 @@ public class VMCreatorSelector {
     }
 
     public static HashMap<String, Object> getGraphicsCard(Context context, int position) {
-        return ListManager.graphicCards(context).get(position);
+        ArrayList<HashMap<String, Object>> list = ListManager.graphicCards(context);
+        return list.get(position < 0 ? 0 : Math.min(position, list.size() - 1));
     }
 
     public static void networkCard(Activity activity, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback) {
@@ -67,7 +68,8 @@ public class VMCreatorSelector {
     }
 
     public static HashMap<String, Object> getNetworkCard(Context context, int position) {
-        return ListManager.networkCards(context).get(position);
+        ArrayList<HashMap<String, Object>> list = ListManager.networkCards(context);
+        return list.get(position < 0 ? 0 : Math.min(position, list.size() - 1));
     }
 
     public static void usbController(Activity activity, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback) {
@@ -75,7 +77,8 @@ public class VMCreatorSelector {
     }
 
     public static HashMap<String, Object> getUsbController(Context context, int position) {
-        return ListManager.usbControllers(context).get(position);
+        ArrayList<HashMap<String, Object>> list = ListManager.usbControllers(context);
+        return list.get(position < 0 ? 0 : Math.min(position, list.size() - 1));
     }
 
     public static void mouse(Activity activity, String arch, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback) {
@@ -83,7 +86,8 @@ public class VMCreatorSelector {
     }
 
     public static HashMap<String, Object> getMouse(Context context, String arch, int position) {
-        return ListManager.mouseTypes(context, arch).get(position);
+        ArrayList<HashMap<String, Object>> list = ListManager.mouseTypes(context, arch);
+        return list.get(position < 0 ? 0 : Math.min(position, list.size() - 1));
     }
 
     public static void keyboard(Activity activity, String arch, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback) {
@@ -91,7 +95,8 @@ public class VMCreatorSelector {
     }
 
     public static HashMap<String, Object> getKeyboard(Context context, String arch, int position) {
-        return ListManager.keyboardTypes(context, arch).get(position);
+        ArrayList<HashMap<String, Object>> list = ListManager.keyboardTypes(context, arch);
+        return list.get(position < 0 ? 0 : Math.min(position, list.size() - 1));
     }
 
     public static void soundCard(Activity activity, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback) {
@@ -99,11 +104,13 @@ public class VMCreatorSelector {
     }
 
     public static HashMap<String, Object> getSoundCard(Context context, int position) {
-        return ListManager.soundCards(context).get(position);
+        ArrayList<HashMap<String, Object>> list = ListManager.soundCards(context);
+        return list.get(position < 0 ? 0 : Math.min(position, list.size() - 1));
     }
 
     public static HashMap<String, Object> getBootFrom(Context context, int position) {
-        return ListManager.bootFrom(context).get(position);
+        ArrayList<HashMap<String, Object>> list = ListManager.bootFrom(context);
+        return list.get(position < 0 ? 0 : Math.min(position, list.size() - 1));
     }
 
     public static void bootFrom(Activity activity, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback) {
@@ -115,7 +122,8 @@ public class VMCreatorSelector {
     }
 
     public static HashMap<String, Object> getAccel(Context context, int position) {
-        return ListManager.accelTypes(context).get(position);
+        ArrayList<HashMap<String, Object>> list = ListManager.accelTypes(context);
+        return list.get(position < 0 ? 0 : Math.min(position, list.size() - 1));
     }
 
     public static void showDialog(Activity activity, ArrayList<HashMap<String, Object>> list, int position, UniversalPickerDialog.UniversalPickerDialogCallback callback, String title) {
