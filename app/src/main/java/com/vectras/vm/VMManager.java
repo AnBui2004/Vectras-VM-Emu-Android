@@ -364,10 +364,6 @@ public class VMManager {
     }
 
     public static void deleteVMDialog(String _vmName, String vmId, Activity _activity) {
-        deleteVMDialog(_vmName, findVmPotision(vmId), _activity);
-    }
-
-    public static void deleteVMDialog(String _vmName, int _position, Activity _activity) {
         DialogUtils.threeDialog(_activity, _activity.getString(R.string.remove) + " " + _vmName, _activity.getString(R.string.remove_vm_content), _activity.getString(R.string.remove_and_do_not_keep_files), _activity.getString(R.string.remove_but_keep_files), _activity.getString(R.string.cancel), true, R.drawable.delete_24px, true,
                 () -> {
                     ProgressDialog progressDialog = new ProgressDialog(_activity);
@@ -376,7 +372,7 @@ public class VMManager {
 
                     new Thread(() -> {
                         isKeptSomeFiles = false;
-                        boolean result = deleteVm(_activity, _position, false);
+                        boolean result = deleteVm(_activity, vmId, false);
                         _activity.runOnUiThread(() -> new Handler(Looper.getMainLooper()).postDelayed(() -> {
                             progressDialog.reset();
 
@@ -397,7 +393,7 @@ public class VMManager {
                     progressDialog.show();
 
                     new Thread(() -> {
-                        boolean result = deleteVm(_activity, _position, true);
+                        boolean result = deleteVm(_activity, vmId, true);
                         _activity.runOnUiThread(() -> new Handler(Looper.getMainLooper()).postDelayed(() -> {
                             progressDialog.reset();
 
@@ -413,13 +409,39 @@ public class VMManager {
                 null);
     }
 
+    public static boolean deleteVm(Context context, String vmId, boolean isKeepFiles) {
+        // Resolve the position at execution time. Resolving it when the
+        // confirmation dialog opens (the old int overload) left a window in
+        // which addToVMList's insert-at-index-0 (import/clone/creation
+        // finishing while the dialog is up) shifts every index, so the
+        // captured position would remove and delete a different VM's entry
+        // and folder.
+        if (vmId == null || vmId.isEmpty()) return false;
+        int position = findVmPotision(vmId);
+        if (position < 0) return false;
+        return deleteVm(context, position, vmId, isKeepFiles);
+    }
+
     public static boolean deleteVm(Context context, int position, boolean isKeepFiles) {
+        return deleteVm(context, position, null, isKeepFiles);
+    }
+
+    private static boolean deleteVm(Context context, int position, String knownVmId, boolean isKeepFiles) {
         if (!JSONUtils.isValidVmList()) return false;
         String vmList = FileUtils.readFromFile(context, new File(AppConfig.maindirpath + "roms-data.json"));
         JsonArray arr = JsonParser.parseString(vmList).getAsJsonArray();
         if (position < 0 || position > arr.size() - 1) return false;
         JsonObject obj = arr.get(position).getAsJsonObject();
         String vmId = (obj != null && obj.has("vmID")) ? obj.get("vmID").getAsString() : null;
+        // A stale position (list changed since the caller captured it) must
+        // never remove a different VM: verify the entry still is the VM the
+        // caller meant, and otherwise re-resolve by ID.
+        if (knownVmId != null && !knownVmId.equals(vmId)) {
+            position = findVmPotision(knownVmId);
+            if (position < 0 || position > arr.size() - 1) return false;
+            obj = arr.get(position).getAsJsonObject();
+            vmId = (obj != null && obj.has("vmID")) ? obj.get("vmID").getAsString() : null;
+        }
         arr.remove(position);
 
         vmList = new Gson().toJson(arr);
