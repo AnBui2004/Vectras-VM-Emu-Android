@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.anbui.elephant.utils.PackageUtil;
 import com.termux.app.TermuxService;
 import com.vectras.qemu.Config;
 import com.vectras.qemu.MainSettingsManager;
@@ -163,39 +164,8 @@ public class DisplaySystem {
                 SetupFeatureCore.extractX11LoaderApk(context);
 
                 try {
-                    PackageInfo appInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? PackageManager.GET_SIGNING_CERTIFICATES : PackageManager.GET_SIGNATURES);
-                    PackageInfo loaderInfo = context.getPackageManager().getPackageArchiveInfo(TermuxService.PREFIX_PATH + "/libexec/termux-x11/loader.apk", Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? PackageManager.GET_SIGNING_CERTIFICATES : PackageManager.GET_SIGNATURES);
-
-
-                    if (appInfo == null || loaderInfo == null) {
-                        handleWhenLoaderInvalid(context);
-                        return;
-                    }
-
-                    Signature[] appSignatures;
-                    Signature[] loaderSignatures;
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        if (appInfo.signingInfo == null || loaderInfo.signingInfo == null) {
-                            handleWhenLoaderInvalid(context);
-                            return;
-                        }
-
-                        if (appInfo.signingInfo.hasMultipleSigners()) {
-                            appSignatures = appInfo.signingInfo.getApkContentsSigners();
-                        } else {
-                            appSignatures = appInfo.signingInfo.getSigningCertificateHistory();
-                        }
-
-                        if (loaderInfo.signingInfo.hasMultipleSigners()) {
-                            loaderSignatures = loaderInfo.signingInfo.getApkContentsSigners();
-                        } else {
-                            loaderSignatures = loaderInfo.signingInfo.getSigningCertificateHistory();
-                        }
-                    } else {
-                        appSignatures = appInfo.signatures;
-                        loaderSignatures = loaderInfo.signatures;
-                    }
+                    Signature[] appSignatures = PackageUtil.getSignatures(context, context.getPackageName());
+                    Signature[] loaderSignatures = PackageUtil.getArchiveSignatures(context, TermuxService.PREFIX_PATH + "/libexec/termux-x11/loader.apk");
 
                     if (
                             appSignatures != null &&
@@ -209,7 +179,7 @@ public class DisplaySystem {
                         handleWhenLoaderInvalid(context);
                         return;
                     }
-                } catch (PackageManager.NameNotFoundException e) {
+                } catch (Exception e) {
                     handleWhenLoaderInvalid(context);
                     return;
                 }

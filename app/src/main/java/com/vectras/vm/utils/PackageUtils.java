@@ -8,7 +8,7 @@ import android.util.Log;
 import com.vectras.vm.AppConfig;
 
 public class PackageUtils {
-    private static final String TAG = "PackageUtils";
+    private static final String TAG = "PackageUtil";
 
     public static boolean isInstalled(String packagename, Context context) {
         PackageManager pm = context.getPackageManager();

@@ -309,7 +309,8 @@ public class VMManager {
     }
 
     public static boolean isVMHidden(String vmPath) {
-        return new File(vmPath).getName().startsWith("_");
+        String folderName = new File(vmPath).getName();
+        return !folderName.equals("_") && folderName.startsWith("_");
     }
 
     public static boolean hideVM(String vmId) {
@@ -566,7 +567,8 @@ public class VMManager {
             File[] vmFolders = new File(AppConfig.vmFolder).listFiles();
             if (vmFolders == null) return 0;
             for (File f : vmFolders) {
-                if (!vmList.contains(f.getName())) {
+                // If it is not in VM list, is not a hidden VM and the VM's config data is valid.
+                if (!vmList.contains(f.getName()) && !(isVMHidden(f.getAbsolutePath()) && JSONUtils.isValidFromFile(f.getAbsolutePath() + "/rom-data.json"))) {
                     FileUtils.moveToFolder(f.getAbsolutePath(), AppConfig.recyclebin);
                     moved++;
                 }
@@ -637,15 +639,6 @@ public class VMManager {
         if (!_filelist.isEmpty()) {
             for (int _repeat = 0; _repeat < _filelist.size(); _repeat++) {
                 if (_startRepeat < _filelist.size()) {
-                    if (isVMHidden(_filelist.get(_startRepeat)))
-                        // A hidden VM ("_"-prefixed folder) is re-added to the
-                        // list by the rebuild below, so it must be un-hidden
-                        // again - exactly what restoreAll() does. Leaving it
-                        // hidden would make moveAllBrokenVMRecycleBin() treat
-                        // the healthy folder as broken (the list stores the
-                        // un-prefixed vmID) and move it to the recycle bin.
-                        unHideVM(_filelist.get(_startRepeat));
-
                     if (isFileExists(_filelist.get(_startRepeat) + "/vmID.txt")) {
                         if (isFileExists(_filelist.get(_startRepeat) + "/rom-data.json")) {
                             tempRomData = FileUtils.readAFile(_filelist.get(_startRepeat) + "/rom-data.json");
@@ -883,7 +876,7 @@ public class VMManager {
     }
 
     public static boolean isthiscommandsafe(@NonNull String _command, Context _context) {
-        Log.d("VMManager.isthiscommandsafe", _command);
+        Log.d(TAG, "isthiscommandsafe: " + _command);
 
         // The command is written to a bash shell's stdin, so characters that
         // trigger shell expansion, redirection, or process substitution let a

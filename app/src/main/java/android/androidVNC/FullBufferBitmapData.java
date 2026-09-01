@@ -20,74 +20,74 @@ import com.vectras.qemu.Config;
  */
 class FullBufferBitmapData extends AbstractBitmapData {
 
-	int xoffset;
-	int yoffset;
-	// Single reusable bitmap backing the drawable. Created lazily on the
-	// first draw and reused for every subsequent frame.
-	private Bitmap bitmap;
+    int xoffset;
+    int yoffset;
+    // Single reusable bitmap backing the drawable. Created lazily on the
+    // first draw and reused for every subsequent frame.
+    private Bitmap bitmap;
 
-	/**
-	 * @author Michael A. MacDonald
-	 *
-	 */
-	class Drawable extends AbstractBitmapDrawable {
+    /**
+     * @author Michael A. MacDonald
+     *
+     */
+    class Drawable extends AbstractBitmapDrawable {
 
-		/**
-		 * @param data
-		 */
-		public Drawable(AbstractBitmapData data) {
-			super(data);
-			// TODO Auto-generated constructor stub
-		}
+        /**
+         * @param data
+         */
+        public Drawable(AbstractBitmapData data) {
+            super(data);
+            // TODO Auto-generated constructor stub
+        }
 
-		/* (non-Javadoc)
-		 * @see android.graphics.drawable.DrawableContainer#draw(android.graphics.Canvas)
-		 */
-	@Override
-	public void draw(Canvas canvas) {
-			int[] pixels = bitmapPixels;
-			if (pixels == null) {
-				return;
-			}
+        /* (non-Javadoc)
+         * @see android.graphics.drawable.DrawableContainer#draw(android.graphics.Canvas)
+         */
+        @Override
+        public void draw(Canvas canvas) {
+            int[] pixels = bitmapPixels;
+            if (pixels == null) {
+                return;
+            }
 
-			// Reuse one bitmap across draws. Creating a full-frame bitmap
-			// here put an allocation plus a whole-frame pixel copy on the UI
-			// thread for every framebuffer update (many times per second),
-			// causing constant GC pressure and visible jank.
-			if (bitmap == null) {
-				bitmap = Bitmap.createBitmap(framebufferwidth, framebufferheight, Config.bitmapConfig);
-			}
+            // Reuse one bitmap across draws. Creating a full-frame bitmap
+            // here put an allocation plus a whole-frame pixel copy on the UI
+            // thread for every framebuffer update (many times per second),
+            // causing constant GC pressure and visible jank.
+            if (bitmap == null || bitmap.getWidth() != framebufferwidth || bitmap.getHeight() != framebufferheight) {
+                if (bitmap != null) {
+                    bitmap.recycle();
+                }
+                bitmap = Bitmap.createBitmap(framebufferwidth, framebufferheight, Config.bitmapConfig);
+            }
 
-			if (vncCanvas.getScaleType() == ImageView.ScaleType.FIT_CENTER || vncCanvas.getScaleType() == ImageView.ScaleType.FIT_XY)
-			{
-				bitmap.setPixels(pixels, 0, data.framebufferwidth, 0, 0, framebufferwidth, framebufferheight);
+            if (vncCanvas.getScaleType() == ImageView.ScaleType.FIT_CENTER || vncCanvas.getScaleType() == ImageView.ScaleType.FIT_XY) {
+                bitmap.setPixels(pixels, 0, data.framebufferwidth, 0, 0, framebufferwidth, framebufferheight);
 
-				if (vncCanvas.getScaleType() == ImageView.ScaleType.FIT_XY) {
-					canvas.drawBitmap(bitmap, (float) vncCanvas.getWidth() / 2 + (float) framebufferwidth / -2, (float) vncCanvas.getHeight() / 2 - (float) framebufferheight / 2, null);
-				} else {
-					canvas.drawBitmap(bitmap, xoffset, yoffset, null);
-				}
+                if (vncCanvas.getScaleType() == ImageView.ScaleType.FIT_XY) {
+                    canvas.drawBitmap(bitmap, (float) vncCanvas.getWidth() / 2 + (float) framebufferwidth / -2, (float) vncCanvas.getHeight() / 2 - (float) framebufferheight / 2, null);
+                } else {
+                    canvas.drawBitmap(bitmap, xoffset, yoffset, null);
+                }
 
 
-			}
-			else
-			{
-				int xo = xoffset < 0 ? 0 : xoffset;
-				int yo = yoffset < 0 ? 0 : yoffset;
+            } else {
+                int xo = xoffset < 0 ? 0 : xoffset;
+                int yo = yoffset < 0 ? 0 : yoffset;
 				/*
 				if (scale == 1 || scale <= 0)
 				{
 				*/
-					int drawWidth = vncCanvas.getVisibleWidth();
-					if (drawWidth + xo > data.framebufferwidth)
-						drawWidth = data.framebufferwidth - xo;
-					int drawHeight = vncCanvas.getVisibleHeight();
-					if (drawHeight + yo > data.framebufferheight)
-						drawHeight = data.framebufferheight - yo;
+                int drawWidth = vncCanvas.getVisibleWidth();
+                if (drawWidth + xo > data.framebufferwidth)
+                    drawWidth = data.framebufferwidth - xo;
+                int drawHeight = vncCanvas.getVisibleHeight();
+                if (drawHeight + yo > data.framebufferheight)
+                    drawHeight = data.framebufferheight - yo;
 
 
-					bitmap.setPixels(pixels, offset(xo, yo), data.framebufferwidth, 0, 0, drawWidth, drawHeight);
-					canvas.drawBitmap(bitmap, 0, 0, null);
+                bitmap.setPixels(pixels, offset(xo, yo), data.framebufferwidth, 0, 0, drawWidth, drawHeight);
+                canvas.drawBitmap(bitmap, 0, 0, null);
 
 				/*
 				}
@@ -102,149 +102,141 @@ class FullBufferBitmapData extends AbstractBitmapData {
 					canvas.drawBitmap(data.bitmapPixels, offset(xo, yo), data.framebufferwidth, xo, yo, scalewidth, scaleheight, false, null);
 				}
 				*/
-			}
-			if(data.vncCanvas.connection.getUseLocalCursor())
-			{
-				// OneToOne
+            }
+            if (data.vncCanvas.connection.getUseLocalCursor()) {
+                // OneToOne
                 int locationX = data.vncCanvas.mouseX;
                 int locationY = data.vncCanvas.mouseY;
 
-				if (vncCanvas.getScaleType() == ImageView.ScaleType.FIT_CENTER) {
-					// Full screen
-					locationX = data.vncCanvas.mouseX;
-					locationY = data.vncCanvas.mouseY;
-				} else if (vncCanvas.getScaleType() == ImageView.ScaleType.FIT_XY){
-					// Scale to fit screen
-					locationX = vncCanvas.getWidth() / 2 + framebufferwidth / -2 + data.vncCanvas.mouseX;
-					locationY = vncCanvas.getHeight() / 2 - framebufferheight / 2 + data.vncCanvas.mouseY;
-				}
+                if (vncCanvas.getScaleType() == ImageView.ScaleType.FIT_CENTER) {
+                    // Full screen
+                    locationX = data.vncCanvas.mouseX;
+                    locationY = data.vncCanvas.mouseY;
+                } else if (vncCanvas.getScaleType() == ImageView.ScaleType.FIT_XY) {
+                    // Scale to fit screen
+                    locationX = vncCanvas.getWidth() / 2 + framebufferwidth / -2 + data.vncCanvas.mouseX;
+                    locationY = vncCanvas.getHeight() / 2 - framebufferheight / 2 + data.vncCanvas.mouseY;
+                }
 
-				setCursorRect(locationX, locationY);
-				clipRect.set(cursorRect);
-				if (canvas.clipRect(cursorRect))
-				{
-					drawCursor(canvas);
-				}
-			}
-		}
-	}
+                setCursorRect(locationX, locationY);
+                clipRect.set(cursorRect);
+                if (canvas.clipRect(cursorRect)) {
+                    drawCursor(canvas);
+                }
+            }
+        }
+    }
 
-	/**
-	 * Multiply this times total number of pixels to get estimate of process size with all buffers plus
-	 * safety factor
-	 */
-	static final int CAPACITY_MULTIPLIER = 7;
-	
-	/**
-	 * @param p
-	 * @param c
-	 */
-	public FullBufferBitmapData(RfbProto p, VncCanvas c, int capacity) {
-		super(p, c);
-		framebufferwidth=rfb.framebufferWidth;
-		framebufferheight=rfb.framebufferHeight;
-		bitmapwidth=framebufferwidth;
-		bitmapheight=framebufferheight;
-		android.util.Log.i("FBBM", "bitmapsize = ("+bitmapwidth+","+bitmapheight+")");
-		bitmapPixels = new int[framebufferwidth * framebufferheight];
-		Arrays.fill(bitmapPixels, 0xFF000000);
-	}
+    /**
+     * Multiply this times total number of pixels to get estimate of process size with all buffers plus
+     * safety factor
+     */
+    static final int CAPACITY_MULTIPLIER = 7;
 
-	/* (non-Javadoc)
-	 * @see android.androidVNC.AbstractBitmapData#copyRect(android.graphics.Rect, android.graphics.Rect, android.graphics.Paint)
-	 */
-	@Override
-	void copyRect(Rect src, Rect dest, Paint paint) {
-		// TODO copy rect working?
-		throw new RuntimeException( "copyrect Not implemented");
-	}
+    /**
+     * @param p
+     * @param c
+     */
+    public FullBufferBitmapData(RfbProto p, VncCanvas c, int capacity) {
+        super(p, c);
+        framebufferwidth = rfb.framebufferWidth;
+        framebufferheight = rfb.framebufferHeight;
+        bitmapwidth = framebufferwidth;
+        bitmapheight = framebufferheight;
+        android.util.Log.i("FBBM", "bitmapsize = (" + bitmapwidth + "," + bitmapheight + ")");
+        bitmapPixels = new int[framebufferwidth * framebufferheight];
+        Arrays.fill(bitmapPixels, 0xFF000000);
+    }
 
-	/* (non-Javadoc)
-	 * @see android.androidVNC.AbstractBitmapData#createDrawable()
-	 */
-	@Override
-	AbstractBitmapDrawable createDrawable() {
-		return new Drawable(this);
-	}
+    /* (non-Javadoc)
+     * @see android.androidVNC.AbstractBitmapData#copyRect(android.graphics.Rect, android.graphics.Rect, android.graphics.Paint)
+     */
+    @Override
+    void copyRect(Rect src, Rect dest, Paint paint) {
+        // TODO copy rect working?
+        throw new RuntimeException("copyrect Not implemented");
+    }
 
-	/* (non-Javadoc)
-	 * @see android.androidVNC.AbstractBitmapData#drawRect(int, int, int, int, android.graphics.Paint)
-	 */
-	@Override
-	void drawRect(int x, int y, int w, int h, Paint paint) {
-		int color = 0xFF000000 | paint.getColor();
-		int offset = offset(x,y);
-		if (w > 10)
-		{
-			for (int j = 0; j < h; j++, offset += framebufferwidth)
-			{
-				Arrays.fill(bitmapPixels, offset, offset + w, color);
-			}
-		}
-		else
-		{
-			for (int j = 0; j < h; j++, offset += framebufferwidth - w)
-			{
-				for (int k = 0; k < w; k++, offset++)
-				{
-					bitmapPixels[offset] = color;
-				}
-			}
-		}
-	}
+    /* (non-Javadoc)
+     * @see android.androidVNC.AbstractBitmapData#createDrawable()
+     */
+    @Override
+    AbstractBitmapDrawable createDrawable() {
+        return new Drawable(this);
+    }
 
-	/* (non-Javadoc)
-	 * @see android.androidVNC.AbstractBitmapData#offset(int, int)
-	 */
-	@Override
-	int offset(int x, int y) {
-		return x + y * framebufferwidth;
-	}
+    /* (non-Javadoc)
+     * @see android.androidVNC.AbstractBitmapData#drawRect(int, int, int, int, android.graphics.Paint)
+     */
+    @Override
+    void drawRect(int x, int y, int w, int h, Paint paint) {
+        int color = 0xFF000000 | paint.getColor();
+        int offset = offset(x, y);
+        if (w > 10) {
+            for (int j = 0; j < h; j++, offset += framebufferwidth) {
+                Arrays.fill(bitmapPixels, offset, offset + w, color);
+            }
+        } else {
+            for (int j = 0; j < h; j++, offset += framebufferwidth - w) {
+                for (int k = 0; k < w; k++, offset++) {
+                    bitmapPixels[offset] = color;
+                }
+            }
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see android.androidVNC.AbstractBitmapData#scrollChanged(int, int)
-	 */
-	@Override
-	void scrollChanged(int newx, int newy) {
-		xoffset = newx;
-		yoffset = newy;
-	}
+    /* (non-Javadoc)
+     * @see android.androidVNC.AbstractBitmapData#offset(int, int)
+     */
+    @Override
+    int offset(int x, int y) {
+        return x + y * framebufferwidth;
+    }
 
-	/* (non-Javadoc)
-	 * @see android.androidVNC.AbstractBitmapData#syncScroll()
-	 */
-	@Override
-	void syncScroll() {
-		// Don't need to do anything here
+    /* (non-Javadoc)
+     * @see android.androidVNC.AbstractBitmapData#scrollChanged(int, int)
+     */
+    @Override
+    void scrollChanged(int newx, int newy) {
+        xoffset = newx;
+        yoffset = newy;
+    }
 
-	}
+    /* (non-Javadoc)
+     * @see android.androidVNC.AbstractBitmapData#syncScroll()
+     */
+    @Override
+    void syncScroll() {
+        // Don't need to do anything here
 
-	/* (non-Javadoc)
-	 * @see android.androidVNC.AbstractBitmapData#updateBitmap(int, int, int, int)
-	 */
-	@Override
-	void updateBitmap(int x, int y, int w, int h) {
-		// Keep the reusable bitmap in sync so the next draw() does not
-		// have to copy the whole framebuffer again.
-		if (bitmap != null && bitmapPixels != null) {
-			bitmap.setPixels(bitmapPixels, offset(x, y), framebufferwidth, x, y, w, h);
-		}
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see android.androidVNC.AbstractBitmapData#validDraw(int, int, int, int)
-	 */
-	@Override
-	boolean validDraw(int x, int y, int w, int h) {
-		return true;
-	}
+    /* (non-Javadoc)
+     * @see android.androidVNC.AbstractBitmapData#updateBitmap(int, int, int, int)
+     */
+    @Override
+    void updateBitmap(int x, int y, int w, int h) {
+        // Keep the reusable bitmap in sync so the next draw() does not
+        // have to copy the whole framebuffer again.
+        if (bitmap != null && bitmapPixels != null) {
+            bitmap.setPixels(bitmapPixels, offset(x, y), framebufferwidth, x, y, w, h);
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see android.androidVNC.AbstractBitmapData#writeFullUpdateRequest(boolean)
-	 */
-	@Override
-	void writeFullUpdateRequest(boolean incremental) throws IOException {
-		rfb.writeFramebufferUpdateRequest(0, 0, framebufferwidth, framebufferheight, incremental);
-	}
+    /* (non-Javadoc)
+     * @see android.androidVNC.AbstractBitmapData#validDraw(int, int, int, int)
+     */
+    @Override
+    boolean validDraw(int x, int y, int w, int h) {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see android.androidVNC.AbstractBitmapData#writeFullUpdateRequest(boolean)
+     */
+    @Override
+    void writeFullUpdateRequest(boolean incremental) throws IOException {
+        rfb.writeFramebufferUpdateRequest(0, 0, framebufferwidth, framebufferheight, incremental);
+    }
 
 }

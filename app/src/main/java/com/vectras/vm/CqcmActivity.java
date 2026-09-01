@@ -12,11 +12,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.anbui.elephant.app.AppChecker;
+import com.anbui.elephant.utils.IntentUtil;
+import com.anbui.elephant.verify.ParamNotebookVerifier;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.vectras.vm.main.MainActivity;
 import com.vectras.vm.main.core.PendingCommand;
-import com.vectras.vm.manager.VmFileManager;
 import com.vectras.vm.utils.FileUtils;
 import com.vectras.vm.utils.JSONUtils;
 import com.vectras.vm.utils.PermissionUtils;
@@ -28,10 +30,12 @@ import java.util.Objects;
 public class CqcmActivity extends AppCompatActivity {
     private final String TAG = "CqcmActivity";
 
+    String source;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(!PermissionUtils.storagepermission(this,false)) {
+        if (!PermissionUtils.storagepermission(this, false)) {
             UIUtils.edgeToEdge(this);
             setContentView(R.layout.activity_cqcm);
             UIUtils.setOnApplyWindowInsetsListener(findViewById(R.id.main));
@@ -53,16 +57,39 @@ public class CqcmActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+
         Log.i("CqcmActivity", "Checking access to storage...");
-        if(PermissionUtils.storagepermission(this,false)) {
-            if (getIntent().hasExtra("command")) {
-                runCommand(getIntent().getStringExtra("command"));
-            } else {
-                startAdd();
-            }
+        if (!PermissionUtils.storagepermission(this,false)) return;
+
+        source = IntentUtil.getCallingPackageName(this);
+
+        if (source == null || !source.equals(AppChecker.PARAM_NOTEBOOK_PACKAGE_NAME) || !AppChecker.isParamNoteBook(this)) {
+            Toast.makeText(getApplicationContext(), "Cannot continue due to an invalid source.", Toast.LENGTH_LONG).show();
+            finish();
+            return;
         }
 
+        if (getIntent().hasExtra("key")) {
+            ParamNotebookVerifier.verify(this, getIntent().getStringExtra("key"), isValid -> {
+                if (isValid) {
+                    runOnUiThread(() -> {
+                        if (getIntent().hasExtra("command")) {
+                            runCommand(getIntent().getStringExtra("command"), source);
+                        } else {
+                            startAdd();
+                        }
+                    });
+                } else {
+                    Toast.makeText(getApplicationContext(), "Invalid key.", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+            });
+        } else {
+            Toast.makeText(getApplicationContext(), "Cannot continue due to an invalid source.", Toast.LENGTH_LONG).show();
+            finish();
+        }
     }
+
     private void startAdd() {
         if (!FileUtils.isFileExists(AppConfig.romsdatajson)) {
             FileUtils.writeToFile(AppConfig.maindirpath, "roms-data.json", "[]");
@@ -112,10 +139,11 @@ public class CqcmActivity extends AppCompatActivity {
         finish();
     }
 
-    private void runCommand(String _command) {
+    private void runCommand(String _command, String _source) {
         Log.i(TAG, "runCommand: " + _command);
 
         PendingCommand.command = _command;
+        PendingCommand.source = _source;
 
         if (!MainActivity.isActivate) {
             startActivity(new Intent(this, SplashActivity.class));
