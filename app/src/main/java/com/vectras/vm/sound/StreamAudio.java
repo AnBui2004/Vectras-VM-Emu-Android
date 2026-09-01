@@ -31,8 +31,23 @@ public class StreamAudio {
     }
 
     public void stop() {
-        if (audioTrack != null) audioTrack.stop();
         isPlay = false;
+        // A MODE_STREAM AudioTrack holds native buffers and an audio
+        // session; stop() alone does not free them. This class is a
+        // singleton restarted for every VM run and every mute toggle, and
+        // streamFromFile() builds a new AudioTrack each time, so without
+        // release() every cycle orphaned one native track until creation
+        // started failing and VM audio stopped working app-wide.
+        AudioTrack oldTrack = audioTrack;
+        audioTrack = null;
+        if (oldTrack != null) {
+            try {
+                oldTrack.stop();
+            } catch (IllegalStateException ignored) {
+
+            }
+            oldTrack.release();
+        }
     }
 
     public void play() {
