@@ -47,19 +47,20 @@ public class QmpClient {
 
 
 			sendRequest(out, QmpClient.requestCommandMode);
-			while(true){
-                response = getResponse(in);
-                if(response == null || response.equals("") || trial < 10)
-				    break;
-
-                Thread.sleep(1000);
+			trial = 0;
+			while ((response = getResponse(in)).equals("") && trial < 5) {
+				// Short backoff instead of full seconds: these round-trips
+				// sit on the hot path for every mouse click, key press,
+				// and status poll, where a 10x1s retry froze the action
+				// for up to ten seconds.
+				Thread.sleep(50L * (trial + 1));
 				trial++;
 			}
 
 			sendRequest(out, command);
-			trial=0;
-			while((response = getResponse(in)).equals("") && trial < 10){
-				Thread.sleep(1000);
+			trial = 0;
+			while ((response = getResponse(in)).equals("") && trial < 10) {
+				Thread.sleep(50L * (trial + 1));
 				trial++;
 			}
 		} catch (java.net.ConnectException e) {
