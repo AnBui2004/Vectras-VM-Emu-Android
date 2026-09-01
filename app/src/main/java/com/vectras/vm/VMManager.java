@@ -637,6 +637,15 @@ public class VMManager {
         if (!_filelist.isEmpty()) {
             for (int _repeat = 0; _repeat < _filelist.size(); _repeat++) {
                 if (_startRepeat < _filelist.size()) {
+                    if (isVMHidden(_filelist.get(_startRepeat)))
+                        // A hidden VM ("_"-prefixed folder) is re-added to the
+                        // list by the rebuild below, so it must be un-hidden
+                        // again - exactly what restoreAll() does. Leaving it
+                        // hidden would make moveAllBrokenVMRecycleBin() treat
+                        // the healthy folder as broken (the list stores the
+                        // un-prefixed vmID) and move it to the recycle bin.
+                        unHideVM(_filelist.get(_startRepeat));
+
                     if (isFileExists(_filelist.get(_startRepeat) + "/vmID.txt")) {
                         if (isFileExists(_filelist.get(_startRepeat) + "/rom-data.json")) {
                             tempRomData = FileUtils.readAFile(_filelist.get(_startRepeat) + "/rom-data.json");
