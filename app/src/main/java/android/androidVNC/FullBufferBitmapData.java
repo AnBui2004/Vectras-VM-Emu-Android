@@ -22,7 +22,10 @@ class FullBufferBitmapData extends AbstractBitmapData {
 
 	int xoffset;
 	int yoffset;
-	
+	// Single reusable bitmap backing the drawable. Created lazily on the
+	// first draw and reused for every subsequent frame.
+	private Bitmap bitmap;
+
 	/**
 	 * @author Michael A. MacDonald
 	 *
@@ -40,33 +43,35 @@ class FullBufferBitmapData extends AbstractBitmapData {
 		/* (non-Javadoc)
 		 * @see android.graphics.drawable.DrawableContainer#draw(android.graphics.Canvas)
 		 */
-		@Override
-		public void draw(Canvas canvas) {
+	@Override
+	public void draw(Canvas canvas) {
 			int[] pixels = bitmapPixels;
 			if (pixels == null) {
 				return;
 			}
 
+			// Reuse one bitmap across draws. Creating a full-frame bitmap
+			// here put an allocation plus a whole-frame pixel copy on the UI
+			// thread for every framebuffer update (many times per second),
+			// causing constant GC pressure and visible jank.
+			if (bitmap == null) {
+				bitmap = Bitmap.createBitmap(framebufferwidth, framebufferheight, Config.bitmapConfig);
+			}
+
 			if (vncCanvas.getScaleType() == ImageView.ScaleType.FIT_CENTER || vncCanvas.getScaleType() == ImageView.ScaleType.FIT_XY)
 			{
-				//canvas.drawBitmap(data.bitmapPixels, 0, data.framebufferwidth, xoffset, yoffset, framebufferwidth, framebufferheight, false, null);
-
-                //XXX; Vectras: for Hardware accelerated surfaces we have to stop using the above deprecated method and use a bitmap-backed method
-                // this fixes the issue with Nougat Devices displaying black screen for 24bit color mode C24bit
-                Bitmap bitmapTmp = Bitmap.createBitmap(framebufferwidth, framebufferheight, Config.bitmapConfig);
-                bitmapTmp.setPixels(pixels, 0, data.framebufferwidth, 0, 0, framebufferwidth, framebufferheight);
+				bitmap.setPixels(pixels, 0, data.framebufferwidth, 0, 0, framebufferwidth, framebufferheight);
 
 				if (vncCanvas.getScaleType() == ImageView.ScaleType.FIT_XY) {
-					canvas.drawBitmap(bitmapTmp, (float) vncCanvas.getWidth() / 2 + (float) framebufferwidth / -2, (float) vncCanvas.getHeight() / 2 - (float) framebufferheight / 2, null);
+					canvas.drawBitmap(bitmap, (float) vncCanvas.getWidth() / 2 + (float) framebufferwidth / -2, (float) vncCanvas.getHeight() / 2 - (float) framebufferheight / 2, null);
 				} else {
-					canvas.drawBitmap(bitmapTmp, xoffset, yoffset, null);
+					canvas.drawBitmap(bitmap, xoffset, yoffset, null);
 				}
 
 
 			}
 			else
 			{
-				float scale = vncCanvas.getScale();
 				int xo = xoffset < 0 ? 0 : xoffset;
 				int yo = yoffset < 0 ? 0 : yoffset;
 				/*
@@ -81,13 +86,8 @@ class FullBufferBitmapData extends AbstractBitmapData {
 						drawHeight = data.framebufferheight - yo;
 
 
-					//canvas.drawBitmap(data.bitmapPixels, offset(xo, yo), data.framebufferwidth, xo, yo, drawWidth, drawHeight, false, null);
-
-                    //XXX; for Hardware accelerated surfaces we have to stop using the above deprecated method and use a bitmap-backed method
-                    // this fixes the issue with Nougat Devices displaying black screen for 24bit color mode C24bit
-                    Bitmap bitmapTmp = Bitmap.createBitmap(framebufferwidth, framebufferheight, Config.bitmapConfig);
-                    bitmapTmp.setPixels(pixels, offset(xo, yo), data.framebufferwidth, 0, 0, drawWidth, drawHeight);
-                    canvas.drawBitmap(bitmapTmp, 0, 0, null);
+					bitmap.setPixels(pixels, offset(xo, yo), data.framebufferwidth, 0, 0, drawWidth, drawHeight);
+					canvas.drawBitmap(bitmap, 0, 0, null);
 
 				/*
 				}
@@ -99,7 +99,7 @@ class FullBufferBitmapData extends AbstractBitmapData {
 					int scaleheight = (int)(vncCanvas.getVisibleHeight() / scale + 1);
 					if (scaleheight + yo > data.framebufferheight)
 						scaleheight = data.framebufferheight - yo;
-					canvas.drawBitmap(data.bitmapPixels, offset(xo, yo), data.framebufferwidth, xo, yo, scalewidth, scaleheight, false, null);				
+					canvas.drawBitmap(data.bitmapPixels, offset(xo, yo), data.framebufferwidth, xo, yo, scalewidth, scaleheight, false, null);
 				}
 				*/
 			}
@@ -224,8 +224,11 @@ class FullBufferBitmapData extends AbstractBitmapData {
 	 */
 	@Override
 	void updateBitmap(int x, int y, int w, int h) {
-		// Don't need to do anything here
-
+		// Keep the reusable bitmap in sync so the next draw() does not
+		// have to copy the whole framebuffer again.
+		if (bitmap != null && bitmapPixels != null) {
+			bitmap.setPixels(bitmapPixels, offset(x, y), framebufferwidth, x, y, w, h);
+		}
 	}
 
 	/* (non-Javadoc)
