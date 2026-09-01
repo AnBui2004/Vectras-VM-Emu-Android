@@ -10,8 +10,21 @@ public class QemuManager {
     public static final int DEFAULT_REFRESH_RATE = 60;
     public static final int DEFAULT_LOW_REFRESH_RATE = 30;
 
+    // Probing runs "qemu-system-* -vnc help" in a proot shell (1-3s) and
+    // the answer cannot change while the app runs, so cache it per arch.
+    private static final java.util.Map<String, Boolean> refreshRateSupportCache = new java.util.HashMap<>();
+
     public static boolean isSupportSetRefreshRate(Context context) {
-        return new Terminal2(context).executeOnThisThread(getQemuExecutableFile(context) + " -vnc help").contains("refresh-rate");
+        String arch = MainSettingsManager.getArch(context);
+        synchronized (refreshRateSupportCache) {
+            Boolean cached = refreshRateSupportCache.get(arch);
+            if (cached != null) return cached;
+        }
+        boolean supported = new Terminal2(context).executeOnThisThread(getQemuExecutableFile(context) + " -vnc help").contains("refresh-rate");
+        synchronized (refreshRateSupportCache) {
+            refreshRateSupportCache.put(arch, supported);
+        }
+        return supported;
     }
 
     public static boolean isSupportAcpiTable(Context context) {
