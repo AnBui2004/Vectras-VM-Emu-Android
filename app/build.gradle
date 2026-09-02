@@ -219,3 +219,22 @@ afterEvaluate {
     android.sourceSets.main.res.srcDirs += 'build/generated/templateRes'
     preBuild.dependsOn generateShortcuts
 }
+
+task buildShellLoaderDebug {
+    dependsOn ':shell-loader:assembleDebug'
+}
+
+task buildShellLoaderRelease {
+    dependsOn ':shell-loader:assembleRelease'
+}
+
+project.afterEvaluate {
+    tasks.named('preBuild').configure {
+        def gradleArgs = gradle.startParameter.taskNames.join(' ').toLowerCase()
+        if (gradleArgs.contains('release')) {
+            dependsOn buildShellLoaderRelease
+        } else {
+            dependsOn buildShellLoaderDebug
+        }
+    }
+}
