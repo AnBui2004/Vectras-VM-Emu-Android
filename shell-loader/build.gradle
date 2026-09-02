@@ -51,14 +51,16 @@ android.defaultConfig.buildConfigField "String", "packageSignatureMismatchErrorT
 android.defaultConfig.buildConfigField "String", "COMMIT", "\"" + ("git rev-parse HEAD\n".execute().getText().trim() ?: (System.getenv('CURRENT_COMMIT') ?: "NO_COMMIT")) + "\""
 
 tasks.register('copyDebugApkToAssets', Copy) {
-    from layout.buildDirectory.dir("intermediates/apk/debug")
-    into(rootProject.layout.projectDirectory.dir("app/src/main/assets/bootstrap"))
+    from layout.buildDirectory.dir("outputs/apk/debug")
+    from layout.buildDirectory.dir("intermediates/apk/debug") // Android Studio
+
+    into rootProject.layout.projectDirectory.dir("app/src/main/assets/bootstrap")
     include "**/*.apk"
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 tasks.register('copyReleaseApkToAssets', Copy) {
-    from rootProject.layout.projectDirectory.dir("shell-loader/release")
+    from layout.buildDirectory.dir("outputs/apk/release")
     into rootProject.layout.projectDirectory.dir("app/src/main/assets/bootstrap")
     include "**/*.apk"
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
