@@ -24,7 +24,7 @@ android {
     namespace 'com.vectras.vm'
     compileSdk = 37
 
-    def versionSuffix = (System.getenv('VECTRAS_VM_VERSION_SUFFIX') ?: "").trim()
+    def versionSuffix = project.hasProperty('versionSuffix') ? project.property('versionSuffix').toString().trim() : ""
 
     defaultConfig {
         applicationId "com.vectras.vm"

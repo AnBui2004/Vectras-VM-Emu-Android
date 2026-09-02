@@ -33,6 +33,29 @@ jobs:
         run: chmod +x gradlew
 
       - name: Create google-services.json
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > app/google-services.json
+
+      - name: Create release-key.jks
+        run: echo "${{ secrets.KEYSTORE }}" | base64 --decode > release-key.jks
+
+      - name: Create keystore.properties
+        run: |
+          cat <<EOF > keystore.properties
+          storeFile=../release-key.jks
+          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          EOF
+
+      - name: Send notification to Telegram
+        run: |
+          if [[ -n "${{ secrets.TELEGRAM_BOT_TOKEN }}" ]]; then
+            curl -s -o /dev/null -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+              -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} -d message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }} \
+              -d $'text=New commit! Starting to build Vectras VM on GitHub.\nPlease wait about 5 minutes.\nRun ID: '${GITHUB_RUN_ID}
+          fi
+
+      - name: Create google-services.json
         run: |
           if [ -n "${{ secrets.GOOGLE_SERVICES_JSON }}" ]; then
             echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > app/google-services.json
@@ -72,10 +95,18 @@ jobs:
           fi
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug -PversionSuffix="nightly"
 
       - name: Upload Debug APK as artifact
         uses: actions/upload-artifact@v4
         with:
           name: pr-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Notify Telegram with release link
+        run: |
+          if [[ -n "${{ secrets.TELEGRAM_BOT_TOKEN }}" ]]; then
+            curl -s -o /dev/null -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+              -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} -d message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }} \
+              -d $'text=Build complete! View the commits here: https://github.com/AnBui2004/Vectras-VM-Emu-Android/commits'
+          fi

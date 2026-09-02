@@ -22,9 +22,6 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Set version suffix
-      run: echo "VECTRAS_VM_VERSION_SUFFIX=nightly" >> "$GITHUB_ENV"
-
     - name: Create google-services.json
       run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > app/google-services.json
 
@@ -49,10 +46,10 @@ jobs:
         fi
 
     - name: Build Debug APK
-      run: ./gradlew assembleDebug
+      run: ./gradlew assembleDebug -PversionSuffix="alpha"
 
     - name: Build Release APK
-      run: ./gradlew assembleRelease
+      run: ./gradlew assembleRelease -PversionSuffix="alpha"
 
     - name: Upload Debug APK as artifact
       uses: actions/upload-artifact@v4
@@ -71,12 +68,12 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: nightly
-        name: 'Vectras VM Nightly Build $$'
+        tag_name: alpha
+        name: 'Alpha $$'
         draft: false
         prerelease: true
         body: |
-          Built from GitHub Actions.
+          This is an unstable version. Scroll down to view stable versions.
           Run ID: ${{ github.run_id }}
         files: |
           app/build/outputs/apk/release/app-release.apk
