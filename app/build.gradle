@@ -220,11 +220,11 @@ afterEvaluate {
     preBuild.dependsOn generateShortcuts
 }
 
-task buildShellLoaderDebug {
+tasks.register('buildShellLoaderDebug', DefaultTask) {
     dependsOn ':shell-loader:assembleDebug'
 }
 
-task buildShellLoaderRelease {
+tasks.register('buildShellLoaderRelease', DefaultTask) {
     dependsOn ':shell-loader:assembleRelease'
 }
 
@@ -236,5 +236,15 @@ project.afterEvaluate {
         } else {
             dependsOn buildShellLoaderDebug
         }
+    }
+}
+
+afterEvaluate {
+    tasks.named('mergeDebugAssets') {
+        dependsOn ':shell-loader:copyDebugApkToAssets'
+    }
+
+    tasks.named('mergeReleaseAssets') {
+        dependsOn ':shell-loader:copyReleaseApkToAssets'
     }
 }

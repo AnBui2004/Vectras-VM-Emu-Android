@@ -63,44 +63,26 @@ jobs:
         name: android-release-apk
         path: app/build/outputs/apk/release/app-release.apk
 
-    - name: Upload to Telegram 
+    - name: Update Nightly Release
+      uses: andelf/nightly-release@main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: nightly
+        name: 'Vectras VM Nightly Build $$'
+        draft: false
+        prerelease: true
+        body: |
+          Built from GitHub Actions.
+          Run ID: ${{ github.run_id }}
+        files: |
+          app/build/outputs/apk/release/app-release.apk
+          app/build/outputs/apk/debug/app-debug.apk
+
+    - name: Notify Telegram with release link
       run: |
-          if [[ -n "${{ secrets.TELEGRAM_BOT_TOKEN }}" ]]; then
-            success=true
-
-            for file in app/build/outputs/apk/release/*.apk; do
-              echo "Uploading $(basename "$file")"
-              tries=0
-              success_file=false
-              until [ $tries -ge 5 ]; do
-                response=$(curl -s -w "\n%{http_code}" --max-time 120 \
-                        -F document=@"$file" \
-                        -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-                        -d message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }} \
-                        -F $'caption=Finished building Vectras VM on GitHub.\nRun ID: '${GITHUB_RUN_ID} \
-                        https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument)
-                http_code=$(echo "$response" | tail -n1)
-                body=$(echo "$response" | sed '$d')
-
-                if [ "$http_code" = "200" ]; then
-                  success_file=true
-                  break
-                else
-                  echo "Attempt $((tries+1)) failed (HTTP $http_code): $body"
-                  sleep 3
-                fi
-                tries=$((tries+1))
-              done
-
-              if ! $success_file; then
-                echo "Upload failed for $file"
-                success=false
-              fi
-            done
-
-            if [ "$success" = false ]; then
-              curl -s -o /dev/null -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-                  -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} -d message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }} \
-                  -d $'text=Something went wrong and Vectras VM\'s apk file could not be uploaded.\nExplore releases here: https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases\nRun ID: '${GITHUB_RUN_ID}
-            fi
-          fi
+        if [[ -n "${{ secrets.TELEGRAM_BOT_TOKEN }}" ]]; then
+          curl -s -o /dev/null -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} -d message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }} \
+            -d $'text=Build complete! Download here: https://github.com/${{ github.repository }}/releases/tag/nightly'
+        fi
