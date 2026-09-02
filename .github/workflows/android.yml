@@ -73,20 +73,21 @@ jobs:
               tries=0
               success_file=false
               until [ $tries -ge 5 ]; do
-                success_targets=false
-                if curl -s -o /dev/null -F document=@"$file" \
-                        -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} -d message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }} \
+                response=$(curl -s -w "\n%{http_code}" --max-time 120 \
+                        -F document=@"$file" \
+                        -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+                        -d message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }} \
                         -F $'caption=Finished building Vectras VM on GitHub.\nRun ID: '${GITHUB_RUN_ID} \
-                        https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument; then
-                  success_targets=true
-                else
-                  echo "Retrying upload for $file to target..."
-                  sleep 2
-                fi
+                        https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument)
+                http_code=$(echo "$response" | tail -n1)
+                body=$(echo "$response" | sed '$d')
 
-                if $success_targets; then
+                if [ "$http_code" = "200" ]; then
                   success_file=true
                   break
+                else
+                  echo "Attempt $((tries+1)) failed (HTTP $http_code): $body"
+                  sleep 3
                 fi
                 tries=$((tries+1))
               done
