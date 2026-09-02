@@ -46,7 +46,6 @@ import androidx.annotation.Nullable;
 import com.google.android.material.button.MaterialButton;
 import com.vectras.vm.R;
 import com.vectras.vm.x11.X11Activity;
-import com.vectras.vm.x11.utils.TermuxX11ExtraKeys;
 
 /**
  * A {@link View} showing extra keys (such as Escape, Ctrl, Alt) not normally available on an Android soft
@@ -115,6 +114,12 @@ public final class ExtraKeysView extends GridLayout {
          * can handle it depending on system settings.
          */
         boolean performExtraKeyButtonHapticFeedback(View view, ExtraKeyButton buttonInfo, Button button);
+
+        /** (Re)loads the extra keys config, e.g. from preferences. */
+        void setExtraKeys();
+
+        /** Returns the currently loaded extra keys config, loading it first if needed. */
+        ExtraKeysInfo getExtraKeysInfo();
     }
 
     /** Defines the default value for {@link #mButtonTextColor} */
@@ -306,8 +311,8 @@ public final class ExtraKeysView extends GridLayout {
      */
     @SuppressLint("ClickableViewAccessibility")
     public void reload() {
-        TermuxX11ExtraKeys.setExtraKeys();
-        ExtraKeysInfo extraKeysInfo = TermuxX11ExtraKeys.getExtraKeysInfo();
+        mExtraKeysViewClient.setExtraKeys();
+        ExtraKeysInfo extraKeysInfo = mExtraKeysViewClient.getExtraKeysInfo();
         if (extraKeysInfo == null)
             return;
 

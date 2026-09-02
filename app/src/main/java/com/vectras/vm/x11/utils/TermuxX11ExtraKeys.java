@@ -1,7 +1,6 @@
 package com.vectras.vm.x11.utils;
 
 import static com.vectras.vm.x11.extrakeys.ExtraKeysConstants.PRIMARY_KEY_CODES_FOR_STRINGS;
-import static com.vectras.vm.x11.X11Activity.toggleKeyboardVisibility;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import android.annotation.SuppressLint;
@@ -32,7 +31,7 @@ public class TermuxX11ExtraKeys implements ExtraKeysView.IExtraKeysView {
     private final X11Activity mActivity;
     private final ExtraKeysView mExtraKeysView;
     private final ClipboardManager mClipboardManager;
-    static private ExtraKeysInfo mExtraKeysInfo;
+    private ExtraKeysInfo mExtraKeysInfo;
 
     private boolean ctrlDown;
     private boolean altDown;
@@ -46,6 +45,7 @@ public class TermuxX11ExtraKeys implements ExtraKeysView.IExtraKeysView {
         mEventListener = eventlistener;
         mActivity = activity;
         mExtraKeysView = extrakeysview;
+        mExtraKeysView.setExtraKeysViewClient(this);
         mClipboardManager = (ClipboardManager) mActivity.getSystemService(Context.CLIPBOARD_SERVICE);
     }
 
@@ -170,7 +170,7 @@ public class TermuxX11ExtraKeys implements ExtraKeysView.IExtraKeysView {
     @SuppressLint("RtlHardcoded")
     public void onLorieExtraKeyButtonClick(View view, String key, boolean ctrlDown, boolean altDown, boolean shiftDown, boolean metaDown, boolean fnDown) {
         switch (key) {
-            case "KEYBOARD" -> toggleKeyboardVisibility(mActivity);
+            case "KEYBOARD" -> mActivity.toggleKeyboardVisibility();
             case "DRAWER", "PREFERENCES" ->
                     mActivity.startActivity(new Intent(mActivity, LoriePreferences.class) {{
                         setAction(ACTION_START_PREFERENCES_ACTIVITY);
@@ -201,7 +201,8 @@ public class TermuxX11ExtraKeys implements ExtraKeysView.IExtraKeysView {
     /**
      * Set the terminal extra keys and style.
      */
-    public static void setExtraKeys() {
+    @Override
+    public void setExtraKeys() {
         mExtraKeysInfo = null;
 
         try {
@@ -211,20 +212,21 @@ public class TermuxX11ExtraKeys implements ExtraKeysView.IExtraKeysView {
             String extrakeys = X11Activity.getPrefs().extra_keys_config.get();
             mExtraKeysInfo = new ExtraKeysInfo(extrakeys, "extra-keys-style", ExtraKeysConstants.CONTROL_CHARS_ALIASES);
         } catch (JSONException e) {
-            Toast.makeText(X11Activity.getInstance(), "Could not load and set the \"extra-keys\" property from the properties file: " + e, Toast.LENGTH_LONG).show();
+            Toast.makeText(mActivity, "Could not load and set the \"extra-keys\" property from the properties file: " + e, Toast.LENGTH_LONG).show();
             Log.e(LOG_TAG, "Could not load and set the \"extra-keys\" property from the properties file: ", e);
 
             try {
                 mExtraKeysInfo = new ExtraKeysInfo(TermuxX11ExtraKeys.DEFAULT_IVALUE_EXTRA_KEYS, "default", ExtraKeysConstants.CONTROL_CHARS_ALIASES);
             } catch (JSONException e2) {
-                Toast.makeText(X11Activity.getInstance(), "Can't create default extra keys", Toast.LENGTH_LONG).show();
+                Toast.makeText(mActivity, "Can't create default extra keys", Toast.LENGTH_LONG).show();
                 Log.e(LOG_TAG, "Could create default extra keys: ", e);
                 mExtraKeysInfo = null;
             }
         }
     }
 
-    public static ExtraKeysInfo getExtraKeysInfo() {
+    @Override
+    public ExtraKeysInfo getExtraKeysInfo() {
         if (mExtraKeysInfo == null)
             setExtraKeys();
         return mExtraKeysInfo;

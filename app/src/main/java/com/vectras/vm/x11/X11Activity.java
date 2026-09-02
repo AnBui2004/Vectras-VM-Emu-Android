@@ -18,6 +18,7 @@ import android.app.PictureInPictureParams;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -76,6 +77,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.vectras.vm.R;
 import com.vectras.vm.databinding.ActivityX11Binding;
+import com.vectras.vm.x11.extrakeys.ExtraKeysInfo;
 import com.vectras.vm.x11.input.InputEventSender;
 import com.vectras.vm.x11.input.InputStub;
 import com.vectras.vm.x11.input.TouchInputHandler;
@@ -96,15 +98,15 @@ public class X11Activity extends AppCompatActivity {
     public static Handler handler = new Handler();
     private final Runnable connectRetry = this::tryConnect;
     FrameLayout frm;
-    private TouchInputHandler mInputHandler;
+    public TouchInputHandler mInputHandler;
     protected ICmdEntryInterface service = null;
     public TermuxX11ExtraKeys mExtraKeys;
     private Notification mNotification;
     private final int mNotificationId = 7892;
     NotificationManager mNotificationManager;
-    private static DisplayManager displayManager;
-    private static boolean showIMEWhileExternalConnected = true;
-    private static boolean externalKeyboardConnected = false;
+    private DisplayManager displayManager;
+    private boolean showIMEWhileExternalConnected = true;
+    private boolean externalKeyboardConnected = false;
     private View.OnKeyListener mLorieKeyListener;
     private boolean filterOutWinKey = false;
     boolean useTermuxEKBarBehaviour = false;
@@ -121,7 +123,7 @@ public class X11Activity extends AppCompatActivity {
 
     public static Prefs prefs = null;
 
-    private static boolean oldFullscreen = false, oldHideCutout = false;
+    private boolean oldFullscreen = false, oldHideCutout = false;
     private final SharedPreferences.OnSharedPreferenceChangeListener preferencesChangedListener = (__, key) -> onPreferencesChanged(key);
     private OrientationEventListener orientationListener;
 
@@ -183,6 +185,16 @@ public class X11Activity extends AppCompatActivity {
 
     ActivityX11Binding binding;
 
+    /** Unwraps the {@link X11Activity} a view's {@link Context} was inflated with, if any. */
+    public static X11Activity findActivity(Context context) {
+        while (context instanceof ContextWrapper) {
+            if (context instanceof X11Activity)
+                return (X11Activity) context;
+            context = ((ContextWrapper) context).getBaseContext();
+        }
+        return null;
+    }
+
     @Override
     @SuppressLint({"AppCompatMethod", "ObsoleteSdkInt", "ClickableViewAccessibility", "WrongConstant", "UnspecifiedRegisterReceiverFlag"})
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,7 +225,7 @@ public class X11Activity extends AppCompatActivity {
         LorieView lorieView = findViewById(R.id.lorieView);
         View lorieParent = (View) lorieView.getParent();
 
-        mInputHandler = new TouchInputHandler(this, new InputEventSender(lorieView));
+        mInputHandler = new TouchInputHandler(this, new InputEventSender(this, lorieView));
         mLorieKeyListener = (v, k, e) -> {
             InputDevice dev = e.getDevice();
             boolean result = mInputHandler.sendKeyEvent(e);
@@ -335,10 +347,10 @@ public class X11Activity extends AppCompatActivity {
         }
         overlay.setVisibility(stylusMenuEnabled ? View.VISIBLE : View.GONE);
         View.OnClickListener listener = view -> {
-            TouchInputHandler.STYLUS_INPUT_HELPER_MODE = (view.equals(left) ? 1 : (view.equals(middle) ? 2 : (view.equals(right) ? 4 : 0)));
-            left.setAlpha((TouchInputHandler.STYLUS_INPUT_HELPER_MODE == 1) ? menuSelectedTrasparency : menuUnselectedTrasparency);
-            middle.setAlpha((TouchInputHandler.STYLUS_INPUT_HELPER_MODE == 2) ? menuSelectedTrasparency : menuUnselectedTrasparency);
-            right.setAlpha((TouchInputHandler.STYLUS_INPUT_HELPER_MODE == 4) ? menuSelectedTrasparency : menuUnselectedTrasparency);
+            mInputHandler.mStylusInputHelperMode = (view.equals(left) ? 1 : (view.equals(middle) ? 2 : (view.equals(right) ? 4 : 0)));
+            left.setAlpha((mInputHandler.mStylusInputHelperMode == 1) ? menuSelectedTrasparency : menuUnselectedTrasparency);
+            middle.setAlpha((mInputHandler.mStylusInputHelperMode == 2) ? menuSelectedTrasparency : menuUnselectedTrasparency);
+            right.setAlpha((mInputHandler.mStylusInputHelperMode == 4) ? menuSelectedTrasparency : menuUnselectedTrasparency);
             visibility.setAlpha(menuUnselectedTrasparency);
         };
 
@@ -350,7 +362,7 @@ public class X11Activity extends AppCompatActivity {
             if (buttons.getVisibility() == View.VISIBLE) {
                 buttons.setVisibility(View.GONE);
                 visibility.setAlpha(menuUnselectedTrasparency);
-                int m = TouchInputHandler.STYLUS_INPUT_HELPER_MODE;
+                int m = mInputHandler.mStylusInputHelperMode;
                 visibility.setText(m == 1 ? "L" : (m == 2 ? "M" : (m == 3 ? "R" : "U")));
             } else {
                 RectF frmRect = getVisibleFrmRect();
@@ -366,12 +378,12 @@ public class X11Activity extends AppCompatActivity {
                 overlay.setX(MathUtils.clamp(overlay.getX(), frmRect.left, maxX));
                 overlay.setY(MathUtils.clamp(overlay.getY(), frmRect.top, maxY));
 
-                int m = TouchInputHandler.STYLUS_INPUT_HELPER_MODE;
+                int m = mInputHandler.mStylusInputHelperMode;
                 listener.onClick(m == 1 ? left : (m == 2 ? middle : (m == 3 ? right : left)));
             }
         });
         //Simulated mouse click 1 = left , 2 = middle , 3 = right
-        TouchInputHandler.STYLUS_INPUT_HELPER_MODE = 1;
+        mInputHandler.mStylusInputHelperMode = 1;
         listener.onClick(left);
 
         visibility.setOnLongClickListener(v -> {
@@ -419,7 +431,7 @@ public class X11Activity extends AppCompatActivity {
             buttons.setAlpha(isInPictureInPictureMode ? 0.f : 1.f);
         } else {
             //Reset default input back to normal
-            TouchInputHandler.STYLUS_INPUT_HELPER_MODE = 1;
+            mInputHandler.mStylusInputHelperMode = 1;
             final float menuUnselectedTrasparency = 0.66f;
             final float menuSelectedTrasparency = 1.0f;
             findViewById(R.id.button_left_click).setAlpha(menuSelectedTrasparency);
@@ -795,13 +807,14 @@ public class X11Activity extends AppCompatActivity {
         handler.post(() -> {
             final ViewPager pager = getTerminalToolbarViewPager();
             boolean showNow = pager.getVisibility() == View.VISIBLE;
+            ExtraKeysInfo extraKeysInfo = mExtraKeys == null ? null : mExtraKeys.getExtraKeysInfo();
             FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) pager.getLayoutParams();
             int pos = getPagerPosition();
 
             // The window is not resized for the keyboard, so a bar along a side has to end above it.
             layoutParams.width = (pos == PAGER_POSITION_LEFT || pos == PAGER_POSITION_RIGHT) ? frm.getHeight() - imeHeight : frm.getWidth();
             layoutParams.height = Math.round(37.5f * getResources().getDisplayMetrics().density *
-                    (TermuxX11ExtraKeys.getExtraKeysInfo() == null ? 0 : TermuxX11ExtraKeys.getExtraKeysInfo().getMatrix().length));
+                    (extraKeysInfo == null ? 0 : extraKeysInfo.getMatrix().length));
 
             switch (pos) {
                 case PAGER_POSITION_TOP:
@@ -1144,12 +1157,10 @@ public class X11Activity extends AppCompatActivity {
 
     /**
      * Manually toggle soft keyboard visibility
-     *
-     * @param context calling context
      */
-    public static void toggleKeyboardVisibility(Context context) {
+    public void toggleKeyboardVisibility() {
         Log.d("X11Activity", "Toggling keyboard visibility");
-        LorieView view = getInstance().getLorieView();
+        LorieView view = getLorieView();
         if (!externalKeyboardConnected || showIMEWhileExternalConnected)
             view.toggleKeyboardVisible();
         else
@@ -1188,25 +1199,14 @@ public class X11Activity extends AppCompatActivity {
         });
     }
 
-    public static boolean isConnected() {
-        if (getInstance() == null)
-            return false;
-
-        return getInstance().getLorieView().connected();
+    public void getRealMetrics(DisplayMetrics m) {
+        if (getLorieView() != null && getLorieView().getDisplay() != null)
+            getLorieView().getDisplay().getRealMetrics(m);
     }
 
-    public static void getRealMetrics(DisplayMetrics m) {
-        if (getInstance() != null &&
-                getInstance().getLorieView() != null &&
-                getInstance().getLorieView().getDisplay() != null)
-            getInstance().getLorieView().getDisplay().getRealMetrics(m);
-    }
-
-    public static void setCapturingEnabled(boolean enabled) {
-        if (getInstance() == null || getInstance().mInputHandler == null)
-            return;
-
-        getInstance().mInputHandler.setCapturingEnabled(enabled);
+    public void setCapturingEnabled(boolean enabled) {
+        if (mInputHandler != null)
+            mInputHandler.setCapturingEnabled(enabled);
     }
 
     public boolean shouldInterceptKeys() {

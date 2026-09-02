@@ -56,7 +56,6 @@ public class X11ToolbarViewPager {
                 ExtraKeysView extraKeysView = (ExtraKeysView) layout;
                 mActivity.mExtraKeys = new TermuxX11ExtraKeys(mEventListener, mActivity, extraKeysView);
                 extraKeysView.reload();
-                extraKeysView.setExtraKeysViewClient(mActivity.mExtraKeys);
                 extraKeysView.setOnHoverListener((v, e) -> true);
                 extraKeysView.setOnGenericMotionListener((v, e) -> true);
             } else {
@@ -76,7 +75,7 @@ public class X11ToolbarViewPager {
 
                 if (SDK_INT >= Build.VERSION_CODES.O)
                     editText.setOnCapturedPointerListener((v2, e2) -> {
-                        X11Activity.setCapturingEnabled(false);
+                        mActivity.setCapturingEnabled(false);
                         return false;
                     });
 

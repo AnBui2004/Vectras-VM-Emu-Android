@@ -154,7 +154,7 @@ public class AddIn {
 
         bindingControls.shutdownBtn.setOnClickListener(v -> activity.finish());
 
-        bindingControls.kbdBtn.setOnClickListener(v -> new Handler(Looper.getMainLooper()).postDelayed(() -> activity.toggleKeyboardVisibility(activity), 200));
+        bindingControls.kbdBtn.setOnClickListener(v -> new Handler(Looper.getMainLooper()).postDelayed(() -> activity.toggleKeyboardVisibility(), 200));
         bindingControls.btnMode.setOnClickListener(v -> {
             FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
             // Create and show the dialog.

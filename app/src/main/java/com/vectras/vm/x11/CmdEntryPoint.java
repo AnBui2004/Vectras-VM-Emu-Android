@@ -26,6 +26,8 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
 
+import dalvik.annotation.optimization.CriticalNative;
+
 @Keep @SuppressLint({"StaticFieldLeak", "UnsafeDynamicallyLoadedCode"})
 public class CmdEntryPoint extends ICmdEntryInterface.Stub {
     public static final String ACTION_START = "com.vectras.vm.x11.CmdEntryPoint.ACTION_START";
@@ -49,11 +51,6 @@ public class CmdEntryPoint extends ICmdEntryInterface.Stub {
     CmdEntryPoint(String[] args) {
         if (!start(args))
             System.exit(1);
-
-        android.util.Log.i("CmdEntryPoint", "start " + BuildConfig.VERSION_NAME);
-
-        spawnListeningThread();
-        sendBroadcastDelayed();
     }
 
     @SuppressLint({"WrongConstant", "PrivateApi"})
@@ -74,8 +71,8 @@ public class CmdEntryPoint extends ICmdEntryInterface.Stub {
     }
 
     private void sendBroadcast() {
-        // Called from the native listening thread on every knock on the port;
-        // coalesce bursts into a single broadcast fired 250ms later.
+        // Called from native (the X server thread) on every knock on the port; coalesce
+        // bursts into a single broadcast fired 250ms later.
         synchronized (this) {
             if (broadcastPending)
                 return;
@@ -143,10 +140,6 @@ public class CmdEntryPoint extends ICmdEntryInterface.Stub {
         handler.postDelayed(this::sendBroadcastDelayed, 1000);
     }
 
-    void spawnListeningThread() {
-        new Thread(this::listenForConnections).start();
-    }
-
     /** @noinspection DataFlowIssue*/
     @SuppressLint("DiscouragedPrivateApi")
     public static Context createContext() {
@@ -177,11 +170,11 @@ public class CmdEntryPoint extends ICmdEntryInterface.Stub {
         return context;
     }
 
-    public static native boolean start(String[] args);
+    public native boolean start(String[] args);
     public native ParcelFileDescriptor getXConnection();
     public native ParcelFileDescriptor getLogcatOutput();
+    @CriticalNative
     private static native boolean connected();
-    private native void listenForConnections();
 
     static {
         try {
@@ -206,12 +199,6 @@ public class CmdEntryPoint extends ICmdEntryInterface.Stub {
             } catch (Exception e) {
                 Log.e("CmdEntryPoint", "Failed to dlopen " + libPath, e);
                 System.err.println("Failed to load native library. Did you install the right apk? Try the universal one.");
-                System.exit(134);
-            }
-        } else {
-            // It is critical only when it is not running in Android application process
-            if (X11Activity.getInstance() == null) {
-                System.err.println("Failed to acquire native library. Did you install the right apk? Try the universal one.");
                 System.exit(134);
             }
         }

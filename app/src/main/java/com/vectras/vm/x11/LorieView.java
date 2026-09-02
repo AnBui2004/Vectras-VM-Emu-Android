@@ -8,7 +8,9 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.opengl.GLES20;
 import android.os.Build;
@@ -38,7 +40,6 @@ import androidx.annotation.NonNull;
 import androidx.core.math.MathUtils;
 
 import com.vectras.vm.x11.input.InputStub;
-import com.vectras.vm.x11.input.TouchInputHandler;
 import com.vectras.vm.x11.utils.SamsungDexUtils;
 
 import java.util.Set;
@@ -52,7 +53,7 @@ import dalvik.annotation.optimization.FastNative;
 @Keep @SuppressLint("WrongConstant")
 @SuppressWarnings("deprecation")
 public class LorieView extends SurfaceView implements InputStub {
-    private static int rendererZoom = 100;
+    private float rendererZoom = 100f;
     private static final Rect NO_INSETS = new Rect();
 
     public interface Callback {
@@ -62,9 +63,10 @@ public class LorieView extends SurfaceView implements InputStub {
     private ClipboardManager clipboard;
     private long lastClipboardTimestamp = System.currentTimeMillis();
     private long mNativeContext;
-    private static boolean clipboardSyncEnabled = false;
-    private static boolean hardwareKbdScancodesWorkaround = false;
+    private boolean clipboardSyncEnabled = false;
+    private boolean hardwareKbdScancodesWorkaround = false;
     private final InputMethodManager mIMM = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+    private final X11Activity activity = X11Activity.findActivity(getContext());
     private Callback mCallback;
     private final Point p = new Point();
     private final Rect contentInsets = new Rect();
@@ -78,7 +80,6 @@ public class LorieView extends SurfaceView implements InputStub {
     private boolean dimensionsFrozen = false;
     boolean commitedText = false;
     private final InputConnection mConnection = new BaseInputConnection(this, false) {
-        private final X11Activity a = X11Activity.getInstance();
         private CharSequence currentComposingText = null;
 
         // We can not inspect X windows and get currently edited text
@@ -209,8 +210,8 @@ public class LorieView extends SurfaceView implements InputStub {
 
             currentComposingText = reuse ? newText : null;
 
-            if (a.useTermuxEKBarBehaviour && a.mExtraKeys != null)
-                a.mExtraKeys.unsetSpecialKeys();
+            if (activity.useTermuxEKBarBehaviour && activity.mExtraKeys != null)
+                activity.mExtraKeys.unsetSpecialKeys();
             commitedText = true;
             return true;
         }
@@ -297,18 +298,9 @@ public class LorieView extends SurfaceView implements InputStub {
         }
     };
 
-    /** Drawable area, in this view's own local coordinates, with insets already excluded. */
-    public Rect getAvailableRect() {
-        return new Rect(availableRect);
-    }
+    public LorieView(Context context, AttributeSet attrs) { super(context, attrs); }
 
-    public LorieView(Context context) { super(context); init(); }
-    public LorieView(Context context, AttributeSet attrs) { super(context, attrs); init(); }
-    public LorieView(Context context, AttributeSet attrs, int defStyleAttr) { super(context, attrs, defStyleAttr); init(); }
-    @SuppressWarnings("unused")
-    public LorieView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) { super(context, attrs, defStyleAttr, defStyleRes); init(); }
-
-    private void init() {
+    {
         getHolder().addCallback(mSurfaceCallback);
         clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         mNativeContext = nativeInit();
@@ -427,7 +419,7 @@ public class LorieView extends SurfaceView implements InputStub {
 
         if (getDisplay() == null || getDisplay().getDisplayId() == Display.DEFAULT_DISPLAY)
             name = "builtin";
-        else if (SamsungDexUtils.checkDeXEnabled(X11Activity.getInstance()))
+        else if (SamsungDexUtils.checkDeXEnabled(activity))
             name = "dex";
         else
             name = "external";
@@ -437,20 +429,15 @@ public class LorieView extends SurfaceView implements InputStub {
 
     @Keep
     @SuppressWarnings("unused")
-    private static void setRendererViewport(int viewportLeft, int viewportTop, int viewportWidth, int viewportHeight,
-                                            float sourceLeft, float sourceTop, float sourceWidth, float sourceHeight) {
+    private void setRendererViewport(int viewportLeft, int viewportTop, int viewportWidth, int viewportHeight,
+                                     float sourceLeft, float sourceTop, float sourceWidth, float sourceHeight) {
         X11Activity.handler.post(() -> {
-            X11Activity activity = X11Activity.getInstance();
-            if (activity == null)
-                return;
-
-            LorieView view = activity.getLorieView();
-            view.inputViewport.set(viewportLeft, viewportTop, viewportLeft + viewportWidth, viewportTop + viewportHeight);
-            view.inputSourceLeft = sourceLeft;
-            view.inputSourceTop = sourceTop;
-            view.inputSourceWidth = sourceWidth;
-            view.inputSourceHeight = sourceHeight;
-            view.updateInputTransform();
+            inputViewport.set(viewportLeft, viewportTop, viewportLeft + viewportWidth, viewportTop + viewportHeight);
+            inputSourceLeft = sourceLeft;
+            inputSourceTop = sourceTop;
+            inputSourceWidth = sourceWidth;
+            inputSourceHeight = sourceHeight;
+            updateInputTransform();
         });
     }
 
@@ -464,7 +451,7 @@ public class LorieView extends SurfaceView implements InputStub {
             requestLayout(); // measuring is what reapplies the dimensions, and the window may still be resizing
     }
 
-    /** Aspect ratio of the area the X screen is drawn in, null if the view is not laid out yet. */
+    /** Aspect ratio of the X screen, null if its size is not known yet. */
     public Rational getScreenAspectRatio() {
         return p.x == 0 || p.y == 0 ? null : new Rational(p.x, p.y);
     }
@@ -476,6 +463,11 @@ public class LorieView extends SurfaceView implements InputStub {
 
         obscuredBottom = height;
         updateViewport();
+    }
+
+    /** Drawable area, in this view's own local coordinates, with insets already excluded. */
+    public Rect getAvailableRect() {
+        return new Rect(availableRect);
     }
 
     public void setContentInsets(int left, int top, int right, int bottom) {
@@ -564,11 +556,6 @@ public class LorieView extends SurfaceView implements InputStub {
 
     @Override
     public boolean dispatchKeyEventPreIme(KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-            X11Activity.getInstance().onBackPressed();
-            return true;
-        }
-
         if (imeBuggyKeys.contains(event.getKeyCode())) {
             // IME does not handle/send events for some keys correctly correctly.
             // So we should send key release manually in the case if IME will not send it...
@@ -581,16 +568,11 @@ public class LorieView extends SurfaceView implements InputStub {
         if (hardwareKbdScancodesWorkaround)
             return false;
 
-        return X11Activity.getInstance().handleKey(event);
+        return activity.handleKey(event);
     }
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-            X11Activity.getInstance().onBackPressed();
-            return true;
-        }
-
         if (imeBuggyKeys.contains(event.getKeyCode())) {
             // remove messages we posted in dispatchKeyEventPreIme
             int action = event.getAction();
@@ -604,14 +586,12 @@ public class LorieView extends SurfaceView implements InputStub {
     ClipboardManager.OnPrimaryClipChangedListener clipboardListener = this::handleClipboardChange;
 
     public void reloadPreferences(Prefs p) {
-        if (X11Activity.getInstance() == null) return;
-
         String filtering = p.displayFilteringMode.get();
         setFiltering(mNativeContext, "nearest".equals(filtering) ? GLES20.GL_NEAREST : GLES20.GL_LINEAR);
         hardwareKbdScancodesWorkaround = p.hardwareKbdScancodesWorkaround.get();
         clipboardSyncEnabled = p.clipboardEnable.get();
         setClipboardSyncEnabled(mNativeContext, clipboardSyncEnabled, clipboardSyncEnabled);
-        TouchInputHandler.refreshInputDevices();
+        activity.mInputHandler.refreshInputDevices();
     }
 
     // It is used in native code
@@ -646,16 +626,14 @@ public class LorieView extends SurfaceView implements InputStub {
         ClipDescription desc = clipboard.getPrimaryClipDescription();
         // Below API 26 the clipboard carries no timestamp, so every change looks like a new one.
         long timestamp = desc == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? lastClipboardTimestamp + 1 : desc.getTimestamp();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (clipboardSyncEnabled && desc != null &&
-                    lastClipboardTimestamp < timestamp &&
-                    desc.getMimeTypeCount() == 1 &&
-                    (desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) ||
-                            desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML))) {
-                lastClipboardTimestamp = timestamp;
-                sendClipboardAnnounce(mNativeContext);
-                Log.d("CLIP", "sending clipboard announce");
-            }
+        if (clipboardSyncEnabled && desc != null &&
+                lastClipboardTimestamp < timestamp &&
+                desc.getMimeTypeCount() == 1 &&
+                (desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) ||
+                        desc.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML))) {
+            lastClipboardTimestamp = timestamp;
+            sendClipboardAnnounce(mNativeContext);
+            Log.d("CLIP", "sending clipboard announce");
         }
     }
 
@@ -671,7 +649,7 @@ public class LorieView extends SurfaceView implements InputStub {
         } else
             clipboard.removePrimaryClipChangedListener(clipboardListener);
 
-        TouchInputHandler.refreshInputDevices();
+        activity.mInputHandler.refreshInputDevices();
     }
 
     @Override
@@ -717,6 +695,10 @@ public class LorieView extends SurfaceView implements InputStub {
     @FastNative private native void sendWindowChange(long ptr, int width, int height, int framerate, String name);
     @FastNative private native void setViewport(long ptr, int x, int y, int width, int height, int expectedWidth, int expectedHeight, int hiddenBottom);
     @FastNative private native void setRendererZoom(long ptr, int percent);
+    @FastNative private native void setZoomAnchor(long ptr, float sourceX, float sourceY, float fracX, float fracY);
+    @FastNative private native void clearZoomAnchor(long ptr);
+    @FastNative private native long getCursorPosition(long ptr);
+    @FastNative private native void sendSync(long ptr, int serial);
 
     // Public API stays free of the native pointer; it's threaded through to an overload below.
     public void connect(int fd) { connect(mNativeContext, fd); }
@@ -730,18 +712,71 @@ public class LorieView extends SurfaceView implements InputStub {
 
     public void adjustRendererZoom(int delta) {
         rendererZoom = MathUtils.clamp(rendererZoom + delta, 100, 400);
-        setRendererZoom(mNativeContext, rendererZoom);
+        setRendererZoom(mNativeContext, Math.round(rendererZoom));
+    }
+
+    /** Multiplies the current zoom by {@code factor}; returns the resulting percentage (100-400). */
+    public int adjustRendererZoomByFactor(float factor) {
+        rendererZoom = MathUtils.clamp(rendererZoom * factor, 100f, 400f);
+        setRendererZoom(mNativeContext, Math.round(rendererZoom));
+        return Math.round(rendererZoom);
+    }
+
+    /** Pins a source point to a fraction of the viewport, so pan follows a pinch instead of the cursor. */
+    public void setPinchZoomFocus(float sourceX, float sourceY, float fracX, float fracY) {
+        setZoomAnchor(mNativeContext, sourceX, sourceY, fracX, fracY);
+    }
+
+    /** Resumes normal cursor-following pan once a pinch ends. */
+    public void clearPinchZoomFocus() {
+        clearZoomAnchor(mNativeContext);
+    }
+
+    /** The real X11 pointer position - unlike RenderData's copy, always accurate in trackpad mode. */
+    public PointF getRealCursorPosition() {
+        long packed = getCursorPosition(mNativeContext);
+        return new PointF((float) (packed >>> 32), (float) (packed & 0xFFFFFFFFL));
+    }
+
+    public interface SyncListener { void onSyncReply(int serial); }
+    private SyncListener mSyncListener;
+
+    /** Notifies {@code listener} once a barrier sent via {@link #sendSync} has been applied server-side. */
+    public void setSyncListener(SyncListener listener) {
+        mSyncListener = listener;
+    }
+
+    /** Asks the X server to echo {@code serial} back once every event sent before this one has actually been applied. */
+    public void sendSync(int serial) {
+        sendSync(mNativeContext, serial);
+    }
+
+    @Keep
+    @SuppressWarnings("unused")
+    private void onSyncReply(int serial) {
+        if (mSyncListener != null)
+            mSyncListener.onSyncReply(serial);
+    }
+
+    /** The portion of the X11 screen currently visible, in X11 screen coordinates. */
+    public RectF getInputSourceRect() {
+        return new RectF(inputSourceLeft, inputSourceTop, inputSourceLeft + inputSourceWidth, inputSourceTop + inputSourceHeight);
+    }
+
+    /** The on-screen rect the picture is drawn into; stable across pan/zoom, unlike getInputSourceRect(). */
+    public Rect getInputViewport() {
+        return new Rect(inputViewport);
     }
 
     public void resetRendererZoom() {
-        rendererZoom = 100;
-        setRendererZoom(mNativeContext, rendererZoom);
+        rendererZoom = 100f;
+        setRendererZoom(mNativeContext, Math.round(rendererZoom));
     }
 
     public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
         freezeDimensions(isInPictureInPictureMode);
         // Zooming a floating window makes no sense, but the zoom is restored along with the size.
-        setRendererZoom(mNativeContext, isInPictureInPictureMode ? 100 : rendererZoom);
+        setRendererZoom(mNativeContext, isInPictureInPictureMode ? 100 : Math.round(rendererZoom));
     }
 
     public void sendMouseEvent(float x, float y, int whichButton, boolean buttonDown, boolean relative) { sendMouseEvent(mNativeContext, x, y, whichButton, buttonDown, relative); }
