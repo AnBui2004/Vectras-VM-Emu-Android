@@ -736,8 +736,6 @@
     <string name="l2_cache_size_hint">L2 cache size (MB)</string>
     <string name="only_qcow2_format_is_supported">Only the qcow2 format is supported.</string>
     <string name="terminal_warning_content">Before continue, ensure you fully understand what you are doing. You should alway double-check the commands you use to ensure they function correctly and do not cause unintended issues. In particular, if someone is guiding you, double-check the commands they provide. We accept no responsibility for any unintended damage resulting from the use of commands not provided by us.</string>
-    <string name="a_vm_is_waiting">A virtual machine is waiting.</string>
-    <string name="a_vm_is_waiting_content">An app has requested to run this virtual machine. Please do not run it unless this request originated from an action you took within that app. Do you want to run it?</string>
 
 
     <!--======================TERMUX STRINGS====================-->

@@ -12,8 +12,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.anbui.elephant.app.AppChecker;
-import com.anbui.elephant.utils.IntentUtil;
 import com.anbui.elephant.verify.ParamNotebookVerifier;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -29,8 +27,6 @@ import java.util.Objects;
 
 public class CqcmActivity extends AppCompatActivity {
     private final String TAG = "CqcmActivity";
-
-    String source;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,32 +57,16 @@ public class CqcmActivity extends AppCompatActivity {
         Log.i("CqcmActivity", "Checking access to storage...");
         if (!PermissionUtils.storagepermission(this,false)) return;
 
-        source = IntentUtil.getCallingPackageName(this);
-
-        if (source == null || !source.equals(AppChecker.PARAM_NOTEBOOK_PACKAGE_NAME) || !AppChecker.isParamNoteBook(this)) {
+        if (ParamNotebookVerifier.verify(this)) {
             Toast.makeText(getApplicationContext(), "Cannot continue due to an invalid source.", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
 
-        if (getIntent().hasExtra("key")) {
-            ParamNotebookVerifier.verify(this, getIntent().getStringExtra("key"), isValid -> {
-                if (isValid) {
-                    runOnUiThread(() -> {
-                        if (getIntent().hasExtra("command")) {
-                            runCommand(getIntent().getStringExtra("command"), source);
-                        } else {
-                            startAdd();
-                        }
-                    });
-                } else {
-                    Toast.makeText(getApplicationContext(), "Invalid key.", Toast.LENGTH_LONG).show();
-                    finish();
-                }
-            });
+        if (getIntent().hasExtra("command")) {
+            runCommand(getIntent().getStringExtra("command"));
         } else {
-            Toast.makeText(getApplicationContext(), "Cannot continue due to an invalid source.", Toast.LENGTH_LONG).show();
-            finish();
+            startAdd();
         }
     }
 
@@ -139,11 +119,10 @@ public class CqcmActivity extends AppCompatActivity {
         finish();
     }
 
-    private void runCommand(String _command, String _source) {
+    private void runCommand(String _command) {
         Log.i(TAG, "runCommand: " + _command);
 
         PendingCommand.command = _command;
-        PendingCommand.source = _source;
 
         if (!MainActivity.isActivate) {
             startActivity(new Intent(this, SplashActivity.class));

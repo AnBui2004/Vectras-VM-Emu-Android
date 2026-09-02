@@ -713,8 +713,6 @@
     <string name="l2_cache_size_hint">Kích thước bộ đệm L2 (MB)</string>
     <string name="only_qcow2_format_is_supported">Chỉ hỗ trợ định dạng qcow2.</string>
     <string name="terminal_warning_content">Trước khi tiếp tục, hãy chắc chắn rằng bạn đang biết bạn thật sự đang làm gì. Bạn nên luôn kiểm tra lại các lệnh mà bạn sử dụng để chúng hoạt động đúng để chúng không gây ra các sự cố ngoài ý muốn. Đặc biệt, nếu đang có ai đó hướng dẫn bạn, hãy kiểm tra lại lệnh mà họ cung cấp cho bạn. Chúng tôi sẽ không chịu trách nhiệm nếu lệnh bạn đang sử dụng không phải do chúng tôi cung cấp và xảy ra bất cứ thiệt hại ngoài ý muốn nào xảy ra đối với bạn.</string>
-    <string name="a_vm_is_waiting">Một máy ảo đang chờ</string>
-    <string name="a_vm_is_waiting_content">Một ứng dụng đã yêu cầu máy ảo này được chạy. Vui lòng không chạy nếu đây không phải là từ một hành động của bạn ở ứng dụng đó tạo ra yêu cầu này. Bạn có muốn chạy nó không?</string>
 
     <!--======================TERMUX STRINGS====================-->
     <string name="application_name" translatable="false">Vterm</string>
