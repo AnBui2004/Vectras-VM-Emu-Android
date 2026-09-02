@@ -18,6 +18,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: PRBuild
 
     steps:
       - uses: actions/checkout@v4
