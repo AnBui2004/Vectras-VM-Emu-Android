@@ -25,16 +25,24 @@ jobs:
     - name: Create google-services.json
       run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > app/google-services.json
 
+    - name: Create release-key.jks
+      run: echo "${{ secrets.KEYSTORE }}" | base64 --decode > release-key.jks
+
+    - name: Create keystore.properties
+      run: |
+        cat <<EOF > keystore.properties
+        storeFile=../release-key.jks
+        storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+        keyAlias=${{ secrets.KEY_ALIAS }}
+        keyPassword=${{ secrets.KEY_PASSWORD }}
+        EOF
+
     - name: Send notification to Telegram
       run: |
         if [[ -n "${{ secrets.TELEGRAM_BOT_TOKEN }}" ]]; then
-          for chat in \
-            "-d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} -d message_thread_id=8" \
-            "-d chat_id=${{ secrets.TELEGRAM_CHAT_ID_VEC }}"; do
-            curl -s -o /dev/null -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-                 $chat \
-                 -d $'text=New update available on GitHub repository and building APK.\nPlease wait about 5 minutes.\nRun ID: '${GITHUB_RUN_ID}
-          done
+          curl -s -o /dev/null -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} -d message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }} \
+            -d $'text=Starting to build Vectras VM on GitHub.\nPlease wait about 5 minutes.\nRun ID: '${GITHUB_RUN_ID}
         fi
 
     - name: Build Debug APK
@@ -66,19 +74,15 @@ jobs:
               success_file=false
               until [ $tries -ge 5 ]; do
                 success_targets=false
-                for target in \
-                  "-F chat_id=${{ secrets.TELEGRAM_CHAT_ID }} -F message_thread_id=8" \
-                  "-F chat_id=${{ secrets.TELEGRAM_CHAT_ID_VEC }}"; do
-
-                  if curl -s -o /dev/null -F document=@"$file" $target \
-                          -F $'caption=Done! Note that this is a version that is automatically built when there are changes in the GitHub repository, not the official version. Please only install it if you really want to see what is new.\nExplore beta releases here: https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases\nRun ID: '${GITHUB_RUN_ID} \
-                          https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument; then
-                    success_targets=true
-                  else
-                    echo "Retrying upload for $file to target..."
-                    sleep 2
-                  fi
-                done
+                if curl -s -o /dev/null -F document=@"$file" \
+                        -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} -d message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }} \
+                        -F $'caption=Finished building Vectras VM on GitHub.\nRun ID: '${GITHUB_RUN_ID} \
+                        https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendDocument; then
+                  success_targets=true
+                else
+                  echo "Retrying upload for $file to target..."
+                  sleep 2
+                fi
 
                 if $success_targets; then
                   success_file=true
@@ -94,12 +98,8 @@ jobs:
             done
 
             if [ "$success" = false ]; then
-              for chat in \
-                "-d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} -d message_thread_id=8" \
-                "-d chat_id=${{ secrets.TELEGRAM_CHAT_ID_VEC }}"; do
-                curl -s -o /dev/null -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-                     $chat \
-                    -d $'text=Something went wrong and the APK file could not be uploaded.\nExplore beta releases here: https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases\nRun ID: '${GITHUB_RUN_ID}
-              done
+              curl -s -o /dev/null -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+                  -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} -d message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }} \
+                  -d $'text=Something went wrong and Vectras VM\'s apk file could not be uploaded.\nExplore releases here: https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases\nRun ID: '${GITHUB_RUN_ID}
             fi
           fi
