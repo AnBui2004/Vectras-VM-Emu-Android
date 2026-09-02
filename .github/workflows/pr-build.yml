@@ -37,15 +37,21 @@ jobs:
 
       - name: Create Dummy Keystore
         run: |
-          keytool -genkey -v -keystore release-key.jks -alias ${{ secrets.KEY_ALIAS || 'androiddebugkey' }} -keyalg RSA -keysize 2048 -validity 10000 -storepass ${{ secrets.KEYSTORE_PASSWORD || 'android' }} -keypass ${{ secrets.KEY_PASSWORD || 'android' }} -dname "CN=Android Debug, O=Android, C=US"
+          RANDOM_PASS=$(openssl rand -base64 12 | tr -dc 'a-zA-Z0-9')
+        
+          echo "::add-mask::$RANDOM_PASS"
 
-      - name: Create keystore.properties
-        run: |
+          keytool -genkey -v -keystore random-key.jks \
+            -alias "test" \
+            -keyalg RSA -keysize 2048 -validity 1 \
+            -storepass "$RANDOM_PASS" -keypass "$RANDOM_PASS" \
+            -dname "CN=test, O=test, C=US"
+      
           cat <<EOF > keystore.properties
-          storeFile=../release-key.jks
-          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
-          keyAlias=${{ secrets.KEY_ALIAS }}
-          keyPassword=${{ secrets.KEY_PASSWORD }}
+          storeFile=../random-key.jks
+          storePassword=$RANDOM_PASS
+          keyAlias=test
+          keyPassword=$RANDOM_PASS
           EOF
 
       - name: Send notification to Telegram
