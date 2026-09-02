@@ -23,7 +23,7 @@ jobs:
       run: chmod +x gradlew
 
     - name: Set version suffix
-      run: echo "VERSION_SUFFIX=nightly" >> "$GITHUB_ENV"
+      run: echo "VECTRAS_VM_VERSION_SUFFIX=nightly" >> "$GITHUB_ENV"
 
     - name: Create google-services.json
       run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > app/google-services.json
