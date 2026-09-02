@@ -35,8 +35,9 @@ jobs:
       - name: Create google-services.json
         run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > app/google-services.json
 
-      - name: Create release-key.jks
-        run: echo "${{ secrets.KEYSTORE }}" | base64 --decode > release-key.jks
+      - name: Create Dummy Keystore
+        run: |
+          keytool -genkey -v -keystore release-key.jks -alias ${{ secrets.KEY_ALIAS || 'androiddebugkey' }} -keyalg RSA -keysize 2048 -validity 10000 -storepass ${{ secrets.KEYSTORE_PASSWORD || 'android' }} -keypass ${{ secrets.KEY_PASSWORD || 'android' }} -dname "CN=Android Debug, O=Android, C=US"
 
       - name: Create keystore.properties
         run: |
