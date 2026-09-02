@@ -74,6 +74,7 @@ jobs:
         prerelease: true
         body: |
           This is an unstable version. Scroll down to view stable versions.
+          See what's new here: https://github.com/${{ github.repository }}/commits/${{ github.ref_name }}
           Run ID: ${{ github.run_id }}
         files: |
           app/build/outputs/apk/release/app-release.apk
@@ -84,5 +85,5 @@ jobs:
         if [[ -n "${{ secrets.TELEGRAM_BOT_TOKEN }}" ]]; then
           curl -s -o /dev/null -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} -d message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }} \
-            -d $'text=Build complete! See what\'s new here: https://github.com/${{ github.repository }}/commits . Download here: https://github.com/${{ github.repository }}/releases/tag/alpha'
+            -d $'text=Build complete! Download here: https://github.com/${{ github.repository }}/releases/tag/alpha'
         fi
