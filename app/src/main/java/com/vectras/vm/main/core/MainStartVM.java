@@ -32,6 +32,7 @@ import com.vectras.vm.utils.FileUtils;
 import com.vectras.vm.utils.NetworkUtils;
 import com.vectras.vm.utils.PackageUtils;
 import com.vectras.vm.utils.ServiceUtils;
+import com.vectras.vm.utils.TextUtils;
 
 import java.io.File;
 
@@ -378,7 +379,7 @@ public class MainStartVM {
             finalCommand = "export DISPLAY=:0 && " + finalCommand;
             DisplaySystem.startDesktop(context);
         }
-        Log.i(TAG, finalCommand);
+        Log.i(TAG, TextUtils.redactSecrets(finalCommand));
 
         if (breakNow) {
             dismissDialog();

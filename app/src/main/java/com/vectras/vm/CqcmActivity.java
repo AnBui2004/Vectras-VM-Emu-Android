@@ -20,6 +20,7 @@ import com.vectras.vm.main.core.PendingCommand;
 import com.vectras.vm.utils.FileUtils;
 import com.vectras.vm.utils.JSONUtils;
 import com.vectras.vm.utils.PermissionUtils;
+import com.vectras.vm.utils.TextUtils;
 import com.vectras.vm.utils.UIUtils;
 
 import java.util.HashMap;
@@ -120,7 +121,7 @@ public class CqcmActivity extends AppCompatActivity {
     }
 
     private void runCommand(String _command) {
-        Log.i(TAG, "runCommand: " + _command);
+        Log.i(TAG, "runCommand: " + TextUtils.redactSecrets(_command));
 
         PendingCommand.command = _command;
 
