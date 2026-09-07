@@ -8,6 +8,7 @@ import com.vectras.vm.utils.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class VmFileManager {
     private static final String TAG = "VmFileManager";
@@ -30,6 +31,22 @@ public class VmFileManager {
     public static final String PENDING_ADD_SUFFIX = "_add_";
     public static final String OPTICAL_DISC_0 = "OpticalDisc0.iso";
     public static final String OPTICAL_DISC_1 = "OpticalDisc1.iso";
+
+    // App-generated vmIDs are letters and digits (see VMManager.startRamdomVMID),
+    // and the hidden-VM marker prepends "_" (HIDE_VM_SUFFIX). Anything outside
+    // this set could escape the VM folder ("..", "/") or inject shell
+    // metacharacters into commands built from these paths.
+    private static final Pattern VALID_VM_ID = Pattern.compile("^[A-Za-z0-9_-]+$");
+
+    public static boolean isValidVmId(String vmId) {
+        return vmId != null && VALID_VM_ID.matcher(vmId).matches();
+    }
+
+    private static String requireValidVmId(String vmId) {
+        if (!isValidVmId(vmId))
+            throw new IllegalArgumentException("Invalid vmId: " + vmId);
+        return vmId;
+    }
 
 
     public static boolean hide(String vmId) {
@@ -91,7 +108,8 @@ public class VmFileManager {
                 FileUtils.delete(fileList.get(position));
         }
 
-        removeTemp(context, "");
+        // Clear the shared temp root (no vmId) as well.
+        FileUtils.delete(tempRoot(context).getAbsolutePath());
     }
 
     public static boolean isInUse(String vmId) {
@@ -104,22 +122,22 @@ public class VmFileManager {
     }
 
     public static String getPath(String vmId) {
-        String path = new File(AppConfig.vmFolder, vmId).getAbsolutePath();
+        String path = new File(AppConfig.vmFolder, requireValidVmId(vmId)).getAbsolutePath();
         FileUtils.createDirectory(path);
         return path + "/";
     }
 
     public static String getPathHide(String vmId) {
-        String path = new File(AppConfig.vmFolder, HIDE_VM_SUFFIX + vmId).getAbsolutePath();
+        String path = new File(AppConfig.vmFolder, HIDE_VM_SUFFIX + requireValidVmId(vmId)).getAbsolutePath();
         return path + "/";
     }
 
     public static String quickGetPath(String vmId) {
-        return new File(AppConfig.vmFolder, vmId).getAbsolutePath();
+        return new File(AppConfig.vmFolder, requireValidVmId(vmId)).getAbsolutePath();
     }
 
     public static String quickGetPathHide(String vmId) {
-        return new File(AppConfig.vmFolder, HIDE_VM_SUFFIX + vmId).getAbsolutePath();
+        return new File(AppConfig.vmFolder, HIDE_VM_SUFFIX + requireValidVmId(vmId)).getAbsolutePath();
     }
 
     public static boolean delete(Context context, String vmId) {
@@ -163,11 +181,14 @@ public class VmFileManager {
         return new File(getTempPath(context, vmId), childFilePath).getAbsolutePath();
     }
 
-    public static String getTempPath(Context context, String vmId) {
+    private static File tempRoot(Context context) {
         File externalCacheDir = context.getExternalCacheDir();
-        String cachePath = externalCacheDir != null ? externalCacheDir.getAbsolutePath() : context.getCacheDir().getAbsolutePath();
+        File cacheDir = externalCacheDir != null ? externalCacheDir : context.getCacheDir();
+        return new File(cacheDir, "temp");
+    }
 
-        String path = new File(cachePath, "temp/" + vmId).getAbsolutePath();
+    public static String getTempPath(Context context, String vmId) {
+        String path = new File(tempRoot(context), requireValidVmId(vmId)).getAbsolutePath();
         FileUtils.createDirectory(path);
         return path + "/";
     }
@@ -177,7 +198,7 @@ public class VmFileManager {
     }
 
     public static String getInternalTempPath(Context context, String vmId) {
-        String path = new File(context.getCacheDir().getAbsolutePath(), "temp/" + vmId).getAbsolutePath();
+        String path = new File(new File(context.getCacheDir(), "temp"), requireValidVmId(vmId)).getAbsolutePath();
         FileUtils.createDirectory(path);
         return path + "/";
     }

@@ -367,7 +367,7 @@ public class VMCreatorActivity extends AppCompatActivity {
                     if (createVMFolder(true)) {
                         Terminal2 terminal2 = new Terminal2(this);
                         terminal2.setShowProgressDialog(true);
-                        terminal2.execute("qemu-img create -f qcow2 " + VmFileManager.getPath(vmID, "disk.qcow2") + " 128G", new Terminal2.Terminal2Callback() {
+                        terminal2.execute("qemu-img create -f qcow2 '" + VmFileManager.getPath(vmID, "disk.qcow2") + "' 128G", new Terminal2.Terminal2Callback() {
                             @Override
                             public void onRunning(String command, String newLine) {
                                 // Nothing to do.
@@ -1051,6 +1051,10 @@ public class VMCreatorActivity extends AppCompatActivity {
                 if (jObj.has("vmID")) {
                     if (!jObj.isNull("vmID")) {
                         if (!jObj.getString("vmID").isEmpty()) {
+                            if (!VmFileManager.isValidVmId(jObj.getString("vmID"))) {
+                                DialogUtils.oneDialog(this, getResources().getString(R.string.oops), getResources().getString(R.string.error_CR_CVBI4), getResources().getString(R.string.ok), true, R.drawable.warning_48px, true, null, null);
+                                return;
+                            }
                             FileUtils.move(VmFileManager.getConfigFile(vmID), VmFileManager.getConfigFile(jObj.getString("vmID")));
                             vmID = jObj.getString("vmID");
                         }

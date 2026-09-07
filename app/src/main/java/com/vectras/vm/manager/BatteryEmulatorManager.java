@@ -51,7 +51,7 @@ public class BatteryEmulatorManager {
             FileUtils.writeToFile(vmTemp.getAbsolutePath(), "battery.asl", batteryAsl);
 
             if (FileUtils.isFileExists(VmFileManager.getTempPath(context, vmId, "battery.asl"))) {
-                String respond = new Terminal2(context).executeOnThisThread("cd " + vmTemp.getAbsolutePath() + " && iasl battery.asl && echo Compiled");
+                String respond = new Terminal2(context).executeOnThisThread("cd '" + vmTemp.getAbsolutePath() + "' && iasl battery.asl && echo Compiled");
                 //Log.d(TAG, respond);
                 return respond.contains("Compiled");
             } else {
