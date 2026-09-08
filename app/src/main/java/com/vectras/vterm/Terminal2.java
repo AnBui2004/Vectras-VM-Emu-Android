@@ -198,6 +198,7 @@ public class Terminal2 {
             writer.close();
 
             String line;
+            long lastProgressUpdate = 0;
             while ((line = reader.readLine()) != null) {
 //                Log.d(TAG, line);
                 VectrasStatus.logError(line);
@@ -209,8 +210,14 @@ public class Terminal2 {
                 }
 
                 if (progressDialog != null) {
-                    String finalLine = line;
-                    new Handler(Looper.getMainLooper()).post(() -> progressDialog.setText(finalLine));
+                    // Throttle main-thread posts: QEMU can emit thousands of
+                    // lines per second; posting each one floods the main looper.
+                    long now = System.currentTimeMillis();
+                    if (now - lastProgressUpdate >= 100) {
+                        lastProgressUpdate = now;
+                        String finalLine = line;
+                        new Handler(Looper.getMainLooper()).post(() -> progressDialog.setText(finalLine));
+                    }
                 }
             }
 
