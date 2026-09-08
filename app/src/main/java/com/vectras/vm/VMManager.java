@@ -485,6 +485,10 @@ public class VMManager {
         return isCompleted;
     }
 
+    public static boolean deleteVmInList(Context context, String vmId) {
+        return deleteVmInList(context, findVmPotision(vmId));
+    }
+
     public static boolean deleteVmInList(Context context, int position) {
         if (!JSONUtils.isValidVmList()) return false;
         String vmList = FileUtils.readFromFile(context, new File(AppConfig.maindirpath + "roms-data.json"));

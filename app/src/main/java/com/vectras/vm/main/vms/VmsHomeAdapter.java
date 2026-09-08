@@ -4,12 +4,13 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,10 +18,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.signature.ObjectKey;
 import com.vectras.vm.R;
 import com.vectras.vm.VMManager;
+import com.vectras.vm.main.core.Event;
 import com.vectras.vm.main.core.MainConfigs;
 import com.vectras.vm.main.core.MainStartVM;
 import com.vectras.vm.main.core.RomOptionsDialog;
 import com.vectras.vm.main.core.SharedData;
+import com.vectras.vm.main.core.SharedViewModel;
 import com.vectras.vm.manager.VmFileManager;
 import com.vectras.vm.utils.DialogUtils;
 import com.vectras.vm.utils.FileUtils;
@@ -59,7 +62,7 @@ public class VmsHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         final MyHolder myHolder = (MyHolder) holder;
         final DataMainRoms current = data.get(position);
 
-        if (current == null) {
+        if (current == null || !VmFileManager.isValidVmId(current.vmID)) {
             myHolder.ivIcon.setImageResource(R.drawable.ic_computer_180dp_with_padding);
             myHolder.textName.setText(activity.getString(R.string.unknow));
             myHolder.textArch.setText(activity.getString(R.string.unknow));
@@ -73,7 +76,20 @@ public class VmsHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     true,
                     R.drawable.error_96px,
                     true,
-                    () -> VMManager.deleteVmInList(activity, position),
+                    () -> {
+                        boolean isDeleted;
+
+                        // Prevent accidental deletion if id already exists.
+                        if (current != null && current.vmID != null && !current.vmID.isEmpty())
+                            isDeleted = VMManager.deleteVmInList(activity, current.vmID);
+                        else
+                            isDeleted = VMManager.deleteVmInList(activity, position);
+
+                        if (isDeleted) {
+                            SharedViewModel sharedViewModel = new ViewModelProvider((ViewModelStoreOwner) activity).get(SharedViewModel.class);
+                            sharedViewModel.requestRefreshVmList.setValue(new Event<>(false));
+                        }
+                    },
                     null,
                     null
             ));

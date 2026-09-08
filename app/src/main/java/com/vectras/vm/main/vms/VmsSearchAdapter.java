@@ -2,7 +2,6 @@ package com.vectras.vm.main.vms;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,12 +14,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.signature.ObjectKey;
 import com.vectras.vm.R;
 import com.vectras.vm.VMManager;
-import com.vectras.vm.main.MainActivity;
-import com.vectras.vm.main.core.MainStartVM;
 import com.vectras.vm.main.core.RomOptionsDialog;
 import com.vectras.vm.manager.VmFileManager;
 import com.vectras.vm.utils.FileUtils;
@@ -63,6 +59,21 @@ public class VmsSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         final MyHolder myHolder = (MyHolder) holder;
         final DataMainRoms current = displayList.get(position);
 
+        UIUtils.setBackgroundItemInList(myHolder.linearItem, position, displayList.size(), isBrighterItemBackground);
+
+        if (current == null || !VmFileManager.isValidVmId(current.vmID)) {
+            myHolder.ivIcon.setImageResource(R.drawable.ic_computer_180dp_with_padding);
+            myHolder.textName.setText(activity.getString(R.string.unknow));
+            myHolder.textSize.setText(activity.getString(R.string.unknow));
+            myHolder.linearItem.setAlpha(0.5f);
+
+            myHolder.linearItem.setEnabled(false);
+            return;
+        } else {
+            myHolder.linearItem.setEnabled(true);
+            myHolder.linearItem.setAlpha(1f);
+        }
+
         myHolder.textName.setText(current.itemName);
         myHolder.textSize.setText(current.itemArch);
         if (!current.itemIcon.isEmpty() && FileUtils.isFileExists(current.itemIcon)){
@@ -88,8 +99,6 @@ public class VmsSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         myHolder.linearItem.setOnClickListener(view -> RomOptionsDialog.show(activity, current));
 
         myHolder.textAvail.setVisibility(View.GONE);
-
-        UIUtils.setBackgroundItemInList(myHolder.linearItem, position, displayList.size(), isBrighterItemBackground);
     }
 
     // return total item from List
