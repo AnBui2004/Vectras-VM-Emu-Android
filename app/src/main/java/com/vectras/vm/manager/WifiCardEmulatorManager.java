@@ -22,7 +22,7 @@ public class WifiCardEmulatorManager {
             FileUtils.writeToFile(vmTemp.getAbsolutePath(), "wifi.asl", wifiAsl);
 
             if (FileUtils.isFileExists(VmFileManager.getTempPath(context, vmId, "wifi.asl"))) {
-                String respond = new Terminal2(context).executeOnThisThread("cd " + vmTemp.getAbsolutePath() + " && iasl wifi.asl && echo Compiled");
+                String respond = new Terminal2(context).executeOnThisThread("cd '" + vmTemp.getAbsolutePath() + "' && iasl wifi.asl && echo Compiled");
                 //Log.d(TAG, respond);
                 return respond.contains("Compiled");
             } else {

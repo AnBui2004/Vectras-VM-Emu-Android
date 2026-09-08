@@ -25,6 +25,7 @@ public class VmEditor {
         if (!JSONUtils.isValidFromFile(AppConfig.romsdatajson))  return false;
 
         String vmIdReady = vmId.isEmpty() ? VMManager.idGenerator() : vmId;
+        if (!VmFileManager.isValidVmId(vmIdReady)) return false;
         if (!forceCreate && VMManager.isVMExist(vmIdReady)) {
             if (!VMManager.replaceToVMList(-1, vmIdReady , vmConfig)) return false;
         } else {

@@ -288,6 +288,7 @@ public class VMManager {
     }
 
     public static boolean writeToVMConfig(String vmID, String content) {
+        if (!VmFileManager.isValidVmId(vmID)) return false;
         return FileUtils.writeToFile(AppConfig.maindirpath + "/roms/" + vmID, "rom-data.json", content.replace("\\u003d", "=")) &&
                 FileUtils.writeToFile(AppConfig.maindirpath + "/roms/" + vmID, "vmID.txt", vmID);
         // TODO: vmID.txt can be removed, it is being retained for backward compatibility.
