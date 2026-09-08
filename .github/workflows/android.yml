@@ -3,11 +3,14 @@ name: Android CI
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
     environment: BuildAPK
+    timeout-minutes: 60
 
     steps:
     - uses: actions/checkout@v4
@@ -64,7 +67,7 @@ jobs:
         path: app/build/outputs/apk/release/app-release.apk
 
     - name: Update Alpha Release
-      uses: andelf/nightly-release@main
+      uses: andelf/nightly-release@5834076edc55cc05975561c9722043f072ac5c26
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
