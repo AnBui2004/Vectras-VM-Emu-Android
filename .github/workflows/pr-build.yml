@@ -15,10 +15,14 @@ concurrency:
   group: pr-build-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     environment: PRBuild
+    timeout-minutes: 60
 
     steps:
       - uses: actions/checkout@v4
