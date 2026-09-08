@@ -142,10 +142,15 @@ dependencies {
     implementation libs.play.services.oss.licenses
 }
 
-afterEvaluate {
-    tasks.register("generatePrefs") {
+def generatePrefs = tasks.register("generatePrefs") {
+    def prefsXml = file('src/main/res/xml/preferences_x11.xml')
+    def out = file('build/generated/java/com/vectras/vm/x11/Prefs.java')
+    inputs.file(prefsXml)
+    outputs.file(out)
+
+    doLast {
         //noinspection UnnecessaryQualifiedReference
-        def xml = groovy.xml.DOMBuilder.parse((new StringReader(file('src/main/res/xml/preferences_x11.xml').text)))
+        def xml = groovy.xml.DOMBuilder.parse((new StringReader(prefsXml.text)))
         def preferenceNodes = xml.documentElement.getElementsByTagName("*")
         def preferences = []
 
@@ -165,7 +170,6 @@ afterEvaluate {
                 preferences << [ type: 'Boolean',  key: node.getAttribute("app:key"), default: node.getAttribute("app:defaultValue") ]
         }
 
-        def out = file('build/generated/java/com/vectras/vm/x11/Prefs.java')
         out.getParentFile().exists() || out.getParentFile().mkdirs()
         out.delete()
         out.createNewFile()
@@ -202,18 +206,25 @@ afterEvaluate {
         out << '  }\n'
         out << '}\n'
     }
-    android.sourceSets.main.java.srcDirs += 'build/generated/java'
-    preBuild.dependsOn generatePrefs
+}
+android.sourceSets.main.java.srcDirs += 'build/generated/java'
+preBuild.dependsOn generatePrefs
 
-    tasks.register("generateShortcuts") {
-        def out = file('build/generated/templateRes/xml/shortcuts.xml')
+def generateShortcuts = tasks.register("generateShortcuts") {
+    def templateFile = file('src/main/templates/xml/shortcuts.xml')
+    def out = file('build/generated/templateRes/xml/shortcuts.xml')
+    inputs.file(templateFile)
+    inputs.property('applicationId', android.defaultConfig.applicationId)
+    outputs.file(out)
+
+    doLast {
         out.getParentFile().exists() || out.getParentFile().mkdirs()
-        out.text = file('src/main/templates/xml/shortcuts.xml').text
+        out.text = templateFile.text
                 .replace('@@APPLICATION_ID@@', android.defaultConfig.applicationId)
     }
-    android.sourceSets.main.res.srcDirs += 'build/generated/templateRes'
-    preBuild.dependsOn generateShortcuts
 }
+android.sourceSets.main.res.srcDirs += 'build/generated/templateRes'
+preBuild.dependsOn generateShortcuts
 
 tasks.register('buildShellLoaderDebug', DefaultTask) {
     dependsOn ':shell-loader:assembleDebug'
