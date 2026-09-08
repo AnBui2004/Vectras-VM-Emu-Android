@@ -57,7 +57,9 @@ public class CqcmActivity extends AppCompatActivity {
         Log.i("CqcmActivity", "Checking access to storage...");
         if (!PermissionUtils.storagepermission(this,false)) return;
 
-        if (ParamNotebookVerifier.verify(this)) {
+        // Only the signature-verified Param Notebook may proceed; everyone
+        // else (including callers with no verifiable calling package) is rejected.
+        if (!ParamNotebookVerifier.verify(this)) {
             Toast.makeText(getApplicationContext(), "Cannot continue due to an invalid source.", Toast.LENGTH_LONG).show();
             finish();
             return;
