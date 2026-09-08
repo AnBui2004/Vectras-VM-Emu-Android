@@ -55,13 +55,13 @@ jobs:
       run: ./gradlew assembleRelease -PversionSuffix="alpha"
 
     - name: Upload Debug APK as artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: android-debug-apk
         path: app/build/outputs/apk/debug/app-debug.apk
 
     - name: Upload Release APK as artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: android-release-apk
         path: app/build/outputs/apk/release/app-release.apk
