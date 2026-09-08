@@ -8,6 +8,20 @@ import com.vectras.vm.R;
 import java.util.Random;
 
 public class TextUtils {
+
+    /**
+     * Masks the value of QEMU "-object secret,id=...,data=..." options so command
+     * lines can be logged without leaking secrets such as the external VNC
+     * password. Handles the backslash escapes (\, \", \,) that
+     * StartVM.getDisplayParams applies to the password.
+     */
+    public static String redactSecrets(String text) {
+        if (text == null) {
+            return null;
+        }
+        return text.replaceAll("data=\"(?:[^\"\\\\]|\\\\.)*\"", "data=\"***\"");
+    }
+
     public static boolean isNumberOnly(String content) {
         return content.matches("\\d+");
     }

@@ -22,6 +22,7 @@ import com.vectras.vm.settings.SettingsData;
 import com.vectras.vm.utils.CpuHelper;
 import com.vectras.vm.utils.DeviceUtils;
 import com.vectras.vm.utils.FileUtils;
+import com.vectras.vm.utils.TextUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class StartVM {
                 snapshotParams += " " + getDisplayParams(activity, vmConfigs.itemExtra);
                 if (!snapshotParams.contains("-incoming defer"))
                     snapshotParams += " -incoming defer";
-                Log.d("StartVM.env", snapshotParams);
+                Log.d("StartVM.env", TextUtils.redactSecrets(snapshotParams));
 
                 FileUtils.copyFile(VmFileManager.getPath(vmConfigs.vmID, VmFileManager.COMPILED_BATERRY_ACPI_FILE_NAME), VmFileManager.getTempPath(activity, vmConfigs.vmID));
                 FileUtils.copyFile(VmFileManager.getPath(vmConfigs.vmID, VmFileManager.COMPILED_WIFI_CARD_ACPI_FILE_NAME), VmFileManager.getTempPath(activity, vmConfigs.vmID));

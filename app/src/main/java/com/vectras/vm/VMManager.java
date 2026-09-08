@@ -876,7 +876,7 @@ public class VMManager {
     }
 
     public static boolean isthiscommandsafe(@NonNull String _command, Context _context) {
-        Log.d(TAG, "isthiscommandsafe: " + _command);
+        Log.d(TAG, "isthiscommandsafe: " + TextUtils.redactSecrets(_command));
 
         // The command is written to a bash shell's stdin, so characters that
         // trigger shell expansion, redirection, or process substitution let a

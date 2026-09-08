@@ -14,6 +14,7 @@ import com.vectras.vm.VMManager;
 import com.vectras.vm.manager.VmFileManager;
 import com.vectras.vm.utils.DialogUtils;
 import com.vectras.vm.utils.FileUtils;
+import com.vectras.vm.utils.TextUtils;
 import com.vectras.vterm.Terminal2;
 
 public class PendingCommand {
@@ -22,7 +23,7 @@ public class PendingCommand {
 
     public static void runNow(Activity activity) {
         if (command != null && !command.isEmpty()) {
-            Log.d(TAG, "runNow: " + command);
+            Log.d(TAG, "runNow: " + TextUtils.redactSecrets(command));
 
             if (!VMManager.isthiscommandsafe(command, activity)) {
                 DialogUtils.oneDialog(

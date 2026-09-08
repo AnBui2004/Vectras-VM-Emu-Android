@@ -10,6 +10,7 @@ import com.vectras.vm.R;
 import com.vectras.vm.logger.VectrasStatus;
 import com.vectras.vm.utils.FileUtils;
 import com.vectras.vm.utils.ProgressDialog;
+import com.vectras.vm.utils.TextUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -201,6 +202,7 @@ public class Terminal2 {
             long lastProgressUpdate = 0;
             while ((line = reader.readLine()) != null) {
 //                Log.d(TAG, line);
+                line = TextUtils.redactSecrets(line);
                 VectrasStatus.logError(line);
                 output.append(line).append("\n");
                 if (callback != null) callback.onRunning(command, line);

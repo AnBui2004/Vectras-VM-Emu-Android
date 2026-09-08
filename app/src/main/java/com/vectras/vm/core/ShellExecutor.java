@@ -6,6 +6,7 @@ import android.util.Log;
 import com.termux.app.TermuxService;
 import com.vectras.vm.AppConfig;
 import com.vectras.vm.logger.VectrasStatus;
+import com.vectras.vm.utils.TextUtils;
 import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -38,8 +39,8 @@ public class ShellExecutor {
 
                 OutputStream outputStream = shellExecutorProcess.getOutputStream();
 
-                Log.d(TAG, "Running command: " + command);
-                logWriter.write("Running command: " + command + "\n");
+                Log.d(TAG, "Running command: " + TextUtils.redactSecrets(command));
+                logWriter.write("Running command: " + TextUtils.redactSecrets(command) + "\n");
                 outputStream.write((command + "\n").getBytes());
                 outputStream.flush();
 
