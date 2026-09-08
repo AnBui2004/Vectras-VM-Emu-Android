@@ -33,9 +33,6 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Create google-services.json
-        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > app/google-services.json
-
       - name: Create Dummy Keystore
         run: |
           RANDOM_PASS=$(openssl rand -base64 12 | tr -dc 'a-zA-Z0-9')
