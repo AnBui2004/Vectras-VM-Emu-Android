@@ -189,7 +189,7 @@ public class RomOptionsDialog {
                 }).start();
             });
 
-            if (vmConfig.isUseDefaultBios && FirmwareManager.isAVarFileExist(VmFileManager.getPath(vmConfig.vmID)) && !VMManager.isNeedLoadMigrate()) {
+            if (vmConfig.isUseDefaultBios && FirmwareManager.isAVarFileExist(VmFileManager.getPath(vmConfig.vmID)) && !VMManager.isNeedLoadMigrate(vmConfig.vmID)) {
                 v.findViewById(R.id.ln_reset_uefi_bios).setOnClickListener(v7 -> {
                     DialogUtils.twoDialog(
                             activity,

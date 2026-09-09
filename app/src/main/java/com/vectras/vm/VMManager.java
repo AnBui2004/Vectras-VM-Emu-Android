@@ -1039,6 +1039,10 @@ public class VMManager {
         return sendQMPCommand("migrate_incoming \\\"exec:cat " + VmFileManager.getSnapshotBin(Config.vmID) + "\\\"");
     }
 
+    public static boolean isNeedLoadMigrate(String vmId) {
+        return isFileExists(VmFileManager.getSnapshotBin(vmId));
+    }
+
     public static boolean isNeedLoadMigrate() {
         return isFileExists(VmFileManager.getSnapshotBin(Config.vmID));
     }
