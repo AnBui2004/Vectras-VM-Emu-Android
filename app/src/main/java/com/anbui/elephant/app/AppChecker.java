@@ -14,9 +14,11 @@ public class AppChecker {
     public static boolean isParamNoteBook(Context context) {
         Signature[] signatures = PackageUtil.getSignatures(context, PARAM_NOTEBOOK_PACKAGE_NAME);
 
-        if (signatures == null) return false;
+        if (signatures == null) {
+            return false;
+        }
 
         String sha256 = new SignatureUtil().getSha256(signatures[0].toByteArray());
-        return sha256.equals(PARAM_NOTEBOOK_SIGNATURE) || sha256.equals(PARAM_NOTEBOOK_SIGNATURE_PLAY_STORE);
+        return sha256.equalsIgnoreCase(PARAM_NOTEBOOK_SIGNATURE) || sha256.equalsIgnoreCase(PARAM_NOTEBOOK_SIGNATURE_PLAY_STORE);
     }
 }

@@ -66,6 +66,8 @@ public class CqcmActivity extends AppCompatActivity {
             return;
         }
 
+        AppConfig.forceDisableQuickLaunch = true;
+
         if (getIntent().hasExtra("command")) {
             runCommand(getIntent().getStringExtra("command"));
         } else {

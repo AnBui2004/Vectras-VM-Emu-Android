@@ -259,7 +259,7 @@ public class ExportRomActivity extends AppCompatActivity {
 
         vmConfigMap.put("versioncode", PackageUtils.getThisVersionCode(getApplicationContext()));
 
-        String tempFolder = VmFileManager.getTempPath(this, current.vmID + "/export");
+        String tempFolder = VmFileManager.getTempPath(this, current.vmID) + "/export/";
 
         FileUtils.writeToFile(tempFolder, "rom-data.json", new Gson().toJson(vmConfigMap));
 

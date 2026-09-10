@@ -369,7 +369,7 @@ public class MainActivity extends AppCompatActivity {
                     showBottomBarAndFab();
                 } else if (bindingContent.efabCreate.getTranslationX() != 0f) {
                     showBottomBarAndFab();
-                } else if (MainSettingsManager.getQuickStart(MainActivity.this)) {
+                } else if (!AppConfig.forceDisableQuickLaunch && MainSettingsManager.getQuickStart(MainActivity.this)) {
                     try {
                         Intent intent = new Intent(Intent.ACTION_MAIN);
                         intent.addCategory(Intent.CATEGORY_HOME);
@@ -379,6 +379,7 @@ public class MainActivity extends AppCompatActivity {
                         finish();
                     }
                 } else {
+                    AppConfig.forceDisableQuickLaunch = false;
                     finish();
                 }
             }

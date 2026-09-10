@@ -82,4 +82,6 @@ public class AppConfig {
     public static String virtIOWinUrlMd5 = "9e650d0e7c6e017a91ca299c8f7ed766";
 
     public static boolean isGmsAvailable = false;
+
+    public static boolean forceDisableQuickLaunch;
 }
