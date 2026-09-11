@@ -2219,6 +2219,26 @@
     "id": ""
   },
   {
+    "rom_name": "Windows 7 buid 6767",
+    "rom_icon": "https://vuetiwuvbyxywfukompp.supabase.co/storage/v1/object/public/getmyos/v1/files/2018/10/15/windows_logo_2006_1_c0e5e8a8271301cfed289ab6118e38b2.png",
+    "rom_url": "https://youtu.be/rWs-8pZAFkE",
+    "rom_path": "Windows 7 build 6767.cvbi",
+    "rom_avail": true,
+    "gui": true,
+    "rom_size": "A pre-Milestone 3 build",
+    "rom_arch": "X86_64",
+    "rom_kernel": "windows",
+    "rom_extra": "",
+    "final_rom_file_name": "",
+    "desc": "This Rom is from Nguyen Bao An Bui. You can get it on An Bui app: https://play.google.com/store/apps/details?id=com.anbui.app\n\nWindows 7 build 6767 is a pre-Milestone 3 build of Windows 7, which was shared on 20 October 2024 alongside its server counterpart.",
+    "file_size": "8 GB",
+    "containsAds": true,
+    "creator": "Nguyen Bao An Bui",
+    "verified": true,
+    "vecid": "windows7build6767cvbi",
+    "id": "99606"
+  },
+  {
     "rom_name": "Windows 7 build 6801",
     "rom_icon": "https://vuetiwuvbyxywfukompp.supabase.co/storage/v1/object/public/getmyos/v1/files/2018/10/15/windows_logo_2006_1_c0e5e8a8271301cfed289ab6118e38b2.png",
     "rom_url": "https://youtu.be/d-dwK7gFZas",
