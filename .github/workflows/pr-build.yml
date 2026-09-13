@@ -8,8 +8,30 @@ name: PR Build
 
 on:
   pull_request:
-  push:
-    branches: [master]
+    paths-ignore:
+    - '**.md'
+    - 'LICENSE*'
+    - '.github/ISSUE_TEMPLATE/**'
+    - '.github/FUNDING.yml'
+    - '.github/dependabot.yml'
+    - '3dfx/**'
+    - 'js/**'
+    - 'qemu/**'
+    - 'resources/**'
+    - 'web/**'
+    push:
+      branches: [master]
+      paths-ignore:
+      - '**.md'
+      - 'LICENSE*'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/FUNDING.yml'
+      - '.github/dependabot.yml'
+      - '3dfx/**'
+      - 'js/**'
+      - 'qemu/**'
+      - 'resources/**'
+      - 'web/**'
 
 concurrency:
   group: pr-build-${{ github.ref }}
