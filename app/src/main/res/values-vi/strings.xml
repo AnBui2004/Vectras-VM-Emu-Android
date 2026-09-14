@@ -360,7 +360,7 @@
     <string name="vm_list_data_is_corrupted_content">Dữ liệu danh sách máy ảo bị lỗi, bạn có muốn sửa chữa không?</string>
     <string name="vm_cache_dir_failed_to_create_content">Không thể tạo thư mục bộ nhớ đệm của máy ảo. Vui lòng thử lại sau.</string>
     <string name="checking_for_updates">Đang iểm tra cập nhật</string>
-    <string name="just_a_sec">Dợi một tí…</string>
+    <string name="just_a_sec">Đợi một tí…</string>
     <string name="whats_new">Có gì mới?</string>
     <string name="new_update_available">Đã có bản cập nhật mới</string>
     <string name="you_are_up_to_date">Đã cập nhật</string>
