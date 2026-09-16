@@ -22,7 +22,7 @@ retrofit2 = "3.0.0"
 swiperefreshlayout = "1.2.0"
 viewpager = "1.1.0"
 playServicesOssLicensesPlugin = "0.13.0"
-playServicesOssLicenses = "17.3.0"
+playServicesOssLicenses = "17.5.2"
 
 [libraries]
 androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
