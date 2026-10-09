@@ -148,6 +148,11 @@ public class StreamAudio {
 
             applyEffect(audioTrack);
 
+            if (audioTrack == null) {
+                isPlay = false;
+                return;
+            }
+
             audioTrack.play();
 
             if (cross != null && !cross.isDestroyed && cross.isPlaying()) cross.stop();
