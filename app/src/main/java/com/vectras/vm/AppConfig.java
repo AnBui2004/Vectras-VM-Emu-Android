@@ -17,8 +17,8 @@ public class AppConfig {
     public static final int standardSetupVersion = 922202607;
     public static final int coreSetupVersion = 0;
     public static String vectrasWebsite = "https://anbui.ovh/";
-    public static String vectrasWebsiteRaw = "https://raw.githubusercontent.com/AnBui2004/Vectras-VM-Emu-Android/refs/heads/master/web/";
-    public static String bootstrapfileslink = vectrasWebsiteRaw + "/data/setupfiles4.json";
+    public static String vectrasWebsiteRaw = "https://anbui.ovh/vec/db/";
+    public static String bootstrapfileslink = vectrasWebsiteRaw + "data/setupfiles4.json";
     public static String community = vectrasWebsite + "community";
     public static String vectrasRaw = vectrasWebsiteRaw + "data/";
     public static String updateJson = vectrasRaw + "UpdateConfig.json";
