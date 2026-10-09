@@ -1262,6 +1262,26 @@
     "id": "99687"
   },
   {
+    "rom_name": "Windows 10 1607",
+    "rom_icon": "https://vuetiwuvbyxywfukompp.supabase.co/storage/v1/object/public/getmyos/v1/files/2018/09/17/windows-logo_1_926ed76111646acbbe332bc5af0cf2ce.png",
+    "rom_url": "https://youtu.be/rWs-8pZAFkE",
+    "rom_path": "Windows 10 1607.cvbi",
+    "rom_avail": true,
+    "gui": true,
+    "rom_size": "Windows 10 Anniversary Update",
+    "rom_arch": "X86_64",
+    "rom_kernel": "windows",
+    "rom_extra": "",
+    "final_rom_file_name": "",
+    "desc": "This Rom is from Nguyen Bao An Bui. You can get it on An Bui app: https://play.google.com/store/apps/details?id=com.anbui.app\n\nWindows 10 is a major release of Microsoft's Windows NT operating system. The successor to Windows 8.1, it was released to manufacturing on July 15, 2015, and later to retail on July 29, 2015. Windows 10 was made available for download via MSDN and TechNet, as a free upgrade for retail copies of Windows 8 and Windows 8.1 users via the Microsoft Store, and to Windows 7 users via Windows Update. Unlike previous Windows NT releases, Windows 10 receives new builds on an ongoing basis, which are available at no additional cost to users; devices in enterprise environments can alternatively use long-term support milestones that only receive critical updates, such as security patches.",
+    "file_size": "8 GB",
+    "containsAds": true,
+    "creator": "Nguyen Bao An Bui",
+    "verified": true,
+    "vecid": "windows101607cvbi",
+    "id": "99599"
+  },
+  {
     "rom_name": "Windows 10 1607 ARM64 build 14978",
     "rom_icon": "https://vuetiwuvbyxywfukompp.supabase.co/storage/v1/object/public/getmyos/v1/files/2018/09/17/windows-logo_1_926ed76111646acbbe332bc5af0cf2ce.png",
     "rom_url": "https://youtu.be/9dKIMShTkDE",
@@ -1860,6 +1880,26 @@
     "verified": true,
     "vecid": "windows1124h2cvbi",
     "id": ""
+  },
+  {
+    "rom_name": "Windows 11 24H2",
+    "rom_icon": "http://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdlvKPSr5FKA0WNydsd-I9pxSndXA6JaDF_GCcn_ZxrA&s",
+    "rom_url": "https://youtu.be/XFoRx55Dm_w",
+    "rom_path": "Windows 11 24H2 R.cvbi",
+    "rom_avail": true,
+    "gui": true,
+    "rom_size": "2024 Update",
+    "rom_arch": "X86_64",
+    "rom_kernel": "windows",
+    "rom_extra": "",
+    "final_rom_file_name": "",
+    "desc": "This Rom is from Nguyen Bao An Bui. You can get it on An Bui app: https://play.google.com/store/apps/details?id=com.anbui.app\n\nWindows 11 is the latest major release of Microsoft's Windows NT operating system, released on October 5, 2021 as the successor to Windows 10 (2015). It is provided free for any Windows 10 devices that meet the new Windows 11 system requirements. A server version, Windows Server 2025, was released in 2024. Windows 11 is the first major version of Windows NT without a companion mobile version following the discontinuations of Windows Phone with Windows 10 Mobile.",
+    "file_size": "11 GB",
+    "containsAds": true,
+    "creator": "Nguyen Bao An Bui",
+    "verified": true,
+    "vecid": "windows1124h2rcvbi",
+    "id": "99598"
   },
   {
     "rom_name": "Windows 11 24H2 ARM64",
