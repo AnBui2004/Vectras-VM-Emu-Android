@@ -82,12 +82,6 @@ public class SplashActivity extends AppCompatActivity {
                 Log.e(TAG, AppConfig.sharedFolder + ": Directory creation failed!");
         }
 
-        File downloadsDir = new File(AppConfig.downloadsFolder);
-        if (!downloadsDir.exists()) {
-            if (!downloadsDir.mkdirs())
-                Log.e(TAG, AppConfig.downloadsFolder + ": Directory creation failed!");
-        }
-
         File jsonFile = new File(AppConfig.maindirpath
                 + "roms-data.json");
         if (!jsonFile.exists())

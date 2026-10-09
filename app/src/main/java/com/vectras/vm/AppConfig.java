@@ -43,10 +43,8 @@ public class AppConfig {
     //public static String basefiledir = datadirpath(SplashActivity.activity) + "/.qemu/";
     //public static String maindirpath = FileUtils.getExternalFilesDirectory(SplashActivity.activity).getPath() + "/";
     public static String sharedFolder = maindirpath + "SharedFolder/";
-    public static String downloadsFolder = maindirpath + "Downloads/";
     public static String romsdatajson = maindirpath + "roms-data.json";
     public static String vmFolder = maindirpath + "roms/";
-    public static String cvbiFolder = maindirpath + "cvbi/";
     public static String lastCrashLogPath = internalDataDirPath + "logs/lastcrash.txt";
 
     public static String neededPkgs() {
@@ -97,11 +95,9 @@ public class AppConfig {
         basefiledir = datadirpath(context) + "/.qemu/";
         maindirpath = FileUtils.getExternalFilesDirectory(context).getPath() + "/";
         sharedFolder = maindirpath + "SharedFolder/";
-        downloadsFolder = maindirpath + "Downloads/";
         romsdatajson = maindirpath + "roms-data.json";
         vmFolder = maindirpath + "roms/";
         recyclebin = maindirpath + "RecycleBin/";
-        cvbiFolder = maindirpath + "cvbi/";
         lastCrashLogPath = internalDataDirPath + "logs/lastcrash.txt";
 
         Config.cacheDir = context.getCacheDir().getAbsolutePath();
