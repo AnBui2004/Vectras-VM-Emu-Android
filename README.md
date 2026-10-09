@@ -15,7 +15,7 @@ We are no longer collaborating with the official Vectras VM as of July 30, 2026.
 > We are migrating to [Bread VM](https://gitlab.com/anbui62/bread-vm). To avoid confusion with the Play Store version of Vectras VM—which shares the same icon—and to break free from certain other constraints, we have decided to move the project to a new home under the name Bread VM. We plan to discontinue support for Vectras VM in this repository around the middle of next year. If you wish to contribute to the project, please switch to Bread VM. Thanks!
 
 > [!TIP]
-> If you want to download APK releases, click "🚀 [Releases](https://gitlab.com/anbui62/vectras-vm-android-emu)" at the top or on the right.
+> If you want to download APK releases, click "🚀 [Releases](https://gitlab.com/anbui62/vectras-vm-android-emu/-/releases)" at the top or on the right.
 
 # 🪴 Vectras VM
 ![GitHub Repo stars](https://img.shields.io/github/stars/AnBui2004/Vectras-VM-Emu-Android)
