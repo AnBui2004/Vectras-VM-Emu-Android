@@ -18,10 +18,9 @@ We are no longer collaborating with the official Vectras VM as of July 30, 2026.
 > If you want to download APK releases, click "🚀 [Releases](https://gitlab.com/anbui62/vectras-vm-android-emu/-/releases)" at the top or on the right.
 
 # 🪴 Vectras VM
-![GitHub Repo stars](https://img.shields.io/github/stars/AnBui2004/Vectras-VM-Emu-Android)
-![GitHub watchers](https://img.shields.io/github/watchers/AnBui2004/Vectras-VM-Emu-Android)
-![GitHub forks](https://img.shields.io/github/forks/AnBui2004/Vectras-VM-Emu-Android)
-[![Total downloads](https://img.shields.io/github/downloads/AnBui2004/Vectras-VM-Emu-Android/total)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases)
+![GitLab stars](https://img.shields.io/gitlab/stars/anbui62/vectras-vm-android-emu)
+![GitLab forks](https://img.shields.io/gitlab/forks/anbui62/vectras-vm-android-emu)
+[![GitLab releases](https://img.shields.io/gitlab/v/release/anbui62/vectras-vm-android-emu)](https://gitlab.com/anbui62/vectras-vm-android-emu/-/releases)
 [![Software License][ico-license]](LICENSE)
 
 Welcome to Vectras VM! A virtual machine app for Android based on QEMU that lets you emulate various OSes including: [![Windows](https://custom-icon-badges.demolab.com/badge/Windows-0078D6?logo=windows11&logoColor=white)](https://www.microsoft.com/en-us/windows) [![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)](https://www.linux.org/) [![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=F0F0F0)](https://www.apple.com/macos) [![Android](https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white)](https://www.android.com/).
@@ -94,20 +93,7 @@ This project is licensed under the following terms:
 
 * **Directory `app/src/main/java/com/anbui/elephant` (excluding `vm`)**: Licensed under [Apache License 2.0](LICENSE-APACHE-2.0).
 * **The rest of the project**: Licensed under [GNU General Public License v2.0](LICENSE).
-* **Brand Assets (Logo / Icon / Name):** The logo, icon, and brand name are the intellectual property of **Nguyen Bao An Bui**. All rights reserved. You are **not permitted** to use this logo, icon, or brand name for forks, commercial products, or republished applications without written consent. This applies to the following files: `nbablab.png`, `notebook_param_48.png`, and `nguyen_bao_an_bui.xml`.
-
-# ⭐ Star History
-
-<a href="https://www.star-history.com/?repos=AnBui2004%2FVectras-VM-Emu-Android&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=AnBui2004/Vectras-VM-Emu-Android&type=date&theme=dark&legend=top-left&sealed_token=2MHlTtOXa6VoJumMfNYZ0BfKwzks9M-RGdd1Pboywmt9W8DRhiUrhui7fg2Zat1LzPFb6Fxxk2O4rF2AZ25n7mBjTrfrNC6xGlsX4EK_F3z8doYa0FfT_o6E1mIzztJ-fU2z0iHvTZ2ECAea4yxwqz7x9q4iPTWxSI3Ryl3pSpBlSdn9DVqgmzcwc1ZD" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=AnBui2004/Vectras-VM-Emu-Android&type=date&legend=top-left&sealed_token=2MHlTtOXa6VoJumMfNYZ0BfKwzks9M-RGdd1Pboywmt9W8DRhiUrhui7fg2Zat1LzPFb6Fxxk2O4rF2AZ25n7mBjTrfrNC6xGlsX4EK_F3z8doYa0FfT_o6E1mIzztJ-fU2z0iHvTZ2ECAea4yxwqz7x9q4iPTWxSI3Ryl3pSpBlSdn9DVqgmzcwc1ZD" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=AnBui2004/Vectras-VM-Emu-Android&type=date&legend=top-left&sealed_token=2MHlTtOXa6VoJumMfNYZ0BfKwzks9M-RGdd1Pboywmt9W8DRhiUrhui7fg2Zat1LzPFb6Fxxk2O4rF2AZ25n7mBjTrfrNC6xGlsX4EK_F3z8doYa0FfT_o6E1mIzztJ-fU2z0iHvTZ2ECAea4yxwqz7x9q4iPTWxSI3Ryl3pSpBlSdn9DVqgmzcwc1ZD" />
- </picture>
-</a>
+* **Brand Assets (Logo / Icon / Name):** The logo, icon, and brand name are the intellectual property of **Nguyen Bao An Bui**. All rights reserved. You may use them but are **not permitted** to modify them. You are **not allowed** to use them in a way that is false or misleading. This applies to the following files: `nbablab.png`, `notebook_param_48.png`, and `nguyen_bao_an_bui.xml`.
 
 [ico-version]: https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white
 [ico-license]: https://img.shields.io/badge/License-GPL_v2-blue.svg
-
-[link-repo]: https://github.com/AnBui2004/Vectras-VM-Emu-Android/
-[link-releases]: https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/
