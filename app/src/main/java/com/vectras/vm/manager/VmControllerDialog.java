@@ -93,7 +93,15 @@ public class VmControllerDialog extends DialogFragment {
                 return;
             }
 
-            long audioFileSize = FileUtils.getFileSize(VmFileManager.findAudioRaw(requireContext(), Config.vmID));
+            long audioFileSize = 0;
+
+            try {
+                if (vmConfig != null && vmConfig.vmID != null && !vmConfig.vmID.isEmpty()) {
+                    audioFileSize = FileUtils.getFileSize(VmFileManager.findAudioRaw(getContext(), vmConfig.vmID));
+                } else {
+                    audioFileSize = FileUtils.getFileSize(VmFileManager.findAudioRaw(getContext(), Config.vmID));
+                }
+            } catch (Exception ignored) {}
 
             isGotInfo.set(true);
             new Handler(Looper.getMainLooper()).post(() -> {
