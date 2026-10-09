@@ -662,7 +662,7 @@ public class MainActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         if (!tryingSecondaryServer) {
                             tryingSecondaryServer = true;
-                            AppConfig.switchToSecondaryServer(this);
+                            AppConfig.switchToSecondaryServer();
                             updateApp();
                         }
                         Log.e(TAG, "updateApp: ", e);
@@ -670,14 +670,14 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     if (!tryingSecondaryServer) {
                         tryingSecondaryServer = true;
-                        AppConfig.switchToSecondaryServer(this);
+                        AppConfig.switchToSecondaryServer();
                         updateApp();
                     }
                 }
             } else {
                 if (!tryingSecondaryServer) {
                     tryingSecondaryServer = true;
-                    AppConfig.switchToSecondaryServer(this);
+                    AppConfig.switchToSecondaryServer();
                     updateApp();
                 }
             }

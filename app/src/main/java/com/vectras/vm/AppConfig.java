@@ -108,7 +108,7 @@ public class AppConfig {
         Config.storagedir = Environment.getExternalStorageDirectory().toString();
     }
 
-    public static void switchToSecondaryServer(Context context) {
+    public static void switchToSecondaryServer() {
         vectrasWebsiteRaw = vectrasWebsiteRawSecondary;
         vectrasRaw = vectrasWebsiteRaw + "data/";
         updateJson = vectrasRaw + "UpdateConfig.json";

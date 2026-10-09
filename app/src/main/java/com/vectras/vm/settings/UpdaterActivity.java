@@ -171,7 +171,7 @@ public class UpdaterActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         if (!tryingSecondaryServer) {
                             tryingSecondaryServer = true;
-                            AppConfig.switchToSecondaryServer(this);
+                            AppConfig.switchToSecondaryServer();
                             check();
                         } else {
                             whenUpToDate();
@@ -181,7 +181,7 @@ public class UpdaterActivity extends AppCompatActivity {
                 } else {
                     if (!tryingSecondaryServer) {
                         tryingSecondaryServer = true;
-                        AppConfig.switchToSecondaryServer(this);
+                        AppConfig.switchToSecondaryServer();
                         check();
                     } else {
                         whenUpToDate();
@@ -191,7 +191,7 @@ public class UpdaterActivity extends AppCompatActivity {
             } else {
                 if (!tryingSecondaryServer) {
                     tryingSecondaryServer = true;
-                    AppConfig.switchToSecondaryServer(this);
+                    AppConfig.switchToSecondaryServer();
                     check();
                 } else {
                     whenUpToDate();

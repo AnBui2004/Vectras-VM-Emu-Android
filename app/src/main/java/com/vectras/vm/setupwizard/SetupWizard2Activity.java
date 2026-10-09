@@ -419,7 +419,7 @@ public class SetupWizard2Activity extends AppCompatActivity {
                     }
                 } else if (!tryingSecondaryServer) {
                     tryingSecondaryServer = true;
-                    AppConfig.switchToSecondaryServer(this);
+                    AppConfig.switchToSecondaryServer();
                     getDataForStandardSetup();
                     return;
                 }
@@ -434,7 +434,7 @@ public class SetupWizard2Activity extends AppCompatActivity {
             } else {
                 if (!tryingSecondaryServer) {
                     tryingSecondaryServer = true;
-                    AppConfig.switchToSecondaryServer(this);
+                    AppConfig.switchToSecondaryServer();
                     getDataForStandardSetup();
                 } else {
                     new Handler(Looper.getMainLooper()).postDelayed(() -> uiController(STEP_SETUP_OPTIONS), 1000);
