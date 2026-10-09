@@ -30,8 +30,8 @@ android {
         applicationId "com.vectras.vm"
         minSdk minApi
         targetSdk targetApi
-        versionCode 181
-        versionName "4.7.3" + (versionSuffix ? "-${versionSuffix}" : "")
+        versionCode 182
+        versionName "4.7.4" + (versionSuffix ? "-${versionSuffix}" : "")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
