@@ -104,6 +104,7 @@ public class VmControllerDialog extends DialogFragment {
             } catch (Exception ignored) {}
 
             isGotInfo.set(true);
+            long finalAudioSize = audioFileSize;
             new Handler(Looper.getMainLooper()).post(() -> {
                 if (!isAdded()) return;
                 progressDialog.reset();
@@ -214,7 +215,7 @@ public class VmControllerDialog extends DialogFragment {
                     }
                 }
 
-                if (streamAudio == null || !isAdded() || audioFileSize == 0 || !(requireActivity() instanceof MainVNCActivity) && !(requireActivity() instanceof X11Activity) && !VmAudioManager.currentVmId.equals(Config.vmID)
+                if (streamAudio == null || !isAdded() || finalAudioSize == 0 || !(requireActivity() instanceof MainVNCActivity) && !(requireActivity() instanceof X11Activity) && !VmAudioManager.currentVmId.equals(Config.vmID)
                 ) {
                     binding.lnMute.setVisibility(View.GONE);
                     binding.sliderVolume.setVisibility(View.GONE);
