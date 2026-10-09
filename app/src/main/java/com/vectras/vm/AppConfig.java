@@ -1,8 +1,12 @@
 package com.vectras.vm;
 
 import android.content.Context;
+import android.os.Environment;
 
+import com.vectras.qemu.Config;
 import com.vectras.vm.utils.DeviceUtils;
+import com.vectras.vm.utils.FileUtils;
+import com.vectras.vm.utils.PackageUtils;
 
 import java.io.File;
 
@@ -17,7 +21,8 @@ public class AppConfig {
     public static final int standardSetupVersion = 922202607;
     public static final int coreSetupVersion = 0;
     public static String vectrasWebsite = "https://anbui.ovh/";
-    public static String vectrasWebsiteRaw = "https://anbui.ovh/vec/db/";
+    public static String vectrasWebsiteRaw = "https://gitlab.com/anbui62/vectras-vm-android-emu/-/raw/master/web/";
+    public static String vectrasWebsiteRawSecondary = "https://anbui.ovh/vec/db/";
     public static String bootstrapfileslink = vectrasWebsiteRaw + "data/setupfiles4.json";
     public static String community = vectrasWebsite + "community";
     public static String vectrasRaw = vectrasWebsiteRaw + "data/";
@@ -84,4 +89,29 @@ public class AppConfig {
     public static boolean isGmsAvailable = false;
 
     public static boolean forceDisableQuickLaunch;
+
+    public static void setup(Context context) {
+        vectrasVersion = PackageUtils.getThisVersionName(context);
+        vectrasVersionCode = PackageUtils.getThisVersionCode(context);
+        internalDataDirPath = context.getFilesDir().getPath() + "/";
+        basefiledir = datadirpath(context) + "/.qemu/";
+        maindirpath = FileUtils.getExternalFilesDirectory(context).getPath() + "/";
+        sharedFolder = maindirpath + "SharedFolder/";
+        downloadsFolder = maindirpath + "Downloads/";
+        romsdatajson = maindirpath + "roms-data.json";
+        vmFolder = maindirpath + "roms/";
+        recyclebin = maindirpath + "RecycleBin/";
+        cvbiFolder = maindirpath + "cvbi/";
+        lastCrashLogPath = internalDataDirPath + "logs/lastcrash.txt";
+
+        Config.cacheDir = context.getCacheDir().getAbsolutePath();
+        Config.storagedir = Environment.getExternalStorageDirectory().toString();
+    }
+
+    public static void switchToSecondaryServer(Context context) {
+        vectrasWebsiteRaw = vectrasWebsiteRawSecondary;
+        vectrasRaw = vectrasWebsiteRaw + "data/";
+        updateJson = vectrasRaw + "UpdateConfig.json";
+        bootstrapfileslink = vectrasWebsiteRaw + "data/setupfiles4.json";
+    }
 }

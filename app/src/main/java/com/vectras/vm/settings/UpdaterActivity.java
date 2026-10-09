@@ -39,6 +39,7 @@ public class UpdaterActivity extends AppCompatActivity {
 
     ActivityUpdaterBinding binding;
     String downloadUrl = "";
+    public boolean tryingSecondaryServer = false;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -168,16 +169,34 @@ public class UpdaterActivity extends AppCompatActivity {
                                     null);
                         }
                     } catch (JSONException e) {
+                        if (!tryingSecondaryServer) {
+                            tryingSecondaryServer = true;
+                            AppConfig.switchToSecondaryServer(this);
+                            check();
+                        } else {
+                            whenUpToDate();
+                        }
                         Log.d(TAG, "JSONException: ", e);
-                        whenUpToDate();
                     }
                 } else {
+                    if (!tryingSecondaryServer) {
+                        tryingSecondaryServer = true;
+                        AppConfig.switchToSecondaryServer(this);
+                        check();
+                    } else {
+                        whenUpToDate();
+                    }
                     Log.d(TAG, "Empty body.");
-                    whenUpToDate();
                 }
             } else {
+                if (!tryingSecondaryServer) {
+                    tryingSecondaryServer = true;
+                    AppConfig.switchToSecondaryServer(this);
+                    check();
+                } else {
+                    whenUpToDate();
+                }
                 Log.d(TAG, "Failed.");
-                whenUpToDate();
             }
         }));
     }

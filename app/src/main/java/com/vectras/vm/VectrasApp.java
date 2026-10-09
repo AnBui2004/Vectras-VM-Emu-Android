@@ -10,6 +10,7 @@ import android.os.Environment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.os.LocaleListCompat;
 import androidx.preference.PreferenceManager;
 
@@ -59,7 +60,7 @@ public class VectrasApp extends Application {
 //		} else {
 //			overrideFont("DEFAULT", R.font.gilroy);
 //		}
-        setupAppConfig(getApplicationContext());
+        AppConfig.setup(this);
 
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
@@ -133,23 +134,5 @@ public class VectrasApp extends Application {
 
     public static Context getApp() {
         return vectrasapp;
-    }
-
-    private void setupAppConfig(Context _context) {
-        AppConfig.vectrasVersion = PackageUtils.getThisVersionName(_context);
-        AppConfig.vectrasVersionCode = PackageUtils.getThisVersionCode(_context);
-        AppConfig.internalDataDirPath = getFilesDir().getPath() + "/";
-        AppConfig.basefiledir = AppConfig.datadirpath(_context) + "/.qemu/";
-        AppConfig.maindirpath = FileUtils.getExternalFilesDirectory(_context).getPath() + "/";
-        AppConfig.sharedFolder = AppConfig.maindirpath + "SharedFolder/";
-        AppConfig.downloadsFolder = AppConfig.maindirpath + "Downloads/";
-        AppConfig.romsdatajson = AppConfig.maindirpath + "roms-data.json";
-        AppConfig.vmFolder = AppConfig.maindirpath + "roms/";
-        AppConfig.recyclebin = AppConfig.maindirpath + "RecycleBin/";
-        AppConfig.cvbiFolder = AppConfig.maindirpath + "cvbi/";
-        AppConfig.lastCrashLogPath = AppConfig.internalDataDirPath + "logs/lastcrash.txt";
-
-        Config.cacheDir = _context.getCacheDir().getAbsolutePath();
-        Config.storagedir = Environment.getExternalStorageDirectory().toString();
     }
 }

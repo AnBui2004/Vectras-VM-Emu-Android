@@ -605,6 +605,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public boolean tryingSecondaryServer = false;
+
     private void updateApp() {
         int versionCode = PackageUtils.getThisVersionCode(getApplicationContext());
 //        String versionName = PackageUtils.getThisVersionName(getApplicationContext());
@@ -658,8 +660,25 @@ public class MainActivity extends AppCompatActivity {
                             bottomSheetDialog.show();
                         }
                     } catch (JSONException e) {
+                        if (!tryingSecondaryServer) {
+                            tryingSecondaryServer = true;
+                            AppConfig.switchToSecondaryServer(this);
+                            updateApp();
+                        }
                         Log.e(TAG, "updateApp: ", e);
                     }
+                } else {
+                    if (!tryingSecondaryServer) {
+                        tryingSecondaryServer = true;
+                        AppConfig.switchToSecondaryServer(this);
+                        updateApp();
+                    }
+                }
+            } else {
+                if (!tryingSecondaryServer) {
+                    tryingSecondaryServer = true;
+                    AppConfig.switchToSecondaryServer(this);
+                    updateApp();
                 }
             }
         }));
