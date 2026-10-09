@@ -68,6 +68,7 @@ public class SetupWizard2Activity extends AppCompatActivity {
     final int STEP_SYSTEM_UPDATE = -1;
     int currentStep = 0;
     String logs = "";
+    public boolean tryingSecondaryServer = false;
     String bootstrapFileLink = "";
     String selectedMirrorCommand = "echo ";
     String selectedMirrorLocation = "";
@@ -416,7 +417,13 @@ public class SetupWizard2Activity extends AppCompatActivity {
                         }
                         downloadBootstrapsCommand = " aria2c -x 4 --async-dns=false --disable-ipv6 -o setup.tar.gz " + bootstrapFileLink;
                     }
+                } else if (!tryingSecondaryServer) {
+                    tryingSecondaryServer = true;
+                    AppConfig.switchToSecondaryServer(this);
+                    getDataForStandardSetup();
+                    return;
                 }
+
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     if (ACTION == ACTION_SYSTEM_UPDATE) {
                         startSetup();
@@ -425,7 +432,13 @@ public class SetupWizard2Activity extends AppCompatActivity {
                     }
                 }, 1000);
             } else {
-                new Handler(Looper.getMainLooper()).postDelayed(() -> uiController(STEP_SETUP_OPTIONS), 1000);
+                if (!tryingSecondaryServer) {
+                    tryingSecondaryServer = true;
+                    AppConfig.switchToSecondaryServer(this);
+                    getDataForStandardSetup();
+                } else {
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> uiController(STEP_SETUP_OPTIONS), 1000);
+                }
                 Log.e("SetupWizard2Activity", "getDataForStandardSetup: " + error);
             }
         }));
