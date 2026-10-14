@@ -11,6 +11,9 @@ We are no longer collaborating with the official Vectras VM as of July 30, 2026.
 > [!CAUTION]
 > For security reasons, you should USE OR UPDATE TO VERSION 4.6.3 OR LATER. You need to uninstall the previous version before updating, your virtual machines will not be deleted. If for some reason you wish to use a version older than 4.6.3, ENSURE YOU KNOW WHAT YOU ARE DOING AND YOU SHOULD USE THE VERSION RELEASED HERE, IN THE OFFICIAL REPOSITORY, OR FROM ANOTHER TRUSTED SOURCE, AVOID USING TERMUX:X11 OR RUN ANY UNFAMILIAR COMMANDS IN THE TERMINAL. IF YOU STILL INSIST ON USING TERMUX:X11, ENSURE THAT NOTHING INTERFERES WITH VECTRAS VM UNDER ANY CIRCUMSTANCES. If you are a developer, `testkey.jks` has been deleted and you need to create a new key.
 
+> [!WARNING]
+> We are no longer adding new features to Vectras VM, it currently only receives bug fix updates.
+
 > [!TIP]
 > We are migrating to [Bread VM](https://github.com/AnBui2004/BreadVM). To avoid confusion with the Play Store version of Vectras VM—which shares the same icon—and to break free from certain other constraints, we have decided to move the project to a new home under the name Bread VM. We plan to discontinue support for Vectras VM in this repository around the middle of next year. If you wish to contribute to the project, please switch to Bread VM. Thanks!
 
