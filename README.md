@@ -81,7 +81,7 @@ Advanced options are [here](ADVANCED.md).
 
 # 💡 Credits & Intellectual Property Notice
 
-This repository uses the [**Vectras VM**](https://github.com/xoureldeen/Vectras-VM-Android) name and logo, which are the original intellectual property and designs of [**Noureldeen Elsayed**](https://github.com/xoureldeen) (established in 2023).
+This repository uses the [**Vectras VM**](https://github.com/xoureldeen/Vectras-VM-Android) name and logo, which are the original intellectual property and designs of [**Noureldeen Elsayed**](https://github.com/xoureldeen) (established in 2023). We have been licensed to use them for this repository, [see here](https://github.com/AnBui2004/Vectras-VM-Emu-Android/issues/132).
 
 This project is a fork/continuation and is **not** affiliated with, endorsed by, or owned as the original trademark of the current maintainer. All rights to the original brand name and logo belong to their respective owners.
 
