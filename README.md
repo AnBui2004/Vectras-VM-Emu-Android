@@ -12,15 +12,13 @@ We are no longer collaborating with the official Vectras VM as of July 30, 2026.
 > For security reasons, you should USE OR UPDATE TO VERSION 4.6.3 OR LATER. You need to uninstall the previous version before updating, your virtual machines will not be deleted. If for some reason you wish to use a version older than 4.6.3, ENSURE YOU KNOW WHAT YOU ARE DOING AND YOU SHOULD USE THE VERSION RELEASED HERE, IN THE OFFICIAL REPOSITORY, OR FROM ANOTHER TRUSTED SOURCE, AVOID USING TERMUX:X11 OR RUN ANY UNFAMILIAR COMMANDS IN THE TERMINAL. IF YOU STILL INSIST ON USING TERMUX:X11, ENSURE THAT NOTHING INTERFERES WITH VECTRAS VM UNDER ANY CIRCUMSTANCES. If you are a developer, `vectrasvm.jks` has been renamed to `testkey.jks`, YOU SHOULD USE THIS OLD KEY ONLY FOR SAFE TESTING PURPOSES AND NOT FOR PRODUCTION RELEASES.
 
 > [!TIP]
-> We are migrating to [Bread VM](https://gitlab.com/anbui62/bread-vm). To avoid confusion with the Play Store version of Vectras VM—which shares the same icon—and to break free from certain other constraints, we have decided to move the project to a new home under the name Bread VM. We plan to discontinue support for Vectras VM in this repository around the middle of next year. If you wish to contribute to the project, please switch to Bread VM. Thanks!
-
-> [!TIP]
-> If you want to download APK releases, click "🚀 [Releases](https://gitlab.com/anbui62/vectras-vm-android-emu/-/releases)" at the top or on the right.
+> We are migrating to [Bread VM](https://github.com/AnBui2004/BreadVM). To avoid confusion with the Play Store version of Vectras VM—which shares the same icon—and to break free from certain other constraints, we have decided to move the project to a new home under the name Bread VM. We plan to discontinue support for Vectras VM in this repository around the middle of next year. If you wish to contribute to the project, please switch to Bread VM. Thanks!
 
 # 🪴 Vectras VM
-![GitLab stars](https://img.shields.io/gitlab/stars/anbui62/vectras-vm-android-emu)
-![GitLab forks](https://img.shields.io/gitlab/forks/anbui62/vectras-vm-android-emu)
-[![GitLab releases](https://img.shields.io/gitlab/v/release/anbui62/vectras-vm-android-emu)](https://gitlab.com/anbui62/vectras-vm-android-emu/-/releases)
+![GitHub Repo stars](https://img.shields.io/github/stars/AnBui2004/Vectras-VM-Emu-Android)
+![GitHub watchers](https://img.shields.io/github/watchers/AnBui2004/Vectras-VM-Emu-Android)
+![GitHub forks](https://img.shields.io/github/forks/AnBui2004/Vectras-VM-Emu-Android)
+[![Total downloads](https://img.shields.io/github/downloads/AnBui2004/Vectras-VM-Emu-Android/total)](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases)
 [![Software License][ico-license]](LICENSE)
 
 Welcome to Vectras VM! A virtual machine app for Android based on QEMU that lets you emulate various OSes including: [![Windows](https://custom-icon-badges.demolab.com/badge/Windows-0078D6?logo=windows11&logoColor=white)](https://www.microsoft.com/en-us/windows) [![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)](https://www.linux.org/) [![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=F0F0F0)](https://www.apple.com/macos) [![Android](https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white)](https://www.android.com/).
@@ -49,7 +47,7 @@ Works fine on devices manufactured in 2021 or later and devices equipped with Sn
 
 # ⬇️ Installation
 
-You can download Vectras VM from the [releases](https://gitlab.com/anbui62/vectras-vm-android-emu) page.
+You can download Vectras VM from the [releases](https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases) page.
 
 ### ⚙️ Bootstraps
 QEMU 7.2.22 - 3dfx is here!
@@ -87,6 +85,7 @@ This repository uses the [**Vectras VM**](https://github.com/xoureldeen/Vectras-
 
 This project is a fork/continuation and is **not** affiliated with, endorsed by, or owned as the original trademark of the current maintainer. All rights to the original brand name and logo belong to their respective owners.
 
+
 # 📜 License
 
 This project is licensed under the following terms:
@@ -95,5 +94,18 @@ This project is licensed under the following terms:
 * **The rest of the project**: Licensed under [GNU General Public License v2.0](LICENSE).
 * **Brand Assets (Logo / Icon / Name):** The logo, icon, and brand name are the intellectual property of **Nguyen Bao An Bui**. All rights reserved. You may use them but are **not permitted** to modify them. You are **not allowed** to use them in a way that is false or misleading. This applies to the following files: `nbablab.png`, `notebook_param_48.png`, and `nguyen_bao_an_bui.xml`.
 
+# ⭐ Star History
+
+<a href="https://www.star-history.com/?repos=AnBui2004%2FVectras-VM-Emu-Android&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=AnBui2004/Vectras-VM-Emu-Android&type=date&theme=dark&legend=top-left&sealed_token=2MHlTtOXa6VoJumMfNYZ0BfKwzks9M-RGdd1Pboywmt9W8DRhiUrhui7fg2Zat1LzPFb6Fxxk2O4rF2AZ25n7mBjTrfrNC6xGlsX4EK_F3z8doYa0FfT_o6E1mIzztJ-fU2z0iHvTZ2ECAea4yxwqz7x9q4iPTWxSI3Ryl3pSpBlSdn9DVqgmzcwc1ZD" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=AnBui2004/Vectras-VM-Emu-Android&type=date&legend=top-left&sealed_token=2MHlTtOXa6VoJumMfNYZ0BfKwzks9M-RGdd1Pboywmt9W8DRhiUrhui7fg2Zat1LzPFb6Fxxk2O4rF2AZ25n7mBjTrfrNC6xGlsX4EK_F3z8doYa0FfT_o6E1mIzztJ-fU2z0iHvTZ2ECAea4yxwqz7x9q4iPTWxSI3Ryl3pSpBlSdn9DVqgmzcwc1ZD" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=AnBui2004/Vectras-VM-Emu-Android&type=date&legend=top-left&sealed_token=2MHlTtOXa6VoJumMfNYZ0BfKwzks9M-RGdd1Pboywmt9W8DRhiUrhui7fg2Zat1LzPFb6Fxxk2O4rF2AZ25n7mBjTrfrNC6xGlsX4EK_F3z8doYa0FfT_o6E1mIzztJ-fU2z0iHvTZ2ECAea4yxwqz7x9q4iPTWxSI3Ryl3pSpBlSdn9DVqgmzcwc1ZD" />
+ </picture>
+</a>
+
 [ico-version]: https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white
 [ico-license]: https://img.shields.io/badge/License-GPL_v2-blue.svg
+
+[link-repo]: https://github.com/AnBui2004/Vectras-VM-Emu-Android/
+[link-releases]: https://github.com/AnBui2004/Vectras-VM-Emu-Android/releases/
