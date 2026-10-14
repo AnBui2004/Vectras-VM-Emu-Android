@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Vectras VM (GitLab)</string>
+    <string name="app_name">Vectras VM</string>
 
     <!--======================VECTRAS STRINGS====================-->
     <string name="qemu_version" translatable="false">Stable</string>
