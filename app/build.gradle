@@ -16,9 +16,9 @@ if (keystorePropsFile.exists()) {
     keystorePropsFile.withInputStream { keystoreProps.load(it) }
 }
 def vectrasStoreFile = keystoreProps['storeFile'] ?: '../testkey.jks'
-def vectrasStorePassword = keystoreProps['storePassword'] ?: '856856'
-def vectrasKeyAlias = keystoreProps['keyAlias'] ?: 'vectras'
-def vectrasKeyPassword = keystoreProps['keyPassword'] ?: '856856'
+def vectrasStorePassword = keystoreProps['storePassword'] ?: 'test'
+def vectrasKeyAlias = keystoreProps['keyAlias'] ?: 'test'
+def vectrasKeyPassword = keystoreProps['keyPassword'] ?: 'test'
 
 android {
     namespace 'com.vectras.vm'
