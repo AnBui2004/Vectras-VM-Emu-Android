@@ -40,7 +40,7 @@ clear
 
 echo -e "\e[1;37m[i] Installing packages..."
 apk update
-apk add aria2
+apk add aria2 libdw pipewire
 clear
 
 echo -e "\e[1;37m[i] Killing process..."
